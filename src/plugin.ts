@@ -18,9 +18,7 @@ jsPsych.plugins['plugin-name'] = (function() {
 
   plugin.info = {
     name: config.name,
-    parameters: {
-      
-    },
+    parameters: {},
   };
 
   plugin.trial = function(displayElement: HTMLElement, trial: any) {
