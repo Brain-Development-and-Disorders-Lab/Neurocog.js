@@ -1,0 +1,36 @@
+name: Node.js CI
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout 🛎️
+      uses: actions/checkout@v2
+    - name: Setup Node ⚙️
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: Install 🚦
+      run: yarn
+    - name: Build 🔨
+      run: yarn build
+
+  style:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout 🛎️
+      uses: actions/checkout@v2
+    - name: Setup Node ⚙️
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: Install 🚦
+      run: yarn
+    - name: Style 💅
+      run: yarn style
