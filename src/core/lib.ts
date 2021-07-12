@@ -177,4 +177,22 @@ export class TrialDataManager {
   }
 }
 
+/**
+ * Load trial configuration data from a JSON file exported
+ */
+export class TrialLoader {
+  private _data: JSON;
+  private _name: string;
+  /**
+   * Default constructor for TrialLoader
+   * @param {string} _name the name of the file or trial
+   * configuration
+   * @param {string} _path the absolutepath to the file
+   */
+  constructor(_name: string, _path: string) {
+    this._data = require(_path);
+    this._name = _name;
+  }
+}
+
 export default {TrialDataManager};
