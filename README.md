@@ -6,7 +6,7 @@ Project boilerplate for creating online neuropsychological tasks using TypeScrip
 
 ### Targeted builds 🎯
 
-A unique feature of this boilerplate the is the out-of-the-box ability to target the Gorilla platform. Simply upload the outputted `*.bundle.js` files in the `dist/` directory to Gorilla as `Resources` and reference them in the `head`, and you're ready to go!
+A unique feature of this boilerplate the is the out-of-the-box ability to target the _Gorilla_ platform. Simply upload the outputted `*.bundle.js` files in the `dist/` directory to _Gorilla_ as `Resources` and reference them in the `head`, and you're ready to go!
 
 ### Support for libraries 📚
 

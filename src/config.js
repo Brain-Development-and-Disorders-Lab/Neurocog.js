@@ -5,10 +5,10 @@ export const config = {
   locale: 'en-AU',
   target: 'desktop',
   trials: {
-    
+    // Define the trial counts here
   },
   images: {
-
+    // Images to be included
   },
   seed: 'seed',
 };

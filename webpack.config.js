@@ -4,18 +4,23 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   mode: 'development',
   entry: {
-    lib: './src/lib.ts',
-    plugin: './src/plugin.ts',
-    timeline: './src/timeline.ts',
+    main: './src/main.ts',
   },
   devtool: 'inline-source-map',
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Intentions Game',
+      title: 'Task Name',
     }),
   ],
   devServer: {
-    contentBase: './dist',
+    contentBase: [
+      // Output path
+      path.join(__dirname, 'dist'),
+      // Assets path
+      path.join(__dirname, 'src/assets'),
+    ],
+    // Required public path for assets
+    contentBasePublicPath: '/assets',
     hot: true,
   },
   module: {
@@ -39,7 +44,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, './dist'),
     filename: '[name].bundle.js',
     clean: true,
   },

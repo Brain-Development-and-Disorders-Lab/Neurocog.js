@@ -5,15 +5,14 @@
  * the individual trials
  */
 export class TrialDataManager {
-  private _dataObject: any
-  private _options: any
-  private _recordKeypresses: boolean
-  private _recordMouse: boolean
-  private _mouseData: any[]
-  private _lastMouseTime = 0
-  private _mouseDelta = 100
-  private _keypressData: any[]
-
+  private _options: any;
+  private _dataObject: any;
+  private _keypressData: any[];
+  private _mouseData: any[];
+  private _recordKeypresses: boolean;
+  private _recordMouse: boolean;
+  private _mouseDelta: number;
+  private _lastMouseTime: number;
   /**
    * Default constructor
    * @param {any} _dataObject existing data structure
@@ -38,7 +37,7 @@ export class TrialDataManager {
    * Extract the options from the options
    * parameters
    */
-  _extractOptions(): void {
+  _extractOptions() {
     // Record keypresses
     if (this._options.keypress !== undefined) {
       if (this._options.keypress === true || this._options.keypress === false) {
@@ -101,7 +100,7 @@ export class TrialDataManager {
    * @param {string} _id ID of the field
    * @return {any} field value
    */
-  getField(_id: string) {
+  getField(_id) {
     if (this._dataObject[_id] !== undefined) {
       return this._dataObject[_id];
     }
@@ -114,7 +113,7 @@ export class TrialDataManager {
    * @param {string} _id ID of the field
    * @param {any} _value field value
    */
-  setField(_id: string, _value: any) {
+  setField(_id, _value) {
     this._dataObject[_id] = _value;
   }
 
@@ -122,7 +121,7 @@ export class TrialDataManager {
    * Store information on a keypress event
    * @param {any} _event event object
    */
-  _keypressEvent(_event: any) {
+  _keypressEvent(_event) {
     this._keypressData.push(
         `${performance.now()}:${_event.code}`
     );
@@ -132,7 +131,7 @@ export class TrialDataManager {
    * Store information on a mouse movement event
    * @param {any} _event event object
    */
-  _mouseEvent(_event: any) {
+  _mouseEvent(_event) {
     const _time = performance.now();
     // Restrict the frequency of updates
     if (_time - this._lastMouseTime > this._mouseDelta) {
@@ -162,7 +161,7 @@ export class TrialDataManager {
    * Extract and return the data gathered throughout the trial
    * @return {any} the trial data
    */
-  export(): any {
+  export() {
     if (this._recordKeypresses) {
       this._dataObject.keypresses = this._keypressData.toString();
     }

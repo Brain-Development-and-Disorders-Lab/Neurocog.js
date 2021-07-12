@@ -6,7 +6,7 @@ import 'jspsych/jspsych';
 import * as $ from 'jquery';
 
 // Import the plugin before adding it to the timeline
-import './plugin';
+import './core/plugin';
 
 // Import and configure seedrandom
 import * as seedrandom from 'seedrandom';
@@ -15,11 +15,15 @@ window.Math.random = seedrandom(config.seed);
 // Timeline setup
 const timeline = [];
 
+const _image = new Image();
+_image.src = 'assets/chess.jpeg';
+
 const instructionsIntroduction = [
   `<h1>${config.name}</h1>` +
   `<span class="instructions-subtitle">` +
     `Please read these instructions carefully.</span>` +
   `<h2>Instructions</h2>` +
+  `<img src=${_image.src}></img>` +
   `<p>This is an example set of instructions.</p>`,
 ];
 
@@ -86,3 +90,4 @@ if (config.target === 'gorilla') {
     console.error(`Fatal: jsPsych not loaded.`);
   }
 }
+
