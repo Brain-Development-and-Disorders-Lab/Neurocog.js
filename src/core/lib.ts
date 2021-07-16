@@ -1,4 +1,6 @@
-// Define any interesting classes here.
+/**
+ * Define any additional classes here.
+ */
 
 /**
  * Class to handle data collection and storage outside
@@ -161,7 +163,7 @@ export class TrialDataManager {
    * Extract and return the data gathered throughout the trial
    * @return {any} the trial data
    */
-  export() {
+  getData(): any {
     if (this._recordKeypresses) {
       this._dataObject.keypresses = this._keypressData.toString();
     }
@@ -190,9 +192,60 @@ export class TrialLoader {
    * @param {string} _path the absolutepath to the file
    */
   constructor(_name: string, _path: string) {
-    this._data = require(_path);
+    fetch(_path)
+        .then((_response) => _response.json())
+        .then((_obj) => {
+          console.info(`Loaded JSON configuration for trials`);
+          this._data = _obj;
+        })
+        .catch((_error) => {
+          console.error(`Error loading JSON configuration for trials`);
+        });
     this._name = _name;
+  }
+
+  /**
+   * Retrieve the data stored in the JSON configuration
+   * @return {JSON}
+   */
+  getTrialData(): JSON {
+    return this._data;
   }
 }
 
-export default {TrialDataManager};
+/**
+ * Subsitute utility class to load images from the configuration
+ * file
+ */
+export class ImageLoader {
+  private _images: any;
+  private _config: any;
+  /**
+   * Default constructor
+   * @param {any} config user-created task configuration
+   */
+  constructor(config: any) {
+    console.info(`Instantiated ImageLoader utility.`);
+    this._config = config;
+    this._images = {};
+    this._load();
+  }
+
+  /**
+   * Load images from the configuration file.
+   */
+  _load() {
+    Object.keys(this._config.images).forEach((_image: any) => {
+      console.debug(`Image: ${_image}`);
+      this._images[_image] = this._config.images[_image];
+    });
+  }
+
+  /**
+   * Return the generated collection of images
+   * @return {any} collection of images
+   */
+  getImages(): any {
+    return this._images;
+  }
+}

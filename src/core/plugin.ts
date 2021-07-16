@@ -9,7 +9,7 @@ import 'jspsych/css/jspsych.css';
 import '../css/styles.css';
 
 // Core modules
-import {config} from '../config';
+import {config} from '../config/config';
 
 jsPsych.plugins['plugin-name'] = (function() {
   const plugin = {

@@ -9,6 +9,7 @@ export const config = {
   },
   images: {
     // Images to be included
+    'chess': 'assets/chess.jpeg',
   },
   seed: 'seed',
 };
