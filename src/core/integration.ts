@@ -1,5 +1,5 @@
 /**
- * THIS FILE SHOULD NOT BE MODIFIED.
+ * MOST OF THIS FILE SHOULD NOT BE MODIFIED.
  *
  * The purpose of this file is to establish variables
  * and imports required.

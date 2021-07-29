@@ -6,7 +6,7 @@ import {render} from 'react-dom';
 import {Grommet} from 'grommet';
 
 // Libraries for examples
-// import webgazer from 'webgazer';
+import webgazer from 'webgazer/dist/webgazer.commonjs2';
 
 // Define the screen types
 export enum Screens {
@@ -43,16 +43,14 @@ function ScreenLayout(props: { screen: any; }): any {
  * @return {any}
  */
 function EyeTracking(props: any): any {
-  // To-Do: Resolve issue with WebGazer
-  // webgazer.setGazeListener(function(data, elapsedTime) {
-  //   if (data == null) {
-  //     return;
-  //   }
-  //   console.log(elapsedTime);
-  // }).begin();
+  webgazer.setGazeListener(function(data, elapsedTime) {
+    if (data == null) {
+      return;
+    }
+  }).begin();
   return (
     <h1>
-      WebGazer started.
+      WebGazer Preview
     </h1>
   );
 }
