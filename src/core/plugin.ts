@@ -10,8 +10,9 @@ import '../css/styles.css';
 
 // Core modules
 import {config} from '../config/config';
+import {displayScreen, Screens} from './screens';
 
-jsPsych.plugins['plugin-name'] = (function() {
+jsPsych.plugins[`${config.pluginName}`] = (function() {
   const plugin = {
     info: {},
     trial: function(displayElement, trial) {},
@@ -20,12 +21,13 @@ jsPsych.plugins['plugin-name'] = (function() {
   // Define the information about the plugin as well as trial
   // parameters
   plugin.info = {
-    name: config.name,
+    name: config.pluginName,
     parameters: {},
   };
 
   plugin.trial = function(displayElement, trial) {
-    jsPsych.finishTrial();
+    displayScreen(Screens.Eyetracking, displayElement, {});
+    // jsPsych.finishTrial();
   };
 
   return plugin;

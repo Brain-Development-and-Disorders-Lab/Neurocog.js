@@ -27,5 +27,9 @@ timeline.push({
   show_clickable_nav: true,
 });
 
+timeline.push({
+  type: `${config.pluginName}`,
+});
+
 // Initialise jsPsych using the configured timeline
 init(timeline);

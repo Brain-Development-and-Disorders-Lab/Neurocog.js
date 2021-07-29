@@ -6,11 +6,12 @@ import {render} from 'react-dom';
 import {Grommet} from 'grommet';
 
 // Libraries for examples
-import webgazer from 'webgazer';
+// import webgazer from 'webgazer';
 
 // Define the screen types
-export enum SCREENS {
-  EYETRACKING = 'eyetracking',
+export enum Screens {
+  // eslint-disable-next-line no-unused-vars
+  Eyetracking = 'eyetracking',
 };
 
 // Screen 1: Showcase front-end frameworks e.g., React.
@@ -28,7 +29,7 @@ export enum SCREENS {
  * @param {any} props properties, namely the screen
  * @return {any}
  */
-function ScreenLayout(props: { screen: any; }) {
+function ScreenLayout(props: { screen: any; }): any {
   return (
     <Grommet>
       {props.screen}
@@ -41,7 +42,7 @@ function ScreenLayout(props: { screen: any; }) {
  * @param {any} props properties for the component
  * @return {any}
  */
-function EyeTracking(props: any) {
+function EyeTracking(props: any): any {
   // To-Do: Resolve issue with WebGazer
   // webgazer.setGazeListener(function(data, elapsedTime) {
   //   if (data == null) {
@@ -63,11 +64,11 @@ function EyeTracking(props: any) {
  * @param {any} _screenProps properties for the component
  */
 export function displayScreen(
-    _type: SCREENS,
+    _type: Screens,
     _target: HTMLElement,
     _screenProps: any) {
   console.debug(`Screen to display: '${_type}'`);
-  if (_type === SCREENS.EYETRACKING) {
+  if (_type === Screens.Eyetracking) {
     render(
         // eslint-disable-next-line new-cap
         ScreenLayout({

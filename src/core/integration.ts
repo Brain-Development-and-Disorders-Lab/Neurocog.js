@@ -18,7 +18,7 @@ import './plugin';
 import {config} from '../config/config';
 
 // Import and configure seedrandom
-import * as seedrandom from 'seedrandom';
+import seedrandom from 'seedrandom';
 window.Math.random = seedrandom(config.seed);
 
 /**
@@ -72,7 +72,8 @@ export function init(timeline: any[]) {
       _jsPsych.init({
         timeline: timeline,
         on_finish: function() {
-          _jsPsych.data.get().localSave(`csv`, `intentions_${Date.now()}.csv`);
+          // _jsPsych.data.get().localSave(`csv`,
+          //     `${config.pluginName}_${Date.now()}.csv`);
         },
         show_progress_bar: true,
         show_preload_progress_bar: true,

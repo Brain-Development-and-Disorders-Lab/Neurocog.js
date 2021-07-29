@@ -1,7 +1,7 @@
 // Configuration and other required data
 export const config = {
   name: 'Plugin Name',
-  pluginName: 'plugin-name',
+  pluginName: 'template-plugin',
   locale: 'en-AU',
   target: 'desktop',
   trials: {
