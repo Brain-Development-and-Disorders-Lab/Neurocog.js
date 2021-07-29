@@ -1,8 +1,8 @@
 {
-  "name": "brain-boilerplate",
+  "name": "experiments",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://henry-burgess@github.com/henry-burgess/brain-boilerplate.git",
+  "repository": "https://henry-burgess@github.com/henry-burgess/experiments.git",
   "author": "Henry Burgess <henryjburg@gmail.com>",
   "license": "MIT",
   "private": true,

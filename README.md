@@ -1,4 +1,4 @@
-# task-template 🧠
+# Experiments 🧠
 
 Project boilerplate for creating online neuropsychological tasks using TypeScript or JavaScript. Now with React!
 
