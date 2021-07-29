@@ -26,8 +26,8 @@ jsPsych.plugins[`${config.pluginName}`] = (function() {
   };
 
   plugin.trial = function(displayElement, trial) {
-    displayScreen(Screens.Eyetracking, displayElement, {});
-    // jsPsych.finishTrial();
+    displayScreen(Screens.Example, displayElement, {});
+    jsPsych.finishTrial();
   };
 
   return plugin;

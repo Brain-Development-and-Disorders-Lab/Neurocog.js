@@ -19,7 +19,7 @@ function style(cb) {
  * @param {function} cb callback function
  */
 function clean(cb) {
-  del(['dist', 'docs', '.cache', '.parcel-cache']);
+  del(['dist', 'docs', '.cache', '.parcel-cache', 'built']);
   cb();
 }
 
