@@ -9,7 +9,7 @@
 import 'jspsych/jspsych';
 
 // Import jQuery for Gorilla integration
-import * as $ from 'jquery';
+import $ from 'jquery';
 
 // Import the plugin before adding it to the timeline
 import './plugin';
