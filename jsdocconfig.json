@@ -1,0 +1,8 @@
+{
+  "opts": {
+    "destination": "./docs"
+  },
+  "templates": {
+    "theme": "flatly"
+  }
+}

@@ -5,7 +5,7 @@ module.exports = {
   name: 'source',
   mode: 'development',
   entry: {
-    main: './src/main.ts',
+    experiment: './src/Experiment.ts',
   },
   devtool: 'inline-source-map',
   plugins: [
@@ -17,11 +17,7 @@ module.exports = {
     contentBase: [
       // Output path
       path.join(__dirname, 'built'),
-      // Assets path
-      path.join(__dirname, 'src/assets'),
     ],
-    // Required public path for assets
-    contentBasePublicPath: '/assets',
     hot: true,
   },
   module: {

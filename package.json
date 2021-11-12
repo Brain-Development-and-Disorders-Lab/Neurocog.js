@@ -1,18 +1,16 @@
 {
   "name": "experiments",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "https://henry-burgess@github.com/henry-burgess/experiments.git",
   "author": "Henry Burgess <henryjburg@gmail.com>",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "webpack serve --config-name source",
-    "watch": "webpack --watch",
-    "examples": "webpack serve --config-name examples",
+    "dev": "webpack serve",
     "build": "webpack",
     "style": "gulp style",
-    "clean": "gulp clean"
+    "clean": "gulp clean",
+    "preview": "parcel example/index.html"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.6",
@@ -20,6 +18,7 @@
     "@types/react-dom": "^17.0.9",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",
+    "consola": "^2.15.3",
     "css-loader": "^5.2.6",
     "del": "^6.0.0",
     "eslint": "^7.30.0",
@@ -28,9 +27,13 @@
     "grommet-icons": "^4.6.0",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
+    "gulp-jsdoc3": "^3.0.0",
     "gulp-rename": "^2.0.0",
+    "gulp-zip": "^5.1.0",
     "html-webpack-plugin": "^5.3.2",
     "jest": "^27.0.6",
+    "jquery": "^3.6.0",
+    "parcel": "^2.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.2.0",
@@ -43,9 +46,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "jquery": "^3.6.0",
-    "jspsych": "^6.0.0",
-    "seedrandom": "^3.0.5",
-    "webgazer": "^2.1.0"
+    "jspsych": "6.3",
+    "seedrandom": "^3.0.5"
   }
 }
