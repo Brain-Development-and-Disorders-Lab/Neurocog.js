@@ -16,6 +16,7 @@ import 'jspsych/jspsych';
 import 'jspsych/plugins/jspsych-instructions';
 import 'jspsych/plugins/jspsych-fullscreen';
 import 'jspsych/plugins/jspsych-preload';
+import 'jspsych/css/jspsych.css';
 
 declare const jsPsych: any;
 
@@ -55,6 +56,8 @@ export class Experiment {
 
     // Configure seedrandom
     window.Math.random = seedrandom(config.seed);
+
+    this.config = config;
 
     // Detect and update the target in the configuration
     this.setPlatform(this.detectPlatforms());
@@ -319,3 +322,5 @@ export class Experiment {
     scale();
   }
 }
+
+export default {Experiment};

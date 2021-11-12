@@ -12,7 +12,7 @@ const del = require('del');
  * @param {function} cb callback function
  */
 function style(cb) {
-  gulp.src(['**/*.ts', '**/*.js', '!node_modules/**'])
+  gulp.src(['src/**/*.ts', 'src/**/*.js', '!node_modules/**'])
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.failAfterError());
@@ -24,7 +24,13 @@ function style(cb) {
  * @param {function} cb callback function
  */
 function clean(cb) {
-  del(['built', 'docs', 'bundle.zip']);
+  del([
+    'built',
+    'docs',
+    'bundle.zip',
+    'dist',
+    '.parcel-cache',
+  ]);
   cb();
 }
 
@@ -53,7 +59,6 @@ function package(cb) {
   cb();
 }
 
-exports.build = build;
 exports.clean = clean;
 exports.docs = docs;
 exports.style = style;

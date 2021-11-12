@@ -1,5 +1,4 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   name: 'source',
@@ -8,18 +7,6 @@ module.exports = {
     experiment: './src/Experiment.ts',
   },
   devtool: 'inline-source-map',
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: 'Task Name',
-    }),
-  ],
-  devServer: {
-    contentBase: [
-      // Output path
-      path.join(__dirname, 'built'),
-    ],
-    hot: true,
-  },
   module: {
     rules: [
       {
@@ -42,7 +29,11 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './built'),
+    libraryTarget: 'umd',
+    library: 'Experiment',
+    libraryExport: 'default',
     filename: '[name].bundle.js',
+    umdNamedDefine: true,
     clean: true,
   },
 };

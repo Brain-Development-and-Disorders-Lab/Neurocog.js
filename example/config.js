@@ -1,6 +1,6 @@
 export const config = {
   // -------------------- Information --------------------
-  name: 'Maze',
+  name: 'Test experiment',
   localisation: 'en-AU',
 
   // -------------------- Manipulations --------------------

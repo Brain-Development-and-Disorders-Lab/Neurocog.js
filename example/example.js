@@ -3,4 +3,14 @@ import {config} from './config';
 
 const experiment = new Experiment(config);
 
-console.debug(experiment);
+const timeline = [{
+  type: 'instructions',
+  pages: [
+    `<h1>Hello world!</h1>`,
+    `<h1>Hello world!</h1>`,
+  ],
+  show_clickable_nav: true,
+}];
+
+experiment.start({timeline: timeline});
+
