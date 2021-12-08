@@ -1,5 +1,5 @@
 // Experiment library
-import {Experiment} from '../built/experiment.bundle';
+import {Experiment} from '../dist/index';
 
 // Configuration to be used
 import {config} from './config';

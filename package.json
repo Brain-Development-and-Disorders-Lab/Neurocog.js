@@ -5,12 +5,14 @@
   "author": "Henry Burgess <henryjburg@gmail.com>",
   "license": "MIT",
   "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "dev": "webpack watch",
     "build": "webpack",
     "style": "gulp style",
     "clean": "gulp clean",
-    "example": "parcel example/index.html"
+    "example": "parcel --dist-dir ./preview example/index.html "
   },
   "devDependencies": {
     "@types/d3": "^7.1.0",

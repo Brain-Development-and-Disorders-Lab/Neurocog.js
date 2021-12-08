@@ -1,6 +1,6 @@
 // Imports
 import {PLATFORMS} from '../constants';
-import {Experiment} from '../main';
+import {Experiment} from '../experiment';
 
 // Logging library
 import consola from 'consola';

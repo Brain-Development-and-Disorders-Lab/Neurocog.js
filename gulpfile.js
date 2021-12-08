@@ -53,7 +53,7 @@ function docs(cb) {
  * @param {function} cb callback function
  */
 function package(cb) {
-  gulp.src('built/*')
+  gulp.src('dist/*')
       .pipe(zip('bundle.zip'))
       .pipe(gulp.dest('./'));
   cb();
