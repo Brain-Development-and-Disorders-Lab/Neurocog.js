@@ -29,6 +29,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist'),
+    libraryTarget: 'commonjs-module',
     filename: '[name].js',
     clean: true,
   },

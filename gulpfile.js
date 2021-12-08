@@ -1,7 +1,6 @@
 // Gulp modules
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
-const zip = require('gulp-zip');
 
 // Other modules
 const del = require('del');
@@ -24,28 +23,14 @@ function style(cb) {
  */
 function clean(cb) {
   del([
-    'built',
     'docs',
-    'bundle.zip',
     'dist',
+    'preview',
     '.parcel-cache',
   ]);
   cb();
 }
 
-/**
- * Generate a compressed archive of the 'built/'
- * sub-directory.
- * @param {function} cb callback function
- */
-function package(cb) {
-  gulp.src('dist/*')
-      .pipe(zip('bundle.zip'))
-      .pipe(gulp.dest('./'));
-  cb();
-}
-
 exports.clean = clean;
 exports.style = style;
-exports.package = package;
 exports.default = style;
