@@ -11,6 +11,7 @@
     "dev": "webpack watch",
     "build": "webpack",
     "style": "gulp style",
+    "docs": "typedoc src/index.ts",
     "clean": "gulp clean",
     "example": "parcel --dist-dir ./preview example/index.html "
   },
@@ -29,7 +30,6 @@
     "grommet-icons": "^4.6.0",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
-    "gulp-jsdoc3": "^3.0.0",
     "gulp-rename": "^2.0.0",
     "gulp-zip": "^5.1.0",
     "jest": "^27.0.6",
@@ -41,6 +41,7 @@
     "style-loader": "^3.0.0",
     "styled-components": "^5.3.0",
     "ts-loader": "^9.2.3",
+    "typedoc": "^0.22.10",
     "typescript": "^4.5.2",
     "webpack": "^5.42.0",
     "webpack-cli": "^4.7.2"
