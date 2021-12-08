@@ -1,7 +1,7 @@
 // Platform contants
 export const PLATFORMS = {
   GORILLA: 'gorilla',
-  JSPSYCH: 'jsPsych',
+  JSPSYCH: 'jspsych',
 };
 
 // Valid controller types

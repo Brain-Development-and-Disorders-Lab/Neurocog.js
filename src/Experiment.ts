@@ -1,24 +1,21 @@
 // Imports
-import {PLATFORMS} from './lib/Properties';
-import {clear, scale} from './lib/Functions';
-import {Manipulations, Stimuli} from './lib/api/Gorilla';
+import {PLATFORMS} from './Constants';
+import {Manipulations} from './api/Manipulations';
+import {Stimuli} from './api/Stimuli';
 
-// Custom types
-import {Config} from './lib/Types';
-import {jsPsych, Init} from './lib/api/jspsych/Types';
-import {Gorilla} from './lib/api/Gorilla/Types';
+import {clear, scale} from './Functions';
 
 // Logging library
 import consola from 'consola';
 
-// Import jsPsych & plugins to ensure everything is bundled when compiled
+// Import jsPsych & require preload plugin to ensure
+// everything is bundled when compiled
 import 'jspsych/jspsych';
-import 'jspsych/plugins/jspsych-instructions';
-import 'jspsych/plugins/jspsych-fullscreen';
 import 'jspsych/plugins/jspsych-preload';
-import 'jspsych/css/jspsych.css';
 
-declare const jsPsych: any;
+// Import any experiment styling
+import 'jspsych/css/jspsych.css';
+import './css/styles.css';
 
 // Import and configure seedrandom for random number generation
 import seedrandom from 'seedrandom';
@@ -34,23 +31,24 @@ export class Experiment {
   // Platform the experiment is running on
   private platform: string;
 
-  // Instances of the window variables
+  // Instances of the window variables, initially
+  // set to 'undefined'
   private instances: {
-    gorilla: any,
-    jsPsych: any,
+    gorilla: undefined,
+    jsPsych: undefined,
   };
 
   // Collection of stimuli
   private stimuliCollection: Stimuli;
 
   // Configuration
-  private config: Config;
+  private config: Configuration;
 
   /**
    * Default constructor
-   * @param {Config} config configuration object
+   * @param {Configuration} config configuration object
    */
-  constructor(config: Config) {
+  constructor(config: Configuration) {
     // Assign the experiment to the window
     window['Experiment'] = this;
 
@@ -67,8 +65,7 @@ export class Experiment {
 
     // Configure the manipulations in the configuration file
     if (this.platform === PLATFORMS.GORILLA) {
-      new Manipulations(config.manipulations,
-          Object.keys(config.manipulations));
+      new Manipulations(config.manipulations);
     }
   }
 
@@ -76,7 +73,7 @@ export class Experiment {
    * Get the experiment configuration object
    * @return {Config}
    */
-  public getConfiguration(): Config {
+  public getConfiguration(): Configuration {
     return this.config;
   }
 
@@ -86,7 +83,7 @@ export class Experiment {
    */
   private setPlatform(_target: string) {
     if (_target !== this.platform) {
-      consola.warn(`Target updated to '${_target}'`);
+      consola.info(`Target updated to '${_target}'`);
     }
     this.platform = _target;
   }
@@ -140,7 +137,8 @@ export class Experiment {
   }
 
   /**
-   * Setup and enable global error handler
+   * Setup and enable the global error handler.
+   * Listens for the 'onerror' event
    */
   private setupErrorHandler(): void {
     window.onerror = (_event: any) => {
@@ -162,7 +160,7 @@ export class Experiment {
 
       // Error description
       const description = document.createElement('code');
-      description.innerHTML = _event;
+      description.innerText = _event;
       description.style.gap = '20rem';
       errorContainer.append(textIntroduction, description);
 
@@ -241,7 +239,7 @@ export class Experiment {
    * @param {Init} parameters collection of the jsPsych
    * timeline nodes to execute.
    */
-  public start(parameters: Init): void {
+  public start(parameters: jsPsychParameters): void {
     // Add the error handler
     this.setupErrorHandler();
 
@@ -266,21 +264,29 @@ export class Experiment {
       const stimuli = this.config.stimuli;
 
       // Make sure Gorilla and jsPsych are loaded
-      if (gorilla && jsPsych) {
+      if (typeof jsPsych !== 'undefined' && typeof gorilla !== 'undefined') {
+        // Update the parameters object with required functions
+        // and properties
+        // Display element
+        parameters.display_element = $('#gorilla')[0];
+
+        // 'on_data_update' callback
+        parameters.on_data_update = function(data) {
+          gorilla.metric(data);
+        };
+
+        // 'on_finish' callback
+        parameters.on_finish = function() {
+          gorilla.finish();
+        };
+
+        // 'preload_images' value
+        parameters.preload_images = Object.values(stimuli);
+
+        // Start Gorilla and initialise jsPsych with the updated
+        // parameters
         gorilla.ready(function() {
-          jsPsych.init({
-            display_element: $('#gorilla')[0],
-            timeline: parameters.timeline,
-            on_data_update: function(data) {
-              gorilla.metric(data);
-            },
-            on_finish: function() {
-              gorilla.finish();
-            },
-            show_progress_bar: true,
-            show_preload_progress_bar: true,
-            preload_images: Object.values(stimuli),
-          });
+          jsPsych.init(parameters);
         });
       } else {
         throw new Error(`Gorilla or jsPsych not loaded`);
@@ -300,19 +306,22 @@ export class Experiment {
       const stimuli = this.config.stimuli;
 
       // Make sure jsPsych is loaded
-      if (jsPsych) {
-        jsPsych.init({
-          timeline: parameters.timeline,
-          on_finish: function() {
-            jsPsych.data.get().localSave(
-                `csv`,
-                `experiment_complete_${Date.now()}.csv`
-            );
-          },
-          show_progress_bar: true,
-          show_preload_progress_bar: true,
-          preload_images: Object.values(stimuli),
-        });
+      if (typeof jsPsych !== 'undefined') {
+        // Update the parameters object with required functions
+        // and properties
+        // 'on_finish' callback
+        parameters.on_finish = function() {
+          jsPsych.data.get().localSave(
+              `csv`,
+              `experiment_complete_${Date.now()}.csv`
+          );
+        };
+
+        // 'preload_images' value
+        parameters.preload_images = Object.values(stimuli);
+
+        // Initialise jsPsych with the updated parameters
+        jsPsych.init(parameters);
       } else {
         throw new Error(`jsPsych not loaded`);
       }
