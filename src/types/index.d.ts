@@ -8,7 +8,7 @@ declare type Configuration = {
   stimuli: {
     [k: string]: string,
   },
-  seed: string,
+  seed: number,
   allowParticipantContact: boolean,
   contact: string,
 };
@@ -47,5 +47,5 @@ declare type Gorilla = {
   finish(): void,
 };
 
-// Declare jsPsych instance
+// Declare a global jsPsych instance
 declare const jsPsych: jsPsych;

@@ -1,9 +1,17 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "outDir": "./built",
-    "allowJs": true,
+    "module": "es6",
     "target": "es5",
+    "lib": [
+      "ES2015",
+      "DOM"
+    ],
+    "outDir": "./built",
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "allowJs": true,
     "esModuleInterop": true
   },
   "include": ["./src/**/*"]

@@ -1,6 +1,6 @@
 # Experiments 🧠
 
-Project boilerplate for creating online neuropsychological tasks using TypeScript or JavaScript. Now with React!
+Project boilerplate for creating online neuropsychological tasks using TypeScript or JavaScript.
 
 ## Features 🌈
 

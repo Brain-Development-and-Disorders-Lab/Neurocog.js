@@ -4,7 +4,7 @@ module.exports = {
   name: 'source',
   mode: 'development',
   entry: {
-    experiment: './src/Experiment.ts',
+    experiment: './src/main.ts',
   },
   devtool: 'inline-source-map',
   module: {

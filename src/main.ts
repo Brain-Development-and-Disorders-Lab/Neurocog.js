@@ -1,9 +1,9 @@
 // Imports
-import {PLATFORMS} from './Constants';
-import {Manipulations} from './api/Manipulations';
-import {Stimuli} from './api/Stimuli';
+import {PLATFORMS} from './constants';
+import {Manipulations} from './api/manipulations';
+import {Stimuli} from './api/stimuli';
 
-import {clear, scale} from './Functions';
+import {clear, scale} from './functions';
 
 // Logging library
 import consola from 'consola';
@@ -17,8 +17,9 @@ import 'jspsych/plugins/jspsych-preload';
 import 'jspsych/css/jspsych.css';
 import './css/styles.css';
 
-// Import and configure seedrandom for random number generation
-import seedrandom from 'seedrandom';
+// Import and configure d3 for random number generation
+// using a uniform random distribution
+import {randomLcg, randomUniform} from 'd3-random';
 
 // Import jQuery for Gorilla integration only
 import $ from 'jquery';
@@ -38,6 +39,9 @@ export class Experiment {
     jsPsych: undefined,
   };
 
+  // Instance of RNG
+  private generator: any;
+
   // Collection of stimuli
   private stimuliCollection: Stimuli;
 
@@ -52,10 +56,10 @@ export class Experiment {
     // Assign the experiment to the window
     window['Experiment'] = this;
 
-    // Configure seedrandom
-    window.Math.random = seedrandom(config.seed);
-
     this.config = config;
+
+    // Configure the d3 RNG
+    this.generator = randomUniform.source(randomLcg(this.config.seed))(0, 1);
 
     // Detect and update the target in the configuration
     this.setPlatform(this.detectPlatforms());
@@ -94,6 +98,15 @@ export class Experiment {
    */
   public getPlatform(): string {
     return this.platform;
+  }
+
+  /**
+   * Generate and return a random number from a uniform
+   * distribution in [0, 1)
+   * @return {number}
+   */
+  public random(): number {
+    return this.generator();
   }
 
   /**

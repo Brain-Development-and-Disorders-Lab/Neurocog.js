@@ -3,6 +3,10 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   ignorePatterns: [
     '.eslintrc.js',
+    'webpack.config.js',
+    'example/',
+    'built/',
+    'dist/',
   ],
   plugins: [
     '@typescript-eslint',
