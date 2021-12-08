@@ -1,39 +1,33 @@
-# Experiments 🧠
+# Cross-Platform jsPsych Wrapper
 
-Project boilerplate for creating online neuropsychological tasks using TypeScript or JavaScript. Now with React!
+A wrapper library that allows a jsPsych codebase to be tested and run on local and online platforms without requiring multiple versions or integrations.
 
-## Features 🌈
+## Features
 
-### Targeted builds 🎯
+### Extensible
 
-A unique feature of this boilerplate the is the out-of-the-box ability to target the _Gorilla_ platform. Simply upload the bundled `*.js` files from the `dist/` directory to _Gorilla_ as `Resources` and reference them in the `head`, and you're ready to go!
+Using TypeScript alongside tools such as Webpack allows the library to be extended and built upon easily. Other libraries or frameworks such as React can be easily added to the wrapper library to be included in the jsPsych codebase.
 
-### Support for libraries 📚
+### Designed around jsPsych 6.3 and Gorilla
 
-No longer bound to vanilla JavaScript, integration with webpack has facilitated bundling of code with all external modules included.
+The wrapper library was designed to integrate with one of the largest and most established online behavioural experiment libraries for JavaScript.
 
-### jsPsych integration 🧠
+## Commands
 
-The boilerplate code is built on jsPsych, taking advantage of an established framework and set of plugins.
+### Developer commands
 
-## Commands 👨‍💻
+`yarn dev`: Run a webpack HMR-compatible (hot module reload) development server to rebuild the library on changes.
 
-`yarn dev`: Run a webpack HMR-compatible (hot module reload) development server to preview the task at [localhost:8080](localhost:8080).
-
-`yarn watch`: Rebuild on changes. The other commands do this automatically anyway.
-
-`yarn build`: Run a development build of the game. Ensure the `target` field of `config.js` is updated to reflect the target of the build.
+`yarn build`: Create a development build of the library.
 
 `yarn style`: Pipe all the source code through ESLint to check for any style violations.
 
-`yarn clean`: Remove any build artefacts.
+`yarn test`: Run the test suite.
 
-## Tools 🛠
+### General commands
 
-Uses `yarn` 🧶 to manage dependencies and packages. 
+`yarn clean`: Remove any generatedbuild artefacts.
 
-`webpack` 📦 is used as the bundling tool. 
+`yarn docs`: Generate the library documentation.
 
-`gulp` 🥤 is used to automate the things that webpack can't do. 
-
-`ESLint` 💅 enforces a consistent style.
+`yarn example`: Run the example jsPsych project from the _example/_ directory. Open [localhost:1234](http://localhost:1234) to view the project in-browser.

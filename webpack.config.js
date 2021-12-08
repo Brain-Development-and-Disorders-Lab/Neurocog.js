@@ -4,7 +4,7 @@ module.exports = {
   name: 'source',
   mode: 'development',
   entry: {
-    experiment: './src/Experiment.ts',
+    index: './src/index.ts',
   },
   devtool: 'inline-source-map',
   module: {
@@ -28,12 +28,9 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    path: path.resolve(__dirname, './built'),
-    libraryTarget: 'umd',
-    library: 'Experiment',
-    libraryExport: 'default',
-    filename: '[name].bundle.js',
-    umdNamedDefine: true,
+    path: path.resolve(__dirname, './dist'),
+    libraryTarget: 'commonjs-module',
+    filename: '[name].js',
     clean: true,
   },
 };

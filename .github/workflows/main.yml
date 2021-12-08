@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Library build, test, style
 
 on: 
   push:
