@@ -39,6 +39,10 @@ export class Experiment {
     jsPsych: undefined,
   };
 
+  // Initial and current state
+  private initialState: any;
+  private globalState: any;
+
   // Instance of RNG
   private generator: any;
 
@@ -66,6 +70,12 @@ export class Experiment {
 
     // Load all the stimuli
     this.loadStimuli();
+
+    // Store the initial and global state (if defined)
+    if (config.state) {
+      this.globalState = config.state;
+      this.initialState = config.state;
+    }
 
     // Configure the manipulations in the configuration file
     if (this.platform === PLATFORMS.GORILLA) {
@@ -98,6 +108,62 @@ export class Experiment {
    */
   public getPlatform(): string {
     return this.platform;
+  }
+  /**
+   * Return the global state instance of the
+   * experiment
+   * @return {any}
+   */
+  public getGlobalState(): any {
+    return this.globalState;
+  }
+
+  /**
+   * Get the value of a particular state component
+   * @param {string} key state component
+   * @return {any}
+   */
+  public getGlobalStateValue(key: string): any {
+    if (key in this.globalState) {
+      return this.globalState[key];
+    } else {
+      consola.error(`State component '${key}' not found`);
+      return null;
+    }
+  }
+
+  /**
+   * Set the value of a particular state component
+   * @param {string} key state component
+   * @param {any} value state component value
+   */
+  public setGlobalStateValue(key: string, value: any): void {
+    // Need to check that the value is defined first,
+    // storing 'undefined' as a state is never a good idea
+    if (typeof value !== 'undefined') {
+      // Go ahead and check that the key currently exists
+      if (key in this.globalState) {
+        // Update the value if so
+        this.globalState[key] = value;
+      } else {
+        // Otherwise, warn that it was not initialised.
+        // State components should not be added along the way,
+        // they should at least be initialised.
+        consola.warn(`State component '${key}' not initialised`);
+        this.globalState[key] = value;
+      }
+    } else {
+      // Log an error
+      consola.error(`State component value must be defined`);
+    }
+  }
+
+  /**
+   * Reset the global state to the initial state
+   */
+  public resetState(): void {
+    consola.warn(`State reset`);
+    this.globalState = this.initialState;
   }
 
   /**
@@ -308,16 +374,6 @@ export class Experiment {
       // Initialise jsPsych
       const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
 
-      // Add a new timeline node to preload the images
-      parameters.timeline.unshift({
-        type: 'preload',
-        auto_preload: true,
-        images: Object.values(this.config.stimuli),
-      });
-
-      // Bring the stimuli into the local scope
-      const stimuli = this.config.stimuli;
-
       // Make sure jsPsych is loaded
       if (typeof jsPsych !== 'undefined') {
         // Update the parameters object with required functions
@@ -331,7 +387,16 @@ export class Experiment {
         };
 
         // 'preload_images' value
-        parameters.preload_images = Object.values(stimuli);
+        const stimuli = this.config.stimuli;
+        if (stimuli && Object.values(stimuli).length > 0) {
+          // Add a new timeline node to preload the images
+          parameters.timeline.unshift({
+            type: 'preload',
+            auto_preload: true,
+            images: Object.values(stimuli),
+          });
+          parameters.preload_images = Object.values(stimuli);
+        }
 
         // Initialise jsPsych with the updated parameters
         jsPsych.init(parameters);
