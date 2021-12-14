@@ -319,94 +319,97 @@ export class Experiment {
    * timeline nodes to execute.
    */
   public start(parameters: jsPsychParameters): void {
-    // Add the error handler
-    this.setupErrorHandler();
+    // Set the onload callback
+    window.onload = () => {
+      // Add the error handler
+      this.setupErrorHandler();
 
-    if (this.platform === PLATFORMS.GORILLA) {
-      // Initialise jsPsych and Gorilla (if required)
-      const gorilla = this.getHook(PLATFORMS.GORILLA) as Gorilla;
-      const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
+      if (this.platform === PLATFORMS.GORILLA) {
+        // Initialise jsPsych and Gorilla (if required)
+        const gorilla = this.getHook(PLATFORMS.GORILLA) as Gorilla;
+        const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
 
-      // Populate the image collection for Gorilla
-      Object.keys(this.config.stimuli).forEach((image) => {
-        this.config.stimuli[image] = gorilla.stimuliURL(image);
-      });
-
-      // Create a new timeline node to preload the images
-      parameters.timeline.unshift({
-        type: 'preload',
-        auto_preload: true,
-        images: Object.values(this.config.stimuli),
-      });
-
-      // Bring the stimuli into the local scope
-      const stimuli = this.config.stimuli;
-
-      // Make sure Gorilla and jsPsych are loaded
-      if (typeof jsPsych !== 'undefined' && typeof gorilla !== 'undefined') {
-        // Update the parameters object with required functions
-        // and properties
-        // Display element
-        parameters.display_element = $('#gorilla')[0];
-
-        // 'on_data_update' callback
-        parameters.on_data_update = function(data) {
-          gorilla.metric(data);
-        };
-
-        // 'on_finish' callback
-        parameters.on_finish = function() {
-          gorilla.finish();
-        };
-
-        // 'preload_images' value
-        parameters.preload_images = Object.values(stimuli);
-
-        // Start Gorilla and initialise jsPsych with the updated
-        // parameters
-        gorilla.ready(function() {
-          jsPsych.init(parameters);
+        // Populate the image collection for Gorilla
+        Object.keys(this.config.stimuli).forEach((image) => {
+          this.config.stimuli[image] = gorilla.stimuliURL(image);
         });
-      } else {
-        throw new Error(`Gorilla or jsPsych not loaded`);
-      }
-    } else {
-      // Initialise jsPsych
-      const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
 
-      // Make sure jsPsych is loaded
-      if (typeof jsPsych !== 'undefined') {
-        // Update the parameters object with required functions
-        // and properties
-        // 'on_finish' callback
-        parameters.on_finish = function() {
-          jsPsych.data.get().localSave(
-              `csv`,
-              `experiment_complete_${Date.now()}.csv`
-          );
-        };
+        // Create a new timeline node to preload the images
+        parameters.timeline.unshift({
+          type: 'preload',
+          auto_preload: true,
+          images: Object.values(this.config.stimuli),
+        });
 
-        // 'preload_images' value
+        // Bring the stimuli into the local scope
         const stimuli = this.config.stimuli;
-        if (stimuli && Object.values(stimuli).length > 0) {
-          // Add a new timeline node to preload the images
-          parameters.timeline.unshift({
-            type: 'preload',
-            auto_preload: true,
-            images: Object.values(stimuli),
-          });
+
+        // Make sure Gorilla and jsPsych are loaded
+        if (typeof jsPsych !== 'undefined' && typeof gorilla !== 'undefined') {
+          // Update the parameters object with required functions
+          // and properties
+          // Display element
+          parameters.display_element = $('#gorilla')[0];
+
+          // 'on_data_update' callback
+          parameters.on_data_update = function(data) {
+            gorilla.metric(data);
+          };
+
+          // 'on_finish' callback
+          parameters.on_finish = function() {
+            gorilla.finish();
+          };
+
+          // 'preload_images' value
           parameters.preload_images = Object.values(stimuli);
+
+          // Start Gorilla and initialise jsPsych with the updated
+          // parameters
+          gorilla.ready(function() {
+            jsPsych.init(parameters);
+          });
+        } else {
+          throw new Error(`Gorilla or jsPsych not loaded`);
         }
-
-        // Initialise jsPsych with the updated parameters
-        jsPsych.init(parameters);
       } else {
-        throw new Error(`jsPsych not loaded`);
-      }
-    }
+        // Initialise jsPsych
+        const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
 
-    // Scale everything
-    scale();
+        // Make sure jsPsych is loaded
+        if (typeof jsPsych !== 'undefined') {
+          // Update the parameters object with required functions
+          // and properties
+          // 'on_finish' callback
+          parameters.on_finish = function() {
+            jsPsych.data.get().localSave(
+                `csv`,
+                `experiment_complete_${Date.now()}.csv`
+            );
+          };
+
+          // 'preload_images' value
+          const stimuli = this.config.stimuli;
+          if (stimuli && Object.values(stimuli).length > 0) {
+            // Add a new timeline node to preload the images
+            parameters.timeline.unshift({
+              type: 'preload',
+              auto_preload: true,
+              images: Object.values(stimuli),
+            });
+            parameters.preload_images = Object.values(stimuli);
+          }
+
+          // Initialise jsPsych with the updated parameters
+          jsPsych.init(parameters);
+        } else {
+          throw new Error(`jsPsych not loaded`);
+        }
+      }
+
+      // Scale everything
+      scale();
+    };
   }
 }
 
