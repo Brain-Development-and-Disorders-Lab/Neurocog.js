@@ -26,7 +26,6 @@
     "eslint-config-google": "^0.14.0",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
-    "gulp-rename": "^2.0.0",
     "jest": "^27.0.6",
     "jquery": "^3.6.0",
     "parcel": "^2.0.1",

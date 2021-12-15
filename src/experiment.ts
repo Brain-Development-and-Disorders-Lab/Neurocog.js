@@ -13,9 +13,8 @@ import consola from 'consola';
 import 'jspsych/jspsych';
 import 'jspsych/plugins/jspsych-preload';
 
-// Import any experiment styling
+// Import jsPsych styles globally
 import 'jspsych/css/jspsych.css';
-import './css/styles.css';
 
 // Import and configure d3 for random number generation
 // using a uniform random distribution
