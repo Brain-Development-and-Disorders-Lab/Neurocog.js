@@ -1,3 +1,6 @@
+// Logging library
+import consola from 'consola';
+
 /**
  * Class that links to the Gorilla Manipulations API. It allows safe references
  * to the API while developing the tasks locally.
@@ -39,7 +42,7 @@ export class Manipulations {
               gorilla.manipulation(key);
         }
       } else {
-        console.warn(`Manipulation '${key}' was not bound`);
+        consola.warn(`Manipulation '${key}' was not bound`);
       }
     });
   }

@@ -3,6 +3,7 @@ import {PLATFORMS} from './constants';
 import {Manipulations} from './api/manipulations';
 import {Stimuli} from './api/stimuli';
 
+// Utility functions
 import {clear, scale} from './functions';
 
 // Logging library
@@ -314,7 +315,7 @@ export class Experiment {
 
   /**
    * Start the experiment
-   * @param {Init} parameters collection of the jsPsych
+   * @param {jsPsychParameters} parameters collection of the jsPsych
    * timeline nodes to execute.
    */
   public start(parameters: jsPsychParameters): void {
