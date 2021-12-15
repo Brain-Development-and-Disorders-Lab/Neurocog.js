@@ -27,6 +27,7 @@ function clean(cb) {
     'dist',
     'preview',
     '.parcel-cache',
+    '*.tgz',
   ]);
   cb();
 }
