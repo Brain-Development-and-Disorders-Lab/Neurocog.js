@@ -3,6 +3,7 @@ import {PLATFORMS} from './constants';
 import {Manipulations} from './api/manipulations';
 import {Stimuli} from './api/stimuli';
 
+// Utility functions
 import {clear, scale} from './functions';
 
 // Logging library
@@ -13,9 +14,8 @@ import consola from 'consola';
 import 'jspsych/jspsych';
 import 'jspsych/plugins/jspsych-preload';
 
-// Import any experiment styling
+// Import jsPsych styles globally
 import 'jspsych/css/jspsych.css';
-import './css/styles.css';
 
 // Import and configure d3 for random number generation
 // using a uniform random distribution
@@ -38,6 +38,10 @@ export class Experiment {
     gorilla: undefined,
     jsPsych: undefined,
   };
+
+  // Initial and current state
+  private initialState: any;
+  private globalState: any;
 
   // Instance of RNG
   private generator: any;
@@ -66,6 +70,12 @@ export class Experiment {
 
     // Load all the stimuli
     this.loadStimuli();
+
+    // Store the initial and global state (if defined)
+    if (config.state) {
+      this.globalState = config.state;
+      this.initialState = config.state;
+    }
 
     // Configure the manipulations in the configuration file
     if (this.platform === PLATFORMS.GORILLA) {
@@ -98,6 +108,62 @@ export class Experiment {
    */
   public getPlatform(): string {
     return this.platform;
+  }
+  /**
+   * Return the global state instance of the
+   * experiment
+   * @return {any}
+   */
+  public getGlobalState(): any {
+    return this.globalState;
+  }
+
+  /**
+   * Get the value of a particular state component
+   * @param {string} key state component
+   * @return {any}
+   */
+  public getGlobalStateValue(key: string): any {
+    if (key in this.globalState) {
+      return this.globalState[key];
+    } else {
+      consola.error(`State component '${key}' not found`);
+      return null;
+    }
+  }
+
+  /**
+   * Set the value of a particular state component
+   * @param {string} key state component
+   * @param {any} value state component value
+   */
+  public setGlobalStateValue(key: string, value: any): void {
+    // Need to check that the value is defined first,
+    // storing 'undefined' as a state is never a good idea
+    if (typeof value !== 'undefined') {
+      // Go ahead and check that the key currently exists
+      if (key in this.globalState) {
+        // Update the value if so
+        this.globalState[key] = value;
+      } else {
+        // Otherwise, warn that it was not initialised.
+        // State components should not be added along the way,
+        // they should at least be initialised.
+        consola.warn(`State component '${key}' not initialised`);
+        this.globalState[key] = value;
+      }
+    } else {
+      // Log an error
+      consola.error(`State component value must be defined`);
+    }
+  }
+
+  /**
+   * Reset the global state to the initial state
+   */
+  public resetState(): void {
+    consola.warn(`State reset`);
+    this.globalState = this.initialState;
   }
 
   /**
@@ -249,99 +315,101 @@ export class Experiment {
 
   /**
    * Start the experiment
-   * @param {Init} parameters collection of the jsPsych
+   * @param {jsPsychParameters} parameters collection of the jsPsych
    * timeline nodes to execute.
    */
   public start(parameters: jsPsychParameters): void {
-    // Add the error handler
-    this.setupErrorHandler();
+    // Set the onload callback
+    window.onload = () => {
+      // Add the error handler
+      this.setupErrorHandler();
 
-    if (this.platform === PLATFORMS.GORILLA) {
-      // Initialise jsPsych and Gorilla (if required)
-      const gorilla = this.getHook(PLATFORMS.GORILLA) as Gorilla;
-      const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
+      if (this.platform === PLATFORMS.GORILLA) {
+        // Initialise jsPsych and Gorilla (if required)
+        const gorilla = this.getHook(PLATFORMS.GORILLA) as Gorilla;
+        const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
 
-      // Populate the image collection for Gorilla
-      Object.keys(this.config.stimuli).forEach((image) => {
-        this.config.stimuli[image] = gorilla.stimuliURL(image);
-      });
-
-      // Create a new timeline node to preload the images
-      parameters.timeline.unshift({
-        type: 'preload',
-        auto_preload: true,
-        images: Object.values(this.config.stimuli),
-      });
-
-      // Bring the stimuli into the local scope
-      const stimuli = this.config.stimuli;
-
-      // Make sure Gorilla and jsPsych are loaded
-      if (typeof jsPsych !== 'undefined' && typeof gorilla !== 'undefined') {
-        // Update the parameters object with required functions
-        // and properties
-        // Display element
-        parameters.display_element = $('#gorilla')[0];
-
-        // 'on_data_update' callback
-        parameters.on_data_update = function(data) {
-          gorilla.metric(data);
-        };
-
-        // 'on_finish' callback
-        parameters.on_finish = function() {
-          gorilla.finish();
-        };
-
-        // 'preload_images' value
-        parameters.preload_images = Object.values(stimuli);
-
-        // Start Gorilla and initialise jsPsych with the updated
-        // parameters
-        gorilla.ready(function() {
-          jsPsych.init(parameters);
+        // Populate the image collection for Gorilla
+        Object.keys(this.config.stimuli).forEach((image) => {
+          this.config.stimuli[image] = gorilla.stimuliURL(image);
         });
+
+        // Create a new timeline node to preload the images
+        parameters.timeline.unshift({
+          type: 'preload',
+          auto_preload: true,
+          images: Object.values(this.config.stimuli),
+        });
+
+        // Bring the stimuli into the local scope
+        const stimuli = this.config.stimuli;
+
+        // Make sure Gorilla and jsPsych are loaded
+        if (typeof jsPsych !== 'undefined' && typeof gorilla !== 'undefined') {
+          // Update the parameters object with required functions
+          // and properties
+          // Display element
+          parameters.display_element = $('#gorilla')[0];
+
+          // 'on_data_update' callback
+          parameters.on_data_update = function(data) {
+            gorilla.metric(data);
+          };
+
+          // 'on_finish' callback
+          parameters.on_finish = function() {
+            gorilla.finish();
+          };
+
+          // 'preload_images' value
+          parameters.preload_images = Object.values(stimuli);
+
+          // Start Gorilla and initialise jsPsych with the updated
+          // parameters
+          gorilla.ready(function() {
+            jsPsych.init(parameters);
+          });
+        } else {
+          throw new Error(`Gorilla or jsPsych not loaded`);
+        }
       } else {
-        throw new Error(`Gorilla or jsPsych not loaded`);
+        // Initialise jsPsych
+        const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
+
+        // Make sure jsPsych is loaded
+        if (typeof jsPsych !== 'undefined') {
+          // Update the parameters object with required functions
+          // and properties
+          // 'on_finish' callback
+          parameters.on_finish = function() {
+            jsPsych.data.get().localSave(
+                `csv`,
+                `experiment_complete_${Date.now()}.csv`
+            );
+          };
+
+          // 'preload_images' value
+          const stimuli = this.config.stimuli;
+          if (stimuli && Object.values(stimuli).length > 0) {
+            // Add a new timeline node to preload the images
+            parameters.timeline.unshift({
+              type: 'preload',
+              auto_preload: true,
+              images: Object.values(stimuli),
+            });
+            parameters.preload_images = Object.values(stimuli);
+          }
+
+          // Initialise jsPsych with the updated parameters
+          jsPsych.init(parameters);
+        } else {
+          throw new Error(`jsPsych not loaded`);
+        }
       }
-    } else {
-      // Initialise jsPsych
-      const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
 
-      // Add a new timeline node to preload the images
-      parameters.timeline.unshift({
-        type: 'preload',
-        auto_preload: true,
-        images: Object.values(this.config.stimuli),
-      });
-
-      // Bring the stimuli into the local scope
-      const stimuli = this.config.stimuli;
-
-      // Make sure jsPsych is loaded
-      if (typeof jsPsych !== 'undefined') {
-        // Update the parameters object with required functions
-        // and properties
-        // 'on_finish' callback
-        parameters.on_finish = function() {
-          jsPsych.data.get().localSave(
-              `csv`,
-              `experiment_complete_${Date.now()}.csv`
-          );
-        };
-
-        // 'preload_images' value
-        parameters.preload_images = Object.values(stimuli);
-
-        // Initialise jsPsych with the updated parameters
-        jsPsych.init(parameters);
-      } else {
-        throw new Error(`jsPsych not loaded`);
-      }
-    }
-
-    // Scale everything
-    scale();
+      // Scale everything
+      scale();
+    };
   }
 }
 

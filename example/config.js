@@ -1,10 +1,17 @@
 export const config = {
   // -------------------- Information --------------------
   name: 'Test experiment',
+  studyName: 'Test study',
   localisation: 'en-US',
 
+  // -------------------- Participants --------------------
+  allowParticipantContact: false,
+  contact: '',
+
   // -------------------- Manipulations --------------------
-  manipulations: {},
+  manipulations: {
+    variableOne: 0,
+  },
 
   // -------------------- Stimuli --------------------
   stimuli: {},

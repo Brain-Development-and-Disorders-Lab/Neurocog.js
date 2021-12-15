@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 declare type Configuration = {
+  // General configuration properties
   name: string,
   studyName: string,
   manipulations: {
@@ -11,6 +12,9 @@ declare type Configuration = {
   seed: number,
   allowParticipantContact: boolean,
   contact: string,
+
+  // Optional initial state configuration
+  state?: any,
 };
 
 // Generic jsPsych parameters used to instantiate the
@@ -21,9 +25,6 @@ declare type jsPsychParameters = {
 
   // 'on_finish' callback
   on_finish: () => void;
-
-  // Collection of images to preload
-  preload_images: string[];
 
   // Other generic properties
   [x: string]: any,
