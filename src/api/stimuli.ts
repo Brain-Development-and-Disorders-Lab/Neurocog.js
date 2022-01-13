@@ -42,18 +42,15 @@ export class Stimuli {
       // want to create a new API call to retrieve each from
       // the Gorilla platform
       Object.keys(this.collection).forEach((image) => {
-        const oldPath = this.collection[image];
-
         // Generate the new API call
         this.collection[image] = gorilla.stimuliURL(image);
-
-        // Debugging information
-        consola.debug(`Old:`, oldPath, 'new:', this.collection[image]);
       });
+      consola.debug(`All images attached to 'stimuliURL'.`);
 
       this.isLoaded = true;
     } else {
       consola.debug(`jsPsych only, local images are loaded.`);
+      this.isLoaded = true;
     }
   }
 
@@ -61,7 +58,7 @@ export class Stimuli {
    * Get the image collection
    * @return {any}
    */
-  public getCollection(): { [x: string]: any; } {
+  public getCollection(): { [x: string]: string; } {
     if (this.isLoaded) {
       // Return the collection if loaded images
       return this.collection;

@@ -9,13 +9,13 @@ import {clear, scale} from './functions';
 // Logging library
 import consola from 'consola';
 
+// Import styling
+import './css/styles.css';
+
 // Import jsPsych & require preload plugin to ensure
 // everything is bundled when compiled
 import 'jspsych/jspsych';
 import 'jspsych/plugins/jspsych-preload';
-
-// Import jsPsych styles globally
-import 'jspsych/css/jspsych.css';
 
 // Import and configure d3 for random number generation
 // using a uniform random distribution
@@ -105,6 +105,10 @@ export class Experiment {
         if (this.platform === PLATFORMS.GORILLA) {
           new Manipulations(this.config.manipulations);
         }
+
+        // Fire custom 'experimentLoaded' event
+        const experimentLoadedEvent = new CustomEvent('experimentLoaded');
+        window.dispatchEvent(experimentLoadedEvent);
 
         // Resolve the promise once everything has been loaded
         this.loaded = true;
@@ -363,32 +367,33 @@ export class Experiment {
       const gorilla = this.getHook(PLATFORMS.GORILLA) as Gorilla;
       const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
 
-      // Populate the image collection for Gorilla
-      Object.keys(this.config.stimuli).forEach((image) => {
-        this.config.stimuli[image] = gorilla.stimuliURL(image);
-      });
-
-      // Create a new timeline node to preload the images
-      parameters.timeline.unshift({
-        type: 'preload',
-        auto_preload: true,
-        images: Object.values(this.config.stimuli),
-      });
-
-      consola.debug(
-          `Added 'preload' node to timeline:`,
-          Object.values(this.config.stimuli)
-      );
-
       // Bring the stimuli into the local scope
-      const stimuli = this.config.stimuli;
-
       // Make sure Gorilla and jsPsych are loaded
       if (typeof jsPsych !== 'undefined' && typeof gorilla !== 'undefined') {
+        consola.debug(
+            `Added 'preload' node to timeline:`,
+            Object.values(this.config.stimuli)
+        );
+
         // Update the parameters object with required functions
         // and properties
         // Display element
         parameters.display_element = $('#gorilla')[0];
+
+        const stimuli = this.config.stimuli;
+        if (stimuli && Object.values(stimuli).length > 0) {
+          consola.debug(`Preloading images:`, Object.values(stimuli));
+
+          // Add a new timeline node to preload the images
+          parameters.timeline.unshift({
+            type: 'preload',
+            auto_preload: true,
+            images: Object.values(stimuli),
+          });
+
+          // Set the 'preload_images' parameter
+          parameters.preload_images = Object.values(stimuli);
+        }
 
         // 'on_data_update' callback
         parameters.on_data_update = function(data) {
@@ -400,12 +405,12 @@ export class Experiment {
           gorilla.finish();
         };
 
-        // 'preload_images' value
-        parameters.preload_images = Object.values(stimuli);
+        consola.debug(`Configured jsPsych parameters:`, parameters);
 
         // Start Gorilla and initialise jsPsych with the updated
         // parameters
         gorilla.ready(function() {
+          consola.debug(`Starting jsPsych...`);
           jsPsych.init(parameters);
         });
       } else {
@@ -447,6 +452,7 @@ export class Experiment {
         consola.debug(`Configured jsPsych parameters:`, parameters);
 
         // Initialise jsPsych with the updated parameters
+        consola.debug(`Starting jsPsych...`);
         jsPsych.init(parameters);
       } else {
         throw new Error(`jsPsych not loaded`);
