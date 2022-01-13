@@ -1,3 +1,5 @@
+import {LogLevel} from "consola";
+
 export const config = {
   // -------------------- Information --------------------
   name: 'Test experiment',
@@ -14,7 +16,9 @@ export const config = {
   },
 
   // -------------------- Stimuli --------------------
-  stimuli: {},
+  stimuli: {
+    'stimulus.jpeg': './images/stimulus.jpeg',
+  },
 
   // -------------------- Keybindings --------------------
   keybindings: {
@@ -40,6 +44,9 @@ export const config = {
   timings: {
     run: 1000,
   },
+
+  // Console logging level
+  logging: LogLevel.Verbose,
 
   // Seed for RNG must be in [0, 1)
   seed: 0.1234,

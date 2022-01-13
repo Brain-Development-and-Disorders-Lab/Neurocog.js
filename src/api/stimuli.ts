@@ -9,16 +9,21 @@ import consola from 'consola';
  * Utility class to load images and setup any API calls if required
  */
 export class Stimuli {
-  private collection: { [x: string]: any };
+  private collection: { [x: string]: string };
   private isLoaded: boolean;
 
   /**
    * Default constructor
    * @param {any} collection images to load and manage
    */
-  constructor(collection: { [x: string]: any }) {
+  constructor(collection: { [x: string]: string }) {
     this.collection = collection;
     this.isLoaded = false;
+
+    consola.debug(
+        `Created new 'Stimuli' instance with collection:`,
+        this.collection
+    );
   }
 
   /**
@@ -27,6 +32,7 @@ export class Stimuli {
   public load(): void {
     // Get the Experiment object to determine the platform
     const experiment = window['Experiment'] as Experiment;
+
     if (experiment.getPlatform() === PLATFORMS.GORILLA) {
       // Populate the image collection for Gorilla
       // Grab the Gorilla API from the browser
@@ -36,11 +42,18 @@ export class Stimuli {
       // want to create a new API call to retrieve each from
       // the Gorilla platform
       Object.keys(this.collection).forEach((image) => {
+        const oldPath = this.collection[image];
+
         // Generate the new API call
         this.collection[image] = gorilla.stimuliURL(image);
+
+        // Debugging information
+        consola.debug(`Old:`, oldPath, 'new:', this.collection[image]);
       });
 
       this.isLoaded = true;
+    } else {
+      consola.debug(`jsPsych only, local images are loaded.`);
     }
   }
 

@@ -14,7 +14,7 @@
     "clean": "gulp clean",
     "docs": "typedoc src/index.ts",
     "test": "jest",
-    "example": "parcel --dist-dir ./preview example/index.html "
+    "example": "parcel example/index.html example/**/*"
   },
   "devDependencies": {
     "@types/d3": "^7.1.0",

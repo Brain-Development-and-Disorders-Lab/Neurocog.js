@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 declare type Configuration = {
   // General configuration properties
   name: string,
@@ -9,12 +8,17 @@ declare type Configuration = {
   stimuli: {
     [k: string]: string,
   },
-  seed: number,
   allowParticipantContact: boolean,
   contact: string,
 
   // Optional initial state configuration
   state?: any,
+
+  // Optional logging level
+  logging?: any,
+
+  // Seed for RNG
+  seed: number,
 };
 
 // Generic jsPsych parameters used to instantiate the
