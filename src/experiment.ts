@@ -52,6 +52,9 @@ export class Experiment {
   // Configuration
   private config: Configuration;
 
+  // 'Loaded' state
+  private loaded: boolean;
+
   /**
    * Default constructor
    * @param {Configuration} config configuration object
@@ -62,6 +65,9 @@ export class Experiment {
 
     this.config = config;
 
+    // Set the state to be 'unloaded'
+    this.loaded = false;
+
     // Set the logging level
     if (this.config.logging) {
       consola.level = this.config.logging;
@@ -70,22 +76,41 @@ export class Experiment {
     // Configure the d3 RNG
     this.generator = randomUniform.source(randomLcg(this.config.seed))(0, 1);
 
-    // Detect and update the target in the configuration
-    this.setPlatform(this.detectPlatforms());
-
-    // Load all the stimuli
-    this.loadStimuli();
-
     // Store the initial and global state (if defined)
     if (config.state) {
       this.globalState = config.state;
       this.initialState = config.state;
     }
 
-    // Configure the manipulations in the configuration file
-    if (this.platform === PLATFORMS.GORILLA) {
-      new Manipulations(config.manipulations);
-    }
+    // Created new 'Stimuli' instance with a collection
+    this.stimuliCollection = new Stimuli(this.config.stimuli);
+  }
+
+  /**
+   * Asynchronous loading function, responsible for connecting
+   * to the Gorilla API properly, forced to execute only after
+   * the window 'load' event has fired.
+   */
+  public async load() {
+    return new Promise((resolve, reject) => {
+      // Add the event listener for the 'load' event
+      window.addEventListener('load', () => {
+        // Detect and update the target in the configuration
+        this.setPlatform(this.detectPlatforms());
+
+        // Load all the stimuli
+        this.loadStimuli();
+
+        // Configure the manipulations in the configuration file
+        if (this.platform === PLATFORMS.GORILLA) {
+          new Manipulations(this.config.manipulations);
+        }
+
+        // Resolve the promise once everything has been loaded
+        this.loaded = true;
+        resolve(this.loaded);
+      });
+    });
   }
 
   /**
@@ -225,7 +250,7 @@ export class Experiment {
    * Listens for the 'onerror' event
    */
   private setupErrorHandler(): void {
-    window.onerror = (_event: any) => {
+    window.addEventListener('error', (_event: any) => {
       // Heading text
       const heading = document.createElement('h1');
       heading.textContent = 'Oh no!';
@@ -283,7 +308,7 @@ export class Experiment {
           textInstructions,
           endButton,
       );
-    };
+    });
   }
 
   /**
@@ -306,7 +331,6 @@ export class Experiment {
    * instance
    */
   private loadStimuli() {
-    this.stimuliCollection = new Stimuli(this.config.stimuli);
     this.stimuliCollection.load();
   }
 
@@ -314,8 +338,8 @@ export class Experiment {
    * Retrieve the collection of loaded images
    * @return {any}
    */
-  public getStimuli(): any {
-    return this.stimuliCollection.getCollection();
+  public getStimuli(): Stimuli {
+    return this.stimuliCollection;
   }
 
   /**
@@ -325,6 +349,11 @@ export class Experiment {
    */
   public start(parameters: jsPsychParameters): void {
     consola.debug(`Running start() function.`);
+
+    if (this.loaded === false) {
+      throw new Error(`Cannot start until all resources are loaded, ` +
+      `ensure 'load()' is called prior to 'start()'`);
+    }
 
     // Add the error handler
     this.setupErrorHandler();
@@ -345,6 +374,11 @@ export class Experiment {
         auto_preload: true,
         images: Object.values(this.config.stimuli),
       });
+
+      consola.debug(
+          `Added 'preload' node to timeline:`,
+          Object.values(this.config.stimuli)
+      );
 
       // Bring the stimuli into the local scope
       const stimuli = this.config.stimuli;

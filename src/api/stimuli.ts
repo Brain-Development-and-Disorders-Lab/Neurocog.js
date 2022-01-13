@@ -74,4 +74,20 @@ export class Stimuli {
     );
     return {};
   }
+
+  /**
+   * Get the path to an image stored locally or remotely
+   * @param {string} image the key used to reference the image
+   * @return {string}
+   */
+  public getImage(image: string): string {
+    consola.debug(`'getImage' called for image:`, image);
+    if (image in Object.keys(this.collection)) {
+      // Check that the image exists
+      return this.collection[image];
+    } else {
+      consola.error(`Image '${image}' not found!`);
+      return '';
+    }
+  }
 }
