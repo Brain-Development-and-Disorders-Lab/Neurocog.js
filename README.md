@@ -1,33 +1,25 @@
-# Cross-Platform jsPsych Wrapper
+# jsPsych Wrapper
 
-A wrapper library that allows a jsPsych codebase to be tested and run on local and online platforms without requiring multiple versions or integrations.
+Utility library used to enable jsPsych-based experiments to run locally and online while being aware of the runtime context. The library is currently integrated and tested with the Gorilla platform.
 
-## Features
-
-### Extensible
-
-Using TypeScript alongside tools such as Webpack allows the library to be extended and built upon easily. Other libraries or frameworks such as React can be easily added to the wrapper library to be included in the jsPsych codebase.
-
-### Designed around jsPsych 6.3 and Gorilla
-
-The wrapper library was designed to integrate with one of the largest and most established online behavioural experiment libraries for JavaScript.
+> `jspsych-wrapper` was bootstrapped using the TSDX tool, used to generate TypeScript libraries.
 
 ## Commands
 
-### Developer commands
+To start development of the library, run the following command:
 
-`yarn dev`: Run a webpack HMR-compatible (hot module reload) development server to rebuild the library on changes.
+```bash
+yarn start
+```
 
-`yarn build`: Create a development build of the library.
+To create a production-ready build of the library, run the following command:
 
-`yarn style`: Pipe all the source code through ESLint to check for any style violations.
+```bash
+yarn build
+```
 
-`yarn test`: Run the test suite.
+To run an example project showing how the library is to be used (source code is located in the `example` folder), run the following commmand:
 
-### General commands
-
-`yarn clean`: Remove any generatedbuild artefacts.
-
-`yarn docs`: Generate the library documentation.
-
-`yarn example`: Run the example jsPsych project from the _example/_ directory. Open [localhost:1234](http://localhost:1234) to view the project in-browser.
+```bash
+yarn example
+```

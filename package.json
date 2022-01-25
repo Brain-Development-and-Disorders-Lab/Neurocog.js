@@ -1,47 +1,65 @@
 {
-  "name": "crossplatform-jspsych-wrapper",
-  "version": "1.1.0",
-  "repository": "https://github.com/Brain-Development-and-Disorders-Lab/crossplatform_jspsych_wrapper.git",
-  "author": "Henry Burgess <henry.burgess@wustl.edu>",
+  "version": "0.1.0",
   "license": "MIT",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "private": true,
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
   "scripts": {
-    "dev": "webpack watch",
-    "build": "webpack",
-    "style": "gulp style",
-    "clean": "gulp clean",
-    "docs": "typedoc src/index.ts",
-    "test": "jest",
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why",
     "example": "parcel example/index.html example/**/*"
   },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "name": "jspsych-wrapper",
+  "author": "Henry Burgess",
+  "module": "dist/jspsych-wrapper.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/jspsych-wrapper.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/jspsych-wrapper.esm.js",
+      "limit": "10 KB"
+    }
+  ],
   "devDependencies": {
-    "@types/d3": "^7.1.0",
-    "@types/jest": "^27.0.3",
-    "@types/jquery": "^3.5.6",
-    "@typescript-eslint/eslint-plugin": "^5.6.0",
-    "@typescript-eslint/parser": "^5.6.0",
-    "css-loader": "^5.2.6",
-    "del": "^6.0.0",
-    "eslint": "^8.4.1",
-    "eslint-config-google": "^0.14.0",
-    "gulp": "^4.0.2",
-    "gulp-eslint": "^6.0.0",
-    "jest": "^27.4.5",
-    "jquery": "^3.6.0",
-    "parcel": "^2.0.1",
-    "style-loader": "^3.0.0",
-    "ts-jest": "^27.1.1",
-    "ts-loader": "^9.2.3",
-    "typedoc": "^0.22.10",
-    "typescript": "^4.5.4",
-    "webpack": "^5.42.0",
-    "webpack-cli": "^4.7.2"
+    "@size-limit/preset-small-lib": "^7.0.5",
+    "@types/jquery": "^3.5.13",
+    "husky": "^7.0.4",
+    "size-limit": "^7.0.5",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.5"
   },
   "dependencies": {
+    "@types/d3": "^7.1.0",
     "consola": "^2.15.3",
     "d3-random": "^3.0.1",
-    "jspsych": "6.3"
+    "jquery": "^3.6.0",
+    "jspsych": "^6.0.0",
+    "parcel": "^2.2.1"
   }
 }

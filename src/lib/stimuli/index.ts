@@ -1,6 +1,5 @@
 // Imports
-import {PLATFORMS} from '../constants';
-import {Experiment} from '../experiment';
+import { PLATFORMS } from '../../constants';
 
 // Logging library
 import consola from 'consola';
@@ -21,8 +20,8 @@ export class Stimuli {
     this.isLoaded = false;
 
     consola.debug(
-        `Created new 'Stimuli' instance with collection:`,
-        this.collection
+      `Created new 'Stimuli' instance with collection:`,
+      this.collection
     );
   }
 
@@ -31,17 +30,17 @@ export class Stimuli {
    */
   public load(): void {
     // Get the Experiment object to determine the platform
-    const experiment = window['Experiment'] as Experiment;
+    const experiment = window['Experiment'];
 
     if (experiment.getPlatform() === PLATFORMS.GORILLA) {
       // Populate the image collection for Gorilla
       // Grab the Gorilla API from the browser
-      const gorilla = window['gorilla'] as Gorilla;
+      const gorilla = window.Gorilla;
 
       // For each of the images from the desktop build, we
       // want to create a new API call to retrieve each from
       // the Gorilla platform
-      Object.keys(this.collection).forEach((image) => {
+      Object.keys(this.collection).forEach(image => {
         // Generate the new API call
         this.collection[image] = gorilla.stimuliURL(image);
       });
@@ -58,7 +57,7 @@ export class Stimuli {
    * Get the image collection
    * @return {any}
    */
-  public getCollection(): { [x: string]: string; } {
+  public getCollection(): { [x: string]: string } {
     if (this.isLoaded) {
       // Return the collection if loaded images
       return this.collection;
@@ -66,7 +65,7 @@ export class Stimuli {
 
     // Raise error and return empty if not loaded yet
     consola.error(
-        `Image collection not loaded before accessing! ` +
+      `Image collection not loaded before accessing! ` +
         `Ensure 'load()' has been called.`
     );
     return {};
@@ -79,7 +78,7 @@ export class Stimuli {
    */
   public getImage(image: string): string {
     consola.debug(`'getImage' called for image:`, image);
-    if (image in Object.keys(this.collection)) {
+    if (Object.keys(this.collection).includes(image)) {
       // Check that the image exists
       return this.collection[image];
     } else {
