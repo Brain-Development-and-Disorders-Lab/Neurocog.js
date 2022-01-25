@@ -1,3 +1,4 @@
+// Experiment configuration type
 declare type Configuration = {
   // General configuration properties
   name: string;

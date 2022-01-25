@@ -1,3 +1,4 @@
+// Gorilla type
 declare type Gorilla = {
   ready(func: () => void): void;
   manipulation(key: string): any;

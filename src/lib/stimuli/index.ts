@@ -35,7 +35,7 @@ export class Stimuli {
     if (experiment.getPlatform() === PLATFORMS.GORILLA) {
       // Populate the image collection for Gorilla
       // Grab the Gorilla API from the browser
-      const gorilla = window.Gorilla;
+      const gorilla = window.gorilla;
 
       // For each of the images from the desktop build, we
       // want to create a new API call to retrieve each from

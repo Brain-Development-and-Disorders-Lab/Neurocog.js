@@ -1,3 +1,4 @@
+// jsPsych type
 declare type jsPsych = {
   // Functions
   init(paramters: jsPsychParameters): void;
@@ -11,6 +12,7 @@ declare type jsPsych = {
   data: any;
 };
 
+// jsPsych parameter types
 declare type jsPsychParameters = {
   // Timeline
   timeline: any[];
