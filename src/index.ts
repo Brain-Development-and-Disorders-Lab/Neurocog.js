@@ -226,7 +226,7 @@ export class Experiment {
       consola.info(`Gorilla instance found`);
 
       // Store the platform
-      this.instances.gorilla = window.Gorilla;
+      this.instances.gorilla = window.gorilla;
     }
 
     // Check for jsPsych

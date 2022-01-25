@@ -24,7 +24,7 @@ export class Manipulations {
    * to the Gorilla Manipulations API.
    */
   private bind() {
-    const gorilla = window.Gorilla;
+    const gorilla = window.gorilla;
     Object.keys(this.manipulations).forEach(key => {
       if (this.manipulations[key]) {
         // Type checks to make sure properties are preserved
