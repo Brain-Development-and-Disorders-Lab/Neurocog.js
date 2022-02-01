@@ -1,53 +1,32 @@
-name: Library build, test, style
-
-on: 
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
+name: CI
+on: [push]
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout 🛎️
-      uses: actions/checkout@v2
-    - name: Setup Node ⚙️
-      uses: actions/setup-node@v1
-      with:
-        node-version: '14.x'
-    - name: Install 🚦
-      run: yarn
-    - name: Build 🔨
-      run: yarn build
+    name: Build, lint, and test on Node ${{ matrix.node }} and ${{ matrix.os }}
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout 🛎️
-      uses: actions/checkout@v2
-    - name: Setup Node ⚙️
-      uses: actions/setup-node@v1
-      with:
-        node-version: '14.x'
-    - name: Install 🚦
-      run: yarn
-    - name: Test 🧪
-      run: yarn test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: ['12.x', '14.x']
+        os: [ubuntu-latest, windows-latest, macOS-latest]
 
-  style:
-    needs: build
-    runs-on: ubuntu-latest
     steps:
-    - name: Checkout 🛎️
-      uses: actions/checkout@v2
-    - name: Setup Node ⚙️
-      uses: actions/setup-node@v1
-      with:
-        node-version: '14.x'
-    - name: Install 🚦
-      run: yarn
-    - name: Style 💅
-      run: yarn style
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Use Node ${{ matrix.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install deps and build (with cache)
+        uses: bahmutov/npm-install@v1
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test --ci --coverage --maxWorkers=2
+
+      - name: Build
+        run: yarn build

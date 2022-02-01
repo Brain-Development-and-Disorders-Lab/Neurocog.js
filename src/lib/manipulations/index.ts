@@ -7,14 +7,14 @@ import consola from 'consola';
  */
 export class Manipulations {
   // Target object containing the manipulations
-  private manipulations: {[manipulation: string]: any};
+  private manipulations: { [manipulation: string]: any };
 
   /**
    * Default constructor
    * @param {any} manipulations target object containing the manipulations
    * @param {string[]} _keys list of manipulation keys
    */
-  constructor(manipulations: {[manipulation: string]: any}) {
+  constructor(manipulations: { [manipulation: string]: any }) {
     this.manipulations = manipulations;
     this.bind();
   }
@@ -24,22 +24,19 @@ export class Manipulations {
    * to the Gorilla Manipulations API.
    */
   private bind() {
-    const gorilla= window['gorilla'] as Gorilla;
-    Object.keys(this.manipulations).forEach((key) => {
+    const gorilla = window.gorilla;
+    Object.keys(this.manipulations).forEach(key => {
       if (this.manipulations[key]) {
         // Type checks to make sure properties are preserved
         if (this.manipulations[key] instanceof Number) {
           // Number
-          this.manipulations[key] =
-              Number(gorilla.manipulation(key));
+          this.manipulations[key] = Number(gorilla.manipulation(key));
         } else if (this.manipulations[key] instanceof Boolean) {
           // Boolean
-          this.manipulations[key] =
-          gorilla.manipulation(key) == 'true';
+          this.manipulations[key] = gorilla.manipulation(key) == 'true';
         } else {
           // Everything else (strings etc.)
-          this.manipulations[key] =
-              gorilla.manipulation(key);
+          this.manipulations[key] = gorilla.manipulation(key);
         }
       } else {
         consola.warn(`Manipulation '${key}' was not bound`);
