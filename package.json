@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -18,7 +18,8 @@
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "example": "parcel example/index.html example/**/*"
+    "example": "parcel example/index.html example/**/*",
+    "clean": "rm -rf .parcel-cache coverage dist"
   },
   "peerDependencies": {},
   "husky": {
