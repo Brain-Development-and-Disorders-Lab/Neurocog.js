@@ -4,7 +4,7 @@ import { Manipulations } from './lib/manipulations';
 import { Stimuli } from './lib/stimuli';
 
 // Utility functions
-import { clear, scale } from './functions';
+import { clear, scale, checkContext } from './functions';
 
 // Logging library
 import consola from 'consola';
@@ -80,6 +80,9 @@ export class Experiment {
       consola.level = this.config.logging;
     }
 
+    // Add the error handler
+    this.setupErrorHandler();
+
     // Configure the d3 RNG
     this.generator = randomUniform.source(randomLcg(this.config.seed))(0, 1);
 
@@ -89,39 +92,34 @@ export class Experiment {
       this.initialState = config.state;
     }
 
+    // Check the context of the script to try and catch any errors
+    checkContext();
+
     // Created new 'Stimuli' instance with a collection
     this.stimuliCollection = new Stimuli(this.config.stimuli);
+
+    // Load all stimuli used in the Experiment.
+    this.load();
   }
 
   /**
-   * Asynchronous loading function, responsible for connecting
-   * to the Gorilla API properly, forced to execute only after
-   * the window 'load' event has fired.
+   * Loading function, responsible for connecting
+   * to the Gorilla API properly.
    */
-  public async load() {
-    return new Promise(resolve => {
-      // Add the event listener for the 'load' event
-      window.addEventListener('load', () => {
-        // Detect and update the target in the configuration
-        this.setPlatform(this.detectPlatforms());
+  public load() {
+    // Add the event listener for the 'load' event
+    // Detect and update the target in the configuration
+    this.setPlatform(this.detectPlatforms());
 
-        // Load all the stimuli
-        this.loadStimuli();
+    // Load all the stimuli
+    this.loadStimuli();
 
-        // Configure the manipulations in the configuration file
-        if (this.platform === PLATFORMS.GORILLA) {
-          new Manipulations(this.config.manipulations);
-        }
+    // Configure the manipulations in the configuration file
+    if (this.platform === PLATFORMS.GORILLA) {
+      new Manipulations(this.config.manipulations);
+    }
 
-        // Fire custom 'experimentLoaded' event
-        const experimentLoadedEvent = new CustomEvent('experimentLoaded');
-        window.dispatchEvent(experimentLoadedEvent);
-
-        // Resolve the promise once everything has been loaded
-        this.loaded = true;
-        resolve(this.loaded);
-      });
-    });
+    this.loaded = true;
   }
 
   /**
@@ -255,7 +253,12 @@ export class Experiment {
    * Listens for the 'onerror' event
    */
   private setupErrorHandler(): void {
-    window.addEventListener('error', (_event: any) => {
+    window.addEventListener('error', (_event: ErrorEvent) => {
+      // Apply global styling
+      document.body.style.fontFamily = 'Open Sans';
+      document.body.style.textAlign = 'center';
+      document.body.style.marginTop = '35vh';
+
       // Heading text
       const heading = document.createElement('h1');
       heading.textContent = 'Oh no!';
@@ -274,7 +277,7 @@ export class Experiment {
 
       // Error description
       const description = document.createElement('code');
-      description.innerText = _event;
+      description.innerText = _event.message;
       description.style.gap = '20rem';
       errorContainer.append(textIntroduction, description);
 
@@ -285,7 +288,7 @@ export class Experiment {
           `Please send an email to ` +
           `<a href="mailto:${this.config.contact}?` +
           `subject=Error (${this.config.studyName})` +
-          `&body=Error text: ${_event}%0D%0A Additional information:"` +
+          `&body=Error text: ${_event.message}%0D%0A Additional information:"` +
           `>${this.config.contact}</a> to share ` +
           `the details of this error.`;
         textInstructions.style.margin = '20px';
@@ -302,7 +305,7 @@ export class Experiment {
       };
 
       // Clear and replace the content of the document.body
-      const contentContainer = document.getElementById('jspsych-content');
+      const contentContainer = document.body;
       if (contentContainer) {
         clear(contentContainer);
         contentContainer.append(
@@ -372,9 +375,6 @@ export class Experiment {
           `ensure 'load()' is called prior to 'start()'`
       );
     }
-
-    // Add the error handler
-    this.setupErrorHandler();
 
     if (this.platform === PLATFORMS.GORILLA) {
       // Initialise jsPsych and Gorilla (if required)
