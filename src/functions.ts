@@ -61,8 +61,10 @@ export function checkContext(): boolean {
     if (contextErrors.gorilla === true && contextErrors.defer === false) {
       // 'defer' was not specified when required
       consola.error(
-        `Missing 'defer' attribute, Gorilla functionality will not work! ` +
-          `Add the 'defer' attribute to the <script> element to resolve this error`
+        new Error(
+          `Missing 'defer' attribute, Gorilla functionality will not work! ` +
+            `Add the 'defer' attribute to the <script> element to resolve this error`
+        )
       );
 
       // Context check didn't pass
@@ -72,10 +74,10 @@ export function checkContext(): boolean {
       contextErrors.defer === false
     ) {
       // 'defer' was not specified, but not required
-      consola.warn(`<script> missing 'defer' attribute`);
+      consola.warn(`Script element missing 'defer' attribute`);
     } else {
       // No issues found
-      consola.info(`No context issues found`);
+      consola.success(`No context issues`);
     }
   } else {
     // Log a warning

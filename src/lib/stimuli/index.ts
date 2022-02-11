@@ -65,8 +65,10 @@ export class Stimuli {
 
     // Raise error and return empty if not loaded yet
     consola.error(
-      `Image collection not loaded before accessing! ` +
-        `Ensure 'load()' has been called.`
+      new Error(
+        `Image collection not loaded before accessing! ` +
+          `Ensure 'load()' has been called.`
+      )
     );
     return {};
   }
@@ -82,7 +84,7 @@ export class Stimuli {
       // Check that the image exists
       return this.collection[image];
     } else {
-      consola.error(`Image '${image}' not found!`);
+      consola.error(new Error(`Image '${image}' not found!`));
       return '';
     }
   }

@@ -92,14 +92,16 @@ export class Experiment {
       this.initialState = config.state;
     }
 
-    // Check the context of the script to try and catch any errors
-    checkContext();
-
     // Created new 'Stimuli' instance with a collection
     this.stimuliCollection = new Stimuli(this.config.stimuli);
 
-    // Load all stimuli used in the Experiment.
-    this.load();
+    // Check the context of the script to try and catch any errors
+    if (checkContext() === false) {
+      consola.error(new Error('Context check failed, halting experiment'));
+    } else {
+      // Load all stimuli used in the Experiment.
+      this.load();
+    }
   }
 
   /**
@@ -166,7 +168,7 @@ export class Experiment {
     if (key in this.globalState) {
       return this.globalState[key];
     } else {
-      consola.error(`State component '${key}' not found`);
+      consola.error(new Error(`State component '${key}' not found`));
       return null;
     }
   }
@@ -193,7 +195,7 @@ export class Experiment {
       }
     } else {
       // Log an error
-      consola.error(`State component value must be defined`);
+      consola.error(new Error(`State component value must be defined`));
     }
   }
 
@@ -221,7 +223,7 @@ export class Experiment {
   private detectPlatforms(): string {
     // Check for Gorilla
     if (PLATFORMS.GORILLA in window) {
-      consola.info(`Gorilla instance found`);
+      consola.success(`Gorilla instance found`);
 
       // Store the platform
       this.instances.gorilla = window.gorilla;
@@ -229,7 +231,7 @@ export class Experiment {
 
     // Check for jsPsych
     if (PLATFORMS.JSPSYCH in window) {
-      consola.info(`jsPsych instance found`);
+      consola.success(`jsPsych instance found`);
 
       // Store the platform
       this.instances.jsPsych = window.jsPsych;
