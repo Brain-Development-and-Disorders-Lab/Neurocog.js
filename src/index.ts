@@ -222,7 +222,10 @@ export class Experiment {
    */
   private detectPlatforms(): string {
     // Check for Gorilla
-    if (PLATFORMS.GORILLA in window) {
+    if (
+      PLATFORMS.GORILLA in window &&
+      window.location.href.includes(PLATFORMS.GORILLA)
+    ) {
       consola.success(`Gorilla instance found`);
 
       // Store the platform
@@ -246,7 +249,8 @@ export class Experiment {
       return PLATFORMS.JSPSYCH;
     } else {
       // Big issue if we are here
-      throw new Error('No valid platforms detected');
+      consola.error(new Error('No valid platforms detected'));
+      return '';
     }
   }
 
@@ -372,9 +376,11 @@ export class Experiment {
     consola.debug(`Running start() function.`);
 
     if (this.loaded === false) {
-      throw new Error(
-        `Cannot start until all resources are loaded, ` +
-          `ensure 'load()' is called prior to 'start()'`
+      consola.error(
+        new Error(
+          `Cannot start until all resources are loaded, ` +
+            `ensure 'load()' is called prior to 'start()'`
+        )
       );
     }
 
@@ -430,7 +436,7 @@ export class Experiment {
           jsPsych.init(parameters);
         });
       } else {
-        throw new Error(`Gorilla or jsPsych not loaded`);
+        consola.error(new Error(`Gorilla or jsPsych not loaded`));
       }
     } else {
       // Initialise jsPsych
@@ -470,7 +476,7 @@ export class Experiment {
         consola.debug(`Starting jsPsych...`);
         jsPsych.init(parameters);
       } else {
-        throw new Error(`jsPsych not loaded`);
+        consola.error(new Error(`jsPsych not loaded`));
       }
     }
 

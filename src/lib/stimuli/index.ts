@@ -30,7 +30,14 @@ export class Stimuli {
    */
   public load(): void {
     // Get the Experiment object to determine the platform
-    const experiment = window['Experiment'];
+    const experiment = window.Experiment;
+
+    // Check if the images are named consistently
+    Object.keys(this.collection).forEach(image => {
+      if (!this.collection[image].endsWith(image)) {
+        consola.warn(`Image '${image}' named inconsistently`);
+      }
+    });
 
     if (experiment.getPlatform() === PLATFORMS.GORILLA) {
       // Populate the image collection for Gorilla

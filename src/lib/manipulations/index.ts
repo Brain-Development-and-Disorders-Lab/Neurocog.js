@@ -12,7 +12,6 @@ export class Manipulations {
   /**
    * Default constructor
    * @param {any} manipulations target object containing the manipulations
-   * @param {string[]} _keys list of manipulation keys
    */
   constructor(manipulations: { [manipulation: string]: any }) {
     this.manipulations = manipulations;
