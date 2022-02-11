@@ -31,7 +31,6 @@ export function clear(target: HTMLElement): void {
   }
 }
 
-
 /**
  * Important utility function used to enforce loading the script with
  * the 'defer' attribute set correctly on Gorilla.
@@ -62,17 +61,18 @@ export function checkContext(): boolean {
     if (contextErrors.gorilla === true && contextErrors.defer === false) {
       // 'defer' was not specified when required
       consola.error(
-          `Missing 'defer' attribute, Gorilla functionality will not work! ` +
+        `Missing 'defer' attribute, Gorilla functionality will not work! ` +
           `Add the 'defer' attribute to the <script> element to resolve this error`
       );
 
       // Context check didn't pass
       status = false;
-    } else if (contextErrors.gorilla === false && contextErrors.defer === false) {
+    } else if (
+      contextErrors.gorilla === false &&
+      contextErrors.defer === false
+    ) {
       // 'defer' was not specified, but not required
-      consola.warn(
-          `<script> missing 'defer' attribute`
-      );
+      consola.warn(`<script> missing 'defer' attribute`);
     } else {
       // No issues found
       consola.info(`No context issues found`);
