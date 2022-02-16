@@ -82,27 +82,21 @@ const config = {
 const experiment = new Experiment(config);
 ```
 
-Call the `load()` method, then place all experiment code inside of the callback:
+After the timeline and experiment has been setup, instead of calling `jsPsych.init(...)`, call `experiment.start(...)` with the jsPsych initialisation parameters:
 
 ```js
-experiment.load().then(() => {
-  // Place experiment code in here
-  // Create and populate the timeline
-});
-```
+const config = {
+  // Configuration data
+};
 
-At the end of the callback, after the timeline and experiment has been setup, instead of calling `jsPsych.init(...)`, call `start(...)` with the equivalend jsPsych initialisation parameters:
+const experiment = new Experiment(config);
 
-```js
-experiment.load().then(() => {
-  // Place experiment code in here
-  // Create and populate the timeline
+// Create and populate the timeline
 
-  // Start the experiment with the jsPsych properties
-  experiment.start({
-    timeline: [...],
-    // Other jsPsych parameters
-  });
+// Start the experiment with the jsPsych properties
+experiment.start({
+  timeline: [...],
+  // Other jsPsych parameters
 });
 ```
 
