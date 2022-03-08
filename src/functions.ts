@@ -60,7 +60,7 @@ export function clearTimeouts(timeouts: number | number[]) {
       // Clear all prior timeouts
       clearTimeout(i);
     }
-  } else if(Object.prototype.toString.call(timeouts) === '[object Array]') {
+  } else if (Object.prototype.toString.call(timeouts) === '[object Array]') {
     // Array type
     for (let i of timeouts) {
       clearTimeout(i);
