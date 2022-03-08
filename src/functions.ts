@@ -1,3 +1,6 @@
+// React imports
+import ReactDOM from 'react-dom';
+
 // Logging library
 import consola from 'consola';
 
@@ -23,11 +26,45 @@ export function scale(): void {
  * Clear the HTML contents of an element without
  * editing innerHTML.
  * @param {HTMLElement} target element to clear contents
+ * @param {boolean} isReact specify if additiona clearing
+ * is required for React content
  */
-export function clear(target: HTMLElement): void {
-  // Clear existing HTML nodes
-  while (target.firstChild) {
-    target.removeChild(target.lastChild as Node);
+export function clear(target: HTMLElement | null, isReact = false): void {
+  if (target) {
+    consola.debug(`Target is not null, clearing...`);
+    if (isReact) {
+      consola.debug(`React-based target, unmounting...`);
+      ReactDOM.unmountComponentAtNode(target);
+    }
+
+    // Clear existing HTML nodes
+    while (target.firstChild) {
+      target.removeChild(target.lastChild as Node);
+    }
+    consola.debug(`Cleared HTML nodes from target`);
+  } else {
+    consola.warn(`Target was not cleared, target not found`);
+  }
+}
+
+/**
+ * Clear a range of timeouts
+ * @param {number | number[]} timeouts the range of timeouts to clear
+ */
+export function clearTimeouts(timeouts: number | number[]) {
+  if (typeof timeouts === 'number') {
+    // Determine the range of timeouts
+    const id = window.setTimeout(() => {}, 0);
+
+    for (let i = id; i >= 0; i--) {
+      // Clear all prior timeouts
+      clearTimeout(i);
+    }
+  } else if(Object.prototype.toString.call(timeouts) === '[object Array]') {
+    // Array type
+    for (let i of timeouts) {
+      clearTimeout(i);
+    }
   }
 }
 

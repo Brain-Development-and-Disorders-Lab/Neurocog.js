@@ -4,7 +4,7 @@ import { Manipulations } from './lib/manipulations';
 import { Stimuli } from './lib/stimuli';
 
 // Utility functions
-import { clear, scale, checkContext } from './functions';
+import { scale, checkContext, clearTimeouts, clear } from './functions';
 
 // Logging library
 import consola from 'consola';
@@ -150,6 +150,7 @@ export class Experiment {
   public getPlatform(): string {
     return this.platform;
   }
+
   /**
    * Return the global state instance of the
    * experiment
@@ -259,70 +260,87 @@ export class Experiment {
    * Listens for the 'onerror' event
    */
   private setupErrorHandler(): void {
-    window.addEventListener('error', (_event: ErrorEvent) => {
-      // Apply global styling
-      document.body.style.fontFamily = 'Open Sans';
-      document.body.style.textAlign = 'center';
-      document.body.style.marginTop = '35vh';
+    window.addEventListener('error', this.invokeError.bind(this));
+  }
 
-      // Heading text
-      const heading = document.createElement('h1');
-      heading.textContent = 'Oh no!';
+  /**
+   * Invoke an error screen that ultimately ends the experiment
+   * @param {ErrorEvent} error event information
+   */
+  public invokeError(error: ErrorEvent) {
+    const target = document.getElementById('jspsych-content');
+    clearTimeouts(10000);
+    clear(target, true);
 
-      // Subheading
-      const subheading = document.createElement('h2');
-      subheading.textContent = 'It looks like an error has occurred.';
+    // Apply global styling
+    document.body.style.fontFamily = 'Open Sans';
+    document.body.style.textAlign = 'center';
 
-      // Container for the error information
-      const errorContainer = document.createElement('div');
-      errorContainer.style.margin = '20px';
+    // Container for elements
+    const container = document.createElement('div');
 
-      // 'Error description:' text
-      const textIntroduction = document.createElement('p');
-      textIntroduction.textContent = 'Error description:';
+    // Heading text
+    const heading = document.createElement('h1');
+    heading.textContent = 'Oh no!';
 
-      // Error description
-      const description = document.createElement('code');
-      description.innerText = _event.message;
-      description.style.gap = '20rem';
-      errorContainer.append(textIntroduction, description);
+    // Subheading
+    const subheading = document.createElement('h2');
+    subheading.textContent = 'It looks like an error has occurred.';
 
-      // Follow-up instructions
-      const textInstructions = document.createElement('p');
-      if (this.config.allowParticipantContact === true) {
-        textInstructions.innerHTML =
-          `Please send an email to ` +
-          `<a href="mailto:${this.config.contact}?` +
-          `subject=Error (${this.config.studyName})` +
-          `&body=Error text: ${_event.message}%0D%0A Additional information:"` +
-          `>${this.config.contact}</a> to share ` +
-          `the details of this error.`;
-        textInstructions.style.margin = '20px';
-      }
+    // Container for the error information
+    const errorContainer = document.createElement('div');
+    errorContainer.style.margin = '20px';
 
-      // Button to end the experiment
-      const endButton = document.createElement('button');
-      endButton.textContent = 'End Experiment';
-      endButton.classList.add('jspsych-btn');
-      endButton.onclick = () => {
-        window.jsPsych.endExperiment(
-          'The experiment ended early due to an error occurring.'
-        );
-      };
+    // 'Error description:' text
+    const textIntroduction = document.createElement('p');
+    textIntroduction.textContent = 'Error description:';
 
-      // Clear and replace the content of the document.body
-      const contentContainer = document.body;
-      if (contentContainer) {
-        clear(contentContainer);
-        contentContainer.append(
-          heading,
-          subheading,
-          errorContainer,
-          textInstructions,
-          endButton
-        );
-      }
-    });
+    // Error description
+    const description = document.createElement('code');
+    description.innerText = error.message;
+    description.style.gap = '20rem';
+    errorContainer.append(textIntroduction, description);
+
+    // Follow-up instructions
+    const textInstructions = document.createElement('p');
+    if (this.config.allowParticipantContact === true) {
+      textInstructions.innerHTML =
+        `Please send an email to ` +
+        `<a href="mailto:${this.config.contact}?` +
+        `subject=Error (${this.config.studyName})` +
+        `&body=Error text: ${error.message}%0D%0A Additional information:"` +
+        `>${this.config.contact}</a> to share ` +
+        `the details of this error.`;
+      textInstructions.style.margin = '20px';
+    }
+
+    // Button to end the experiment
+    const endButton = document.createElement('button');
+    endButton.textContent = 'End Experiment';
+    endButton.classList.add('jspsych-btn');
+    endButton.onclick = () => {
+      // End the experiment and provide an error message
+      window.jsPsych.endExperiment(
+        'The experiment ended early due to an error occurring.'
+      );
+    };
+
+    // Replace the content of the document.body
+    if (target) {
+      // Populate the container
+      container.append(
+        heading,
+        subheading,
+        errorContainer,
+        textInstructions,
+        endButton
+      );
+
+      // Update the styling of the target
+      target.style.display = 'flex';
+      target.style.justifyContent = 'center';
+      target.append(container);
+    }
   }
 
   /**
