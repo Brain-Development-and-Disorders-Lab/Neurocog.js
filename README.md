@@ -1,28 +1,10 @@
-# jsPsych Wrapper
+# Neurocog.js
 
-Utility library used to enable jsPsych-based experiments to run locally and online while being aware of the runtime context. The library is currently integrated and tested to run on the [Gorilla](https://gorilla.sc) platform.
+<img src="icon.png" alt="Neurocog.js icon" width="200"/>
 
-> `jspsych-wrapper` was bootstrapped using the TSDX tool, a utility for generating TypeScript libraries.
+A utility wrapper library extending the functionality of jsPsych-based cognitive tasks and enabling multiplatform operation.
 
-## Commands
-
-To start development of the library, run the following command:
-
-```bash
-yarn start
-```
-
-To create a production-ready build of the library, run the following command:
-
-```bash
-yarn build
-```
-
-To run an example project showing how the library is to be used (source code is located in the `example` folder), run the following commmand:
-
-```bash
-yarn example
-```
+> `Neurocog.js` was bootstrapped using the TSDX tool, a utility for generating libraries using TypeScript.
 
 ## Features
 
@@ -50,20 +32,20 @@ A seeded RNG is accessed via the `random()` method. The `consola` logging librar
 
 ## Usage
 
-It is expected that a form of bundling tool or transformation is done on the source code when this tool is used (e.g. Webpack, Parcel.js). To get started with the library, import it at the top of the file containing your `jsPsych.init(...)` function call:
+To get started with the library, import it at the top of the file containing your `jsPsych.init(...)` function call:
 
 ```js
-import { Experiment } from 'jspsych-wrapper';
+import { Experiment } from 'neurocog';
 ```
 
-### Configuration
+## Configuration
 
 Before instantiating the `Experiment` instance, create an experiment configuration object. A set of properties are required in a configuration object:
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| name | `string` | A plain-text name for the experiment such as `"Two-step Game"` |
-| studyName | `string` | A plain-text name for the experiment plugin such as `"twostep-game"`. No whitespace is permitted. |
+| name | `string` | A plain-text name for the experiment such as `"Brain Game"` |
+| studyName | `string` | A plain-text name for the experiment plugin such as `"brain-game"`. No whitespace is permitted. |
 | manipulations | `key : value` | A collection of key-value pairs that represent the manipulations configured in Gorilla. The key must be a string, and the value can be a string, boolean, or number. |
 | stimuli | `key : value` | A collection of key-value pairs that represent the images used in the experiment. The key can be used as a unique identifier for accessing the image in the source code. The value is the relative path to the actual image. |
 | allowParticipantContact | `boolean` | Whether or not to show an email address for participants to contact in the case of an error. |
@@ -102,6 +84,24 @@ experiment.start({
 
 Check out the experiment in the `example/` directory for a more in-depth example.
 
-### Important
+## Developer Commands
 
-All code that references images, stimuli, or manipulations **must** be called inside or from the file that contains the `load()` function callback.
+If you would like to contribute or experiment with the library, these commands will be useful for you.
+
+To start development of the library, run the following command:
+
+```bash
+yarn start
+```
+
+To create a production-ready build of the library, run the following command:
+
+```bash
+yarn build
+```
+
+To run the example project showing how the library is to be used (source code is located in the `example` folder), run the following commmand:
+
+```bash
+yarn example
+```
