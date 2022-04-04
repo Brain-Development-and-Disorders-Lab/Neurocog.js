@@ -1,10 +1,12 @@
 // Imports
-import { PLATFORMS } from './constants';
-import { Manipulations } from './lib/manipulations';
-import { Stimuli } from './lib/stimuli';
+import { ErrorHandler } from './lib/api/jspsych/ErrorHandler';
+import { Platforms } from './lib/constants';
+import { Manipulations } from './lib/api/gorilla/Manipulations';
+import { State } from './lib/classes/State';
+import { Stimuli } from './lib/api/gorilla/Stimuli';
 
 // Utility functions
-import { scale, checkContext, clearTimeouts, clear } from './functions';
+import { checkContext } from './lib/functions';
 
 // Logging library
 import consola from 'consola';
@@ -30,25 +32,23 @@ import $ from 'jquery';
  * or Gorilla if required
  */
 export class Experiment {
-  // Platform the experiment is running on
-  private platform = '';
+  // Platform the experiment is running on, initially 'Invalid'
+  private platform: Platforms = Platforms.Invalid;
 
-  // Instances of the window variables, initially
-  // set to 'undefined'
+  // Instances of the window variables, initially set to 'undefined'
   private instances: {
     gorilla: Gorilla | undefined;
     jsPsych: jsPsych | undefined;
   };
-
-  // Initial and current state
-  private initialState: any;
-  private globalState: any;
 
   // Instance of RNG
   private generator: any;
 
   // Collection of stimuli
   private stimuliCollection: Stimuli;
+
+  // State management
+  private state: State;
 
   // Configuration
   private config: Configuration;
@@ -80,16 +80,19 @@ export class Experiment {
       consola.level = this.config.logging;
     }
 
-    // Add the error handler
-    this.setupErrorHandler();
-
     // Configure the d3 RNG
     this.generator = randomUniform.source(randomLcg(this.config.seed))(0, 1);
 
+    // Add the error handler
+    new ErrorHandler(config);
+
     // Store the initial and global state (if defined)
     if (config.state) {
-      this.globalState = config.state;
-      this.initialState = config.state;
+      // Initialise with given State
+      this.state = new State(config.state);
+    } else {
+      // Initialise with empty State
+      this.state = new State();
     }
 
     // Created new 'Stimuli' instance with a collection
@@ -117,7 +120,7 @@ export class Experiment {
     this.loadStimuli();
 
     // Configure the manipulations in the configuration file
-    if (this.platform === PLATFORMS.GORILLA) {
+    if (this.platform === Platforms.Gorilla) {
       new Manipulations(this.config.manipulations);
     }
 
@@ -134,9 +137,9 @@ export class Experiment {
 
   /**
    * Update and set the target
-   * @param {string} _target updated target
+   * @param {Platforms} _target updated target
    */
-  private setPlatform(_target: string) {
+  private setPlatform(_target: Platforms) {
     if (_target !== this.platform) {
       consola.info(`Target updated to '${_target}'`);
     }
@@ -145,67 +148,19 @@ export class Experiment {
 
   /**
    * Get the current platform the Experiment is running on
-   * @return {string}
+   * @return {Platforms}
    */
-  public getPlatform(): string {
+  public getPlatform(): Platforms {
     return this.platform;
   }
 
   /**
    * Return the global state instance of the
    * experiment
-   * @return {any}
+   * @return {State}
    */
-  public getGlobalState(): any {
-    return this.globalState;
-  }
-
-  /**
-   * Get the value of a particular state component
-   * @param {string} key state component
-   * @return {any}
-   */
-  public getGlobalStateValue(key: string): any {
-    if (key in this.globalState) {
-      return this.globalState[key];
-    } else {
-      consola.error(new Error(`State component '${key}' not found`));
-      return null;
-    }
-  }
-
-  /**
-   * Set the value of a particular state component
-   * @param {string} key state component
-   * @param {any} value state component value
-   */
-  public setGlobalStateValue(key: string, value: any): void {
-    // Need to check that the value is defined first,
-    // storing 'undefined' as a state is never a good idea
-    if (typeof value !== 'undefined') {
-      // Go ahead and check that the key currently exists
-      if (key in this.globalState) {
-        // Update the value if so
-        this.globalState[key] = value;
-      } else {
-        // Otherwise, warn that it was not initialised.
-        // State components should not be added along the way,
-        // they should at least be initialised.
-        consola.warn(`State component '${key}' not initialised`);
-        this.globalState[key] = value;
-      }
-    } else {
-      // Log an error
-      consola.error(new Error(`State component value must be defined`));
-    }
-  }
-
-  /**
-   * Reset the global state to the initial state
-   */
-  public resetState(): void {
-    consola.warn(`State reset`);
-    this.globalState = this.initialState;
+  public getState(): State {
+    return this.state;
   }
 
   /**
@@ -219,13 +174,13 @@ export class Experiment {
 
   /**
    * Detect the platform that the experiment is running on
-   * @return {string} platform name
+   * @return {Platforms} platform name
    */
-  private detectPlatforms(): string {
+  private detectPlatforms(): Platforms {
     // Check for Gorilla
     if (
-      PLATFORMS.GORILLA in window &&
-      window.location.href.includes(PLATFORMS.GORILLA)
+      Platforms.Gorilla in window &&
+      window.location.href.includes(Platforms.Gorilla)
     ) {
       consola.success(`Gorilla instance found`);
 
@@ -234,7 +189,7 @@ export class Experiment {
     }
 
     // Check for jsPsych
-    if (PLATFORMS.JSPSYCH in window) {
+    if (Platforms.jsPsych in window) {
       consola.success(`jsPsych instance found`);
 
       // Store the platform
@@ -244,103 +199,15 @@ export class Experiment {
     // Return the correct platform
     if (this.instances.gorilla) {
       // Gorilla was found
-      return PLATFORMS.GORILLA;
+      return Platforms.Gorilla;
     } else if (this.instances.jsPsych) {
       // jsPsych found but not Gorilla
-      return PLATFORMS.JSPSYCH;
-    } else {
-      // Big issue if we are here
-      consola.error(new Error('No valid platforms detected'));
-      return '';
-    }
-  }
-
-  /**
-   * Setup and enable the global error handler.
-   * Listens for the 'onerror' event
-   */
-  private setupErrorHandler(): void {
-    window.addEventListener('error', this.invokeError.bind(this));
-  }
-
-  /**
-   * Invoke an error screen that ultimately ends the experiment
-   * @param {ErrorEvent} error event information
-   */
-  public invokeError(error: ErrorEvent) {
-    const target = document.getElementById('jspsych-content');
-    clearTimeouts(10000);
-    clear(target, true);
-
-    // Apply global styling
-    document.body.style.fontFamily = 'Open Sans';
-    document.body.style.textAlign = 'center';
-
-    // Container for elements
-    const container = document.createElement('div');
-
-    // Heading text
-    const heading = document.createElement('h1');
-    heading.textContent = 'Oh no!';
-
-    // Subheading
-    const subheading = document.createElement('h2');
-    subheading.textContent = 'It looks like an error has occurred.';
-
-    // Container for the error information
-    const errorContainer = document.createElement('div');
-    errorContainer.style.margin = '20px';
-
-    // 'Error description:' text
-    const textIntroduction = document.createElement('p');
-    textIntroduction.textContent = 'Error description:';
-
-    // Error description
-    const description = document.createElement('code');
-    description.innerText = error.message;
-    description.style.gap = '20rem';
-    errorContainer.append(textIntroduction, description);
-
-    // Follow-up instructions
-    const textInstructions = document.createElement('p');
-    if (this.config.allowParticipantContact === true) {
-      textInstructions.innerHTML =
-        `Please send an email to ` +
-        `<a href="mailto:${this.config.contact}?` +
-        `subject=Error (${this.config.studyName})` +
-        `&body=Error text: ${error.message}%0D%0A Additional information:"` +
-        `>${this.config.contact}</a> to share ` +
-        `the details of this error.`;
-      textInstructions.style.margin = '20px';
+      return Platforms.jsPsych;
     }
 
-    // Button to end the experiment
-    const endButton = document.createElement('button');
-    endButton.textContent = 'End Experiment';
-    endButton.classList.add('jspsych-btn');
-    endButton.onclick = () => {
-      // End the experiment and provide an error message
-      window.jsPsych.endExperiment(
-        'The experiment ended early due to an error occurring.'
-      );
-    };
-
-    // Replace the content of the document.body
-    if (target) {
-      // Populate the container
-      container.append(
-        heading,
-        subheading,
-        errorContainer,
-        textInstructions,
-        endButton
-      );
-
-      // Update the styling of the target
-      target.style.display = 'flex';
-      target.style.justifyContent = 'center';
-      target.append(container);
-    }
+    // Big issue if we are here
+    consola.error(new Error('No valid platforms detected'));
+    return Platforms.Invalid;
   }
 
   /**
@@ -349,15 +216,15 @@ export class Experiment {
    * @param {string} platform identifier of the platform
    * @return {any} platform instance
    */
-  private getHook(platform: string): Gorilla | jsPsych | null {
+  public getHook(platform: string): Gorilla | jsPsych | null {
     switch (platform) {
-      case PLATFORMS.GORILLA:
+      case Platforms.Gorilla:
         if (this.instances.gorilla) {
           return this.instances.gorilla;
         } else {
           return null;
         }
-      case PLATFORMS.JSPSYCH:
+      case Platforms.jsPsych:
         if (this.instances.jsPsych) {
           return this.instances.jsPsych;
         } else {
@@ -402,10 +269,10 @@ export class Experiment {
       );
     }
 
-    if (this.platform === PLATFORMS.GORILLA) {
+    if (this.platform === Platforms.Gorilla) {
       // Initialise jsPsych and Gorilla (if required)
-      const gorilla = this.getHook(PLATFORMS.GORILLA) as Gorilla;
-      const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
+      const gorilla = this.getHook(Platforms.Gorilla) as Gorilla;
+      const jsPsych = this.getHook(Platforms.jsPsych) as jsPsych;
 
       // Bring the stimuli into the local scope
       // Make sure Gorilla and jsPsych are loaded
@@ -458,7 +325,7 @@ export class Experiment {
       }
     } else {
       // Initialise jsPsych
-      const jsPsych = this.getHook(PLATFORMS.JSPSYCH) as jsPsych;
+      const jsPsych = this.getHook(Platforms.jsPsych) as jsPsych;
       consola.debug(`Retrieved jsPsych:`, jsPsych);
 
       // Make sure jsPsych is loaded
@@ -497,9 +364,6 @@ export class Experiment {
         consola.error(new Error(`jsPsych not loaded`));
       }
     }
-
-    // Scale everything
-    scale();
   }
 }
 

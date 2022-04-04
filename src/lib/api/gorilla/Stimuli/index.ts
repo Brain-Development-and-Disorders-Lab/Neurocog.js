@@ -1,5 +1,5 @@
 // Imports
-import { PLATFORMS } from '../../constants';
+import { Platforms } from '../../../constants';
 
 // Logging library
 import consola from 'consola';
@@ -39,7 +39,7 @@ export class Stimuli {
       }
     });
 
-    if (experiment.getPlatform() === PLATFORMS.GORILLA) {
+    if (experiment.getPlatform() === Platforms.Gorilla) {
       // Populate the image collection for Gorilla
       // Grab the Gorilla API from the browser
       const gorilla = window.gorilla;

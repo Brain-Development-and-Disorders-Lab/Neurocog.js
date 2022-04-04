@@ -5,24 +5,6 @@ import ReactDOM from 'react-dom';
 import consola from 'consola';
 
 /**
- * Scaling function to automatically resize and scale content
- */
-export function scale(): void {
-  const wrapper = document.querySelector(
-    '.jspsych-content-wrapper'
-  ) as HTMLElement;
-  const content = document.querySelector('.jspsych-content') as HTMLElement;
-
-  if (content) {
-    // Apply the CSS transform using the scale() function
-    content.style.width = `${Math.max(
-      content.clientWidth,
-      wrapper.clientWidth
-    )}px`;
-  }
-}
-
-/**
  * Clear the HTML contents of an element without
  * editing innerHTML.
  * @param {HTMLElement} target element to clear contents
@@ -33,6 +15,7 @@ export function clear(target: HTMLElement | null, isReact = false): void {
   if (target) {
     consola.debug(`Target is not null, clearing...`);
     if (isReact) {
+      // Note: this is for React < v18
       consola.debug(`React-based target, unmounting...`);
       ReactDOM.unmountComponentAtNode(target);
     }
