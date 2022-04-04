@@ -6,28 +6,26 @@ import consola from 'consola';
  * outside of the main experiment
  */
 export class State {
-  // Initial and current state
-  private readonly initialState: any;
-  private globalState: any;
+  // Current state
+  private stateData: any;
 
   /**
    * Default constructor
    * @param {any} initial optional initial state object
    */
   constructor(initial: any = {}) {
-    // Store initial state, mutable state separately
-    this.initialState = initial;
-    this.globalState = initial;
+    // Store initial state
+    this.stateData = initial;
   }
 
   /**
    * Get the value of a particular state component
    * @param {string} key state component
-   * @return {any}
+   * @return {any | null}
    */
   public get(key: string): any | null {
-    if (key in this.globalState) {
-      return this.globalState[key];
+    if (key in this.stateData) {
+      return this.stateData[key];
     } else {
       consola.error(new Error(`State component '${key}' not found`));
       return null;
@@ -44,9 +42,9 @@ export class State {
     // storing 'undefined' as a state is never a good idea
     if (typeof value !== 'undefined') {
       // Go ahead and check that the key currently exists
-      if (key in this.globalState) {
+      if (key in this.stateData) {
         // Update the value if so
-        this.globalState[key] = value;
+        this.stateData[key] = value;
       } else {
         // Otherwise, warn that it was not initialised.
         // State components should not be added along the way,
@@ -54,19 +52,11 @@ export class State {
         consola.warn(
           `State component '${key}' initialised after experiment start`
         );
-        this.globalState[key] = value;
+        this.stateData[key] = value;
       }
     } else {
       // Log an error
       consola.error(new Error(`State component value must be defined`));
     }
-  }
-
-  /**
-   * Reset the global state to the initial state
-   */
-  public reset(): void {
-    consola.warn(`State reset`);
-    this.globalState = this.initialState;
   }
 }

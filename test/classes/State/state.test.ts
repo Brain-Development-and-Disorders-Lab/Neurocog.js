@@ -63,3 +63,20 @@ describe('State modification', () => {
     expect(typeof state.get('data')).toBe('number');
   });
 });
+
+describe('State instance', () => {
+  it('can specify values after initialisation', () => {
+    const state = new State();
+
+    state.set('count', 0);
+    expect(state.get('count')).toBe(0);
+  });
+
+  it('does not allow undefined values', () => {
+    const state = new State({
+      message: 'hello',
+    });
+
+    expect(state.set('message', undefined)).toBeUndefined();
+  });
+});
