@@ -136,13 +136,13 @@ export class Experiment {
 
   /**
    * Update and set the target
-   * @param {Platforms} _target updated target
+   * @param {Platforms} target updated target
    */
-  private setPlatform(_target: Platforms) {
-    if (_target !== this.platform) {
-      consola.info(`Target updated to '${_target}'`);
+  private setPlatform(target: Platforms) {
+    if (target !== this.platform) {
+      consola.info(`Target updated to '${target}'`);
     }
-    this.platform = _target;
+    this.platform = target;
   }
 
   /**
