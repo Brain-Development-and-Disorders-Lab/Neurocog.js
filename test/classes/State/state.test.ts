@@ -39,7 +39,7 @@ describe('State modification', () => {
     expect(state.get('message')).toBe('hello world');
   });
 
-  it ('modifies an object', () => {
+  it('modifies an object', () => {
     const state = new State({
       data: {
         count: 0,
@@ -53,7 +53,7 @@ describe('State modification', () => {
     expect(state.get('data').count).toBe(1);
   });
 
-  it ('changes types', () => {
+  it('changes types', () => {
     const state = new State({
       data: 'hello',
     });
@@ -62,4 +62,4 @@ describe('State modification', () => {
     state.set('data', 0);
     expect(typeof state.get('data')).toBe('number');
   });
-})
+});
