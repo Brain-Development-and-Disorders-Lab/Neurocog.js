@@ -1,5 +1,5 @@
 // Imports
-import { Platforms } from '../../../constants';
+import { Platforms } from '../../constants';
 
 // Logging library
 import consola from 'consola';

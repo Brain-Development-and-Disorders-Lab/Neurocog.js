@@ -25,7 +25,7 @@ export class State {
    * @param {string} key state component
    * @return {any}
    */
-   public get(key: string): any | null {
+  public get(key: string): any | null {
     if (key in this.globalState) {
       return this.globalState[key];
     } else {
@@ -51,7 +51,9 @@ export class State {
         // Otherwise, warn that it was not initialised.
         // State components should not be added along the way,
         // they should at least be initialised.
-        consola.warn(`State component '${key}' initialised after experiment start`);
+        consola.warn(
+          `State component '${key}' initialised after experiment start`
+        );
         this.globalState[key] = value;
       }
     } else {
