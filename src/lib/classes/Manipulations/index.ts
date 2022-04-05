@@ -6,36 +6,25 @@ import consola from 'consola';
  * to the API while developing the tasks locally.
  */
 export class Manipulations {
-  // Target object containing the manipulations
-  private manipulations: { [manipulation: string]: any };
-
-  /**
-   * Default constructor
-   * @param {any} manipulations target object containing the manipulations
-   */
-  constructor(manipulations: { [manipulation: string]: any }) {
-    this.manipulations = manipulations;
-    this.bind();
-  }
-
   /**
    * Retrieves the Gorilla instance and connects any manipulations specified
    * to the Gorilla Manipulations API.
+   * @param {any} manipulations target object containing the manipulations
    */
-  private bind() {
+  public static link(manipulations: { [manipulation: string]: any }) {
     const gorilla = window.gorilla;
-    Object.keys(this.manipulations).forEach(key => {
-      if (this.manipulations[key]) {
+    Object.keys(manipulations).forEach(key => {
+      if (manipulations[key]) {
         // Type checks to make sure properties are preserved
-        if (this.manipulations[key] instanceof Number) {
+        if (manipulations[key] instanceof Number) {
           // Number
-          this.manipulations[key] = Number(gorilla.manipulation(key));
-        } else if (this.manipulations[key] instanceof Boolean) {
+          manipulations[key] = Number(gorilla.manipulation(key));
+        } else if (manipulations[key] instanceof Boolean) {
           // Boolean
-          this.manipulations[key] = gorilla.manipulation(key) == 'true';
+          manipulations[key] = gorilla.manipulation(key) == 'true';
         } else {
           // Everything else (strings etc.)
-          this.manipulations[key] = gorilla.manipulation(key);
+          manipulations[key] = gorilla.manipulation(key);
         }
       } else {
         consola.warn(`Manipulation '${key}' was not bound`);

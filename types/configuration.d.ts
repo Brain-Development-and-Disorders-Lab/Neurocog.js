@@ -4,7 +4,7 @@ declare type Configuration = {
   name: string;
   studyName: string;
   manipulations: {
-    [k: string]: number | string;
+    [k: string]: number | string | boolean | any;
   };
   stimuli: {
     [k: string]: string;

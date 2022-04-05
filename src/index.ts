@@ -120,7 +120,7 @@ export class Experiment {
 
     // Configure the manipulations in the configuration file
     if (this.platform === Platforms.Gorilla) {
-      new Manipulations(this.config.manipulations);
+      Manipulations.link(this.config.manipulations);
     }
 
     this.loaded = true;
