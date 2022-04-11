@@ -8,43 +8,21 @@ A utility wrapper library extending the functionality of jsPsych-based cognitive
 
 ## Features
 
-### Integration with [Gorilla](https://gorilla.sc)
+### [Gorilla](https://gorilla.sc) integration
 
-**Status**: Ready
-
-Facilitates interaction with parts of the Gorilla API. Load and access stimuli, read and modify manipulations, and update stored data while maintaining the same codebase online and offline. The wrapper library detects what context the experiment is running in and makes API calls accordingly.
-
-Stimuli and manipulations are automatically updated to use the Gorilla API when Gorilla is detected. Additionally, the Gorilla API configured to record experiment data, and the library will start and end the experiment using Gorilla API functions.
+Facilitates interaction with parts of the Gorilla API. Load and access stimuli, access manipulations, and update stored data while maintaining the same codebase online and offline. The wrapper library detects what context the experiment is running in and makes API calls accordingly.
 
 ### State management
 
-**Status**: Ready
+A global state is maintained outside of the jsPsych instace. While not an advisable for experiment-wide data storage, a state system can be used to direct task logic and add an element of dynamic behavior. Additionally, it could function as temporary data storage.
 
-A global state is maintained by the `Experiment` and is bound to the `window` interface. Using a key-value collection, the global state is instantiated when the `Experiment` instance is created, and it can be updated and added to over the entire duration of the experiment.
+### Error handling & task shutdown
 
-| Method | Parameters | Description |
-| ------ | ---------- | ----------- |
-| getGlobalState | none | Get the global state |
-| getGlobalStateValue | `key: string` | Get the value of a global state variable |
-| setGlobalStateValue | `key: string`, `value: any` | Set the value of a global state variable |
-
-### Error management
-
-**Status**: Ready
-
-By listening for errors in the browser, the `Experiment` class provides graceful error handling by providing an alert to participants before ending the experiment. This prevents online experiments hanging resulting in the complete loss of participant data.
-
-### Remote computations
-
-**Status**: Testing
-
-Currently in testing, the Axios library has been integrated into a `Compute` class to provide the ability to send and receive requests from a jsPsych experiment.
+By listening for errors in the browser, this library provides graceful error handling and alerts participants before ending the experiment. This prevents online experiments from hanging or resulting in the complete loss of participant data.
 
 ### Seeded random number generation
 
-**Status**: Ready
-
-A seeded RNG is accessed via the `Experiment.random` method.
+A seeded RNG is provided using the [D3.js](https://d3js.org) library.
 
 ## Installation
 
@@ -60,7 +38,7 @@ $ npm install neurocog
 $ yarn add neurocog
 ```
 
-To get started with the library, import it at the top of the file containing a `jsPsych.init(...)` function call.
+The library is contained in the `Experiment` class. To get started, import it at the top of the file containing a `jsPsych.init(...)` function call.
 
 ```js
 import { Experiment } from 'neurocog';
@@ -71,49 +49,42 @@ import { Experiment } from 'neurocog';
 Download the script and import it via a `<script>` tag in the `<head>` of the HTML page.
 
 ```html
-<script src="./neurocog.js"></script>
+<script src="<location of>/neurocog.js"></script>
 ```
 
-## Configuration
+## Usage
 
-Before instantiating the `Experiment` instance, create an experiment configuration object. A set of properties are required in a configuration object:
+Before instantiating the `Experiment` instance, create an experiment configuration object. The following parameters are recognized (parameters in **bold** are required):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| name | `string` | A plain-text name for the experiment such as `"Brain Game"` |
-| studyName | `string` | A plain-text name for the experiment plugin such as `"brain-game"`. No whitespace is permitted. |
-| manipulations | `key : value` | A collection of key-value pairs that represent the manipulations configured in Gorilla. The key must be a string, and the value can be a string, boolean, or number. |
-| stimuli | `key : value` | A collection of key-value pairs that represent the images used in the experiment. The key can be used as a unique identifier for accessing the image in the source code. The value is the relative path to the actual image. |
-| allowParticipantContact | `boolean` | Whether or not to show an email address for participants to contact in the case of an error. |
-| contact | `string` | The contact email address for the experiment. |
-| state | `key : value` | Optional state initialisation parameters. This object is digested as the initial state and is accessible during the experiment using the same keys. |
+| **name** | `string` | A human-readable name for the experiment such as `"Brain Game"` |
+| **studyName** | `string` | A machine-readable name for the experiment plugin such as `"brain-game"`. No whitespace is permitted. |
+| **manipulations** | `key : value` | A collection of key-value pairs that represent the manipulations configured in Gorilla. The key must be a string, and the value can be a string, boolean, or number. *While required, it can be empty.* |
+| **stimuli** | `key : value` | A collection of key-value pairs that represent the images used in the experiment. The key can be used as a unique identifier for accessing the image in the source code. The value is the relative path to the actual image. *While required, it can be empty.* |
+| **allowParticipantContact** | `boolean` | Whether or not to show an email address for participants to contact in the case of an error. |
+| **contact** | `string` | The contact email address for the experiment. |
+| **seed** | `number` | A float to act as the seed for the RNG. |
+| state | `key : value` | State initialisation parameters. This object is digested as the initial state and is accessible during the experiment using the same keys. *While not required, it must be at least defined if state functionality is to be used.* |
 | logging | `LogLevel` | Set the logging level of the `consola` logging utility. |
-| seed | `number` | A float to act as the seed for the RNG. |
 
 An example configuration object can be seen in the `example/config.js` file.
 
 Once the configuration has been created, instantiate the `Experiment` instance:
 
 ```js
-const config = {
+// File: experiment-code.js
+const configuration = {
   // Configuration data
 };
 
-const experiment = new Experiment(config);
+const experiment = new Experiment(configuration);
 ```
 
-After the timeline and experiment has been setup, instead of calling `jsPsych.init(...)`, call `experiment.start(...)` with any jsPsych initialisation parameters. All jsPsych parameters are supported:
+After the timeline and experiment has been setup, instead of using `jsPsych.init(...)`, use `experiment.start(...)` with jsPsych initialisation parameters. All jsPsych parameters are supported:
 
 ```js
-const config = {
-  // Configuration data
-};
-
-const experiment = new Experiment(config);
-
-// Create and populate the timeline here
-
-// Start the experiment with the jsPsych properties
+// File: experiment-code.js
 experiment.start({
   timeline: [...],
   // Other jsPsych parameters
@@ -123,7 +94,7 @@ experiment.start({
 Finally, ensure that the script containing the `experiment.start()` function is imported with the `defer` parameter set in its `<script>` tag, shown below:
 
 ```html
-<script src="./experiment-code.js" defer></script>
+<script src="<location of>/experiment-code.js" defer></script>
 ```
 
 When running the experiment on Gorilla, this will look slightly different, since only the `<head>` component is editable. On Gorilla, edit the `<head>` component after uploading the experiment code as a `Resource`:
@@ -135,6 +106,44 @@ When running the experiment on Gorilla, this will look slightly different, since
 If the script is not imported correctly, it will not operate properly on Gorilla, and will display a warning when operating offline.
 
 Check out the experiment in the `example/` directory for a more in-depth example.
+
+### [Gorilla](https://gorilla.sc) integration: Manipulations
+
+The manipulations specified in the `Experiment` configuration should have the same name as the manipluations defined online on Gorilla. The library, if operating online on the Gorilla platform, will update the values of the configured manipulations with the actual manipulations defined by Gorilla.
+
+To access manipulations:
+
+```javascript
+// File: configuration.js
+export const configuration = {
+  // ...
+  manipulations: {
+    variableA: 1,
+    variableB: 2,
+  },
+  // ...
+};
+```
+
+```javascript
+// File: experiment-code.js
+import { configuration } from "./configuration";
+
+const variableA = configuration.manipulations.variableA; // 1
+const variableB = configuration.manipulations.variableB; // 2
+```
+
+### [Gorilla](https://gorilla.sc) integration: Stimuli
+
+
+
+### State management: accessing and updating state variables
+
+| Method | Parameters | Description |
+| ------ | ---------- | ----------- |
+| getGlobalState | none | Get the global state |
+| getGlobalStateValue | `key: string` | Get the value of a global state variable |
+| setGlobalStateValue | `key: string`, `value: any` | Set the value of a global state variable |
 
 ## Developer commands
 
