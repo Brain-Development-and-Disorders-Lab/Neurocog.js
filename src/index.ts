@@ -1,6 +1,7 @@
 // Imports
 import { Platforms } from './lib/constants';
 import { Manipulations } from './lib/classes/Manipulations';
+import { Resources } from './lib/classes/Resources';
 import { State } from './lib/classes/State';
 import { Stimuli } from './lib/classes/Stimuli';
 
@@ -111,24 +112,24 @@ export class Experiment {
    * to the Gorilla API properly.
    */
   public load() {
-    // Add the event listener for the 'load' event
     // Detect and update the target in the configuration
     this.setPlatform(this.detectPlatforms());
 
     // Load all the stimuli
     this.loadStimuli();
 
-    // Configure the manipulations in the configuration file
+    // Configure the manipulations and resources in the configuration file
     if (this.platform === Platforms.Gorilla) {
       Manipulations.link(this.config.manipulations);
+      Resources.link(this.config.resources);
     }
 
     this.loaded = true;
   }
 
   /**
-   * Get the experiment configuration object
-   * @return {Config}
+   * Get the experiment configuration data
+   * @return {Configuration}
    */
   public getConfiguration(): Configuration {
     return this.config;
@@ -222,7 +223,7 @@ export class Experiment {
    */
   public invokeError(error: Error | ErrorEvent): void {
     const target = document.getElementById('jspsych-content');
-    clearTimeouts(10000);
+    clearTimeouts();
     clear(target, true);
 
     // Apply global styling
