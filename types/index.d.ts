@@ -1,8 +1,44 @@
+// Experiment configuration type
+declare type Configuration = {
+  // General configuration properties
+  name: string;
+  studyName: string;
+
+  // Gorilla manipulations
+  manipulations: {
+    [k: string]: number | string | boolean | any;
+  };
+
+  // Gorilla resources
+  resources: {
+    [k: string]: string;
+  };
+
+  // Gorilla stimuli
+  stimuli: {
+    [k: string]: string;
+  };
+
+  // Error-handling contact
+  allowParticipantContact: boolean;
+  contact: string;
+
+  // Optional initial state configuration
+  state?: any;
+
+  // Optional logging level
+  logging?: any;
+
+  // Seed for RNG
+  seed: number;
+};
+
 // Gorilla type
 declare type Gorilla = {
   ready(func: () => void): void;
   manipulation(key: string): any;
   stimuliURL(stimuli: string): string;
+  resourceURL(resource: string): string;
   metric(data: any): void;
   finish(): void;
 };
