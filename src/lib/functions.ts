@@ -11,9 +11,9 @@ import consola from 'consola';
  * @param {boolean} isReact specify if additiona clearing
  * is required for React content
  */
-export function clear(target: HTMLElement | null, isReact = false): void {
+export const clear = (target: HTMLElement | null, isReact = false): void => {
   if (target) {
-    consola.debug(`Target is not null, clearing...`);
+    consola.debug(`Target is defined, clearing...`);
     if (isReact) {
       // Note: this is for React < v18
       consola.debug(`React-based target, unmounting...`);
@@ -28,14 +28,19 @@ export function clear(target: HTMLElement | null, isReact = false): void {
   } else {
     consola.warn(`Target was not cleared, target not found`);
   }
-}
+};
 
 /**
  * Clear a range of timeouts
  * @param {number | number[]} timeouts the range of timeouts to clear
  */
-export function clearTimeouts(timeouts: number | number[]) {
-  if (typeof timeouts === 'number') {
+export const clearTimeouts = (timeouts?: number[]): void => {
+  if (timeouts) {
+    // Array type
+    for (let i of timeouts) {
+      clearTimeout(i);
+    }
+  } else {
     // Determine the range of timeouts
     const id = window.setTimeout(() => {}, 0);
 
@@ -43,19 +48,14 @@ export function clearTimeouts(timeouts: number | number[]) {
       // Clear all prior timeouts
       clearTimeout(i);
     }
-  } else if (Object.prototype.toString.call(timeouts) === '[object Array]') {
-    // Array type
-    for (let i of timeouts) {
-      clearTimeout(i);
-    }
   }
-}
+};
 
 /**
  * Important utility function used to enforce loading the script with
  * the 'defer' attribute set correctly on Gorilla.
  */
-export function checkContext(): boolean {
+export const checkContext = (): boolean => {
   // Get the current script
   const scriptElement = document.currentScript;
 
@@ -105,4 +105,4 @@ export function checkContext(): boolean {
   }
 
   return status;
-}
+};
