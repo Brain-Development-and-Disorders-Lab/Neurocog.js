@@ -11,7 +11,10 @@ import consola from 'consola';
  * @param {boolean} isReact specify if additiona clearing
  * is required for React content
  */
-export const clear = (target: HTMLElement | null, isReact: boolean = false): void => {
+export const clear = (
+  target: HTMLElement | null,
+  isReact: boolean = false
+): void => {
   if (target) {
     consola.debug(`Target is defined, clearing...`);
     if (isReact) {
