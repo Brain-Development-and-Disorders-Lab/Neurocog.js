@@ -1,11 +1,11 @@
 // Imports
-import { PLATFORMS } from '../../constants';
+import { Platforms } from '../../constants';
 
 // Logging library
 import consola from 'consola';
 
 /**
- * Utility class to load images and setup any API calls if required
+ * @summary Utility class to load images and setup any API calls if required
  */
 export class Stimuli {
   private collection: { [x: string]: string };
@@ -14,6 +14,7 @@ export class Stimuli {
   /**
    * Default constructor
    * @param {any} collection images to load and manage
+   * @class
    */
   constructor(collection: { [x: string]: string }) {
     this.collection = collection;
@@ -30,9 +31,16 @@ export class Stimuli {
    */
   public load(): void {
     // Get the Experiment object to determine the platform
-    const experiment = window['Experiment'];
+    const experiment = window.Experiment;
 
-    if (experiment.getPlatform() === PLATFORMS.GORILLA) {
+    // Check if the images are named consistently
+    Object.keys(this.collection).forEach(image => {
+      if (!this.collection[image].endsWith(image)) {
+        consola.warn(`Image '${image}' named inconsistently`);
+      }
+    });
+
+    if (experiment.getPlatform() === Platforms.Gorilla) {
       // Populate the image collection for Gorilla
       // Grab the Gorilla API from the browser
       const gorilla = window.gorilla;
@@ -55,7 +63,7 @@ export class Stimuli {
 
   /**
    * Get the image collection
-   * @return {any}
+   * @return {{ [x: string]: string }}
    */
   public getCollection(): { [x: string]: string } {
     if (this.isLoaded) {
@@ -65,8 +73,10 @@ export class Stimuli {
 
     // Raise error and return empty if not loaded yet
     consola.error(
-      `Image collection not loaded before accessing! ` +
-        `Ensure 'load()' has been called.`
+      new Error(
+        `Image collection not loaded before accessing! ` +
+          `Ensure 'load()' has been called.`
+      )
     );
     return {};
   }
@@ -82,7 +92,7 @@ export class Stimuli {
       // Check that the image exists
       return this.collection[image];
     } else {
-      consola.error(`Image '${image}' not found!`);
+      consola.error(new Error(`Image '${image}' not found!`));
       return '';
     }
   }
