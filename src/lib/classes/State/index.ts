@@ -2,7 +2,7 @@
 import consola from 'consola';
 
 /**
- * State management class to maintain variables globally
+ * @summary State management class to maintain variables globally
  * outside of the main experiment
  */
 export class State {
@@ -12,6 +12,7 @@ export class State {
   /**
    * Default constructor
    * @param {any} initial optional initial state object
+   * @class
    */
   constructor(initial: any = {}) {
     // Store initial state

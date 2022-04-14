@@ -30,6 +30,7 @@ import $ from 'jquery';
 /**
  * Experiment class to start and manage connection to jsPsych
  * or Gorilla if required
+ * @summary
  */
 export class Experiment {
   // Platform the experiment is running on, initially 'Invalid'
@@ -59,6 +60,7 @@ export class Experiment {
   /**
    * Default constructor
    * @param {Configuration} config configuration object
+   * @class
    */
   constructor(config: Configuration) {
     // Assign the experiment to the window
@@ -301,7 +303,7 @@ export class Experiment {
    * Retrieve an instance of a platform to utilise
    * in integration
    * @param {string} platform identifier of the platform
-   * @return {any} platform instance
+   * @return {Gorilla | jsPsych | null} platform instance
    */
   public getHook(platform: string): Gorilla | jsPsych | null {
     switch (platform) {
@@ -333,7 +335,7 @@ export class Experiment {
 
   /**
    * Retrieve the collection of loaded images
-   * @return {any}
+   * @return {Stimuli}
    */
   public getStimuli(): Stimuli {
     return this.stimuliCollection;

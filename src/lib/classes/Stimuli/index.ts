@@ -5,7 +5,7 @@ import { Platforms } from '../../constants';
 import consola from 'consola';
 
 /**
- * Utility class to load images and setup any API calls if required
+ * @summary Utility class to load images and setup any API calls if required
  */
 export class Stimuli {
   private collection: { [x: string]: string };
@@ -14,6 +14,7 @@ export class Stimuli {
   /**
    * Default constructor
    * @param {any} collection images to load and manage
+   * @class
    */
   constructor(collection: { [x: string]: string }) {
     this.collection = collection;
@@ -62,7 +63,7 @@ export class Stimuli {
 
   /**
    * Get the image collection
-   * @return {any}
+   * @return {{ [x: string]: string }}
    */
   public getCollection(): { [x: string]: string } {
     if (this.isLoaded) {

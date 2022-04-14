@@ -11,7 +11,7 @@ import consola from 'consola';
  * @param {boolean} isReact specify if additiona clearing
  * is required for React content
  */
-export const clear = (target: HTMLElement | null, isReact = false): void => {
+export const clear = (target: HTMLElement | null, isReact: boolean = false): void => {
   if (target) {
     consola.debug(`Target is defined, clearing...`);
     if (isReact) {
@@ -32,7 +32,7 @@ export const clear = (target: HTMLElement | null, isReact = false): void => {
 
 /**
  * Clear a range of timeouts
- * @param {number | number[]} timeouts the range of timeouts to clear
+ * @param {number[]} timeouts the range of timeouts to clear
  */
 export const clearTimeouts = (timeouts?: number[]): void => {
   if (timeouts) {

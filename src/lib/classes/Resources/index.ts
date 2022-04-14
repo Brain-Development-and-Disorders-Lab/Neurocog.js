@@ -2,14 +2,15 @@
 import consola from 'consola';
 
 /**
- * Class that links to the Gorilla API 'Resources'. It allows safe references
- * to the API while developing the tasks locally.
+ * @summary Class that links to the Gorilla API 'Resources'. It allows
+ * safe references to the API while developing the tasks locally.
  */
 export class Resources {
   /**
    * Retrieves the Gorilla instance and connects any resources specified
    * to the Gorilla API 'Resources'.
-   * @param {any} resources target object containing the resources
+   * @param {{ [resource: string]: any }} resources target object containing
+   * the resources
    */
   public static link(resources: { [resource: string]: any }) {
     const gorilla = window.gorilla;

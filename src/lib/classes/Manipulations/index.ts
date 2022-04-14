@@ -2,14 +2,15 @@
 import consola from 'consola';
 
 /**
- * Class that links to the Gorilla Manipulations API. It allows safe references
- * to the API while developing the tasks locally.
+ * @summary Class that links to the Gorilla Manipulations API. It allows
+ * safe references to the API while developing the tasks locally.
  */
 export class Manipulations {
   /**
    * Retrieves the Gorilla instance and connects any manipulations specified
    * to the Gorilla Manipulations API.
-   * @param {any} manipulations target object containing the manipulations
+   * @param {{ [manipulation: string]: any }} manipulations target object
+   * containing the manipulations
    */
   public static link(manipulations: { [manipulation: string]: any }) {
     const gorilla = window.gorilla;
