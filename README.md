@@ -30,11 +30,11 @@ A seeded RNG is provided using the [D3.js](https://d3js.org) library.
 
 Install the library using NPM or Yarn:
 
-```bash
+```Shell
 $ npm install neurocog
 ```
 
-```bash
+```Shell
 $ yarn add neurocog
 ```
 
@@ -72,7 +72,7 @@ An example configuration object can be seen in the `example/config.js` file.
 
 Once the configuration has been created, instantiate the `Experiment` instance:
 
-```js
+```JavaScript
 // File: experiment-code.js
 const configuration = {
   // Configuration data
@@ -83,7 +83,7 @@ const experiment = new Experiment(configuration);
 
 After the timeline and experiment has been setup, instead of using `jsPsych.init(...)`, use `experiment.start(...)` with jsPsych initialisation parameters. All jsPsych parameters are supported:
 
-```js
+```JavaScript
 // File: experiment-code.js
 experiment.start({
   timeline: [...],
@@ -93,13 +93,13 @@ experiment.start({
 
 Finally, ensure that the script containing the `experiment.start()` function is imported with the `defer` parameter set in its `<script>` tag, shown below:
 
-```html
+```HTML
 <script src="<location of>/experiment-code.js" defer></script>
 ```
 
 When running the experiment on Gorilla, this will look slightly different, since only the `<head>` component is editable. On Gorilla, edit the `<head>` component after uploading the experiment code as a `Resource`:
 
-```html
+```HTML
 <script src="{{ resource 'experiment-code.js' }}" defer></script>
 ```
 
@@ -113,7 +113,7 @@ The manipulations specified in the `Experiment` configuration should have the sa
 
 To access manipulations:
 
-```javascript
+```JavaScript
 // File: configuration.js
 export const configuration = {
   // ...
@@ -125,7 +125,7 @@ export const configuration = {
 };
 ```
 
-```javascript
+```JavaScript
 // File: experiment-code.js
 import { configuration } from "./configuration";
 
@@ -139,7 +139,7 @@ Neurocog.js supports a key-value system in the configuration file when defining 
 
 To use stimuli in a jsPsych experiment with Neurocog.js, specify a key for accessing the image alongside a value containing the relative path to the actual image location:
 
-```javascript
+```JavaScript
 // File: configuration.js
 export const configuration = {
   // ...
@@ -156,7 +156,7 @@ The above example references two images stored in an `img/` directory: `a_1.jpg`
 
 Neurocog.js ultimately stores images in a 'stimuli collection', which can be accessed safely using the following code snippet:
 
-```javascript
+```JavaScript
 // File: experiment-code.js
 // Get 'img/a_1.jpg'
 const imageA = experiment.getStimuli().getImage('a.jpg');
