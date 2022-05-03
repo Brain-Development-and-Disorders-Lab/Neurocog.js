@@ -24,9 +24,6 @@ import 'jspsych/plugins/jspsych-preload';
 // using a uniform random distribution
 import { randomLcg, randomUniform } from 'd3-random';
 
-// Import jQuery for Gorilla integration only
-import $ from 'jquery';
-
 /**
  * Experiment class to start and manage connection to jsPsych
  * or Gorilla if required
@@ -374,7 +371,7 @@ export class Experiment {
         // Update the parameters object with required functions
         // and properties
         // Display element
-        parameters.display_element = $('#gorilla')[0];
+        parameters.display_element = document.getElementById('gorilla');
 
         const stimuli = this.config.stimuli;
         if (stimuli && Object.values(stimuli).length > 0) {
