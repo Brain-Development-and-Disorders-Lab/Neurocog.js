@@ -135,7 +135,35 @@ const variableB = configuration.manipulations.variableB; // 2
 
 ### [Gorilla](https://gorilla.sc) integration: Stimuli
 
+Neurocog.js supports a key-value system in the configuration file when defining relative paths to stimuli. A `stimuli` keyword is expected in the configuration file, and represents the object containing these key-value pairings.
 
+To use stimuli in a jsPsych experiment with Neurocog.js, specify a key for accessing the image alongside a value containing the relative path to the actual image location:
+
+```javascript
+// File: configuration.js
+export const configuration = {
+  // ...
+  stimuli: {
+    'a.jpg' : 'img/a_1.jpg',
+    'b.jpg' : 'img/b_1.jpg',
+    // ...
+  },
+  // ...
+}
+```
+
+The above example references two images stored in an `img/` directory: `a_1.jpg` and `b_2.jpg`. Since these images have been assigned keys `a.jpg` and `b.jpg` respectively, they can be referenced throughout the experiment source code using these keys.
+
+Neurocog.js ultimately stores images in a 'stimuli collection', which can be accessed safely using the following code snippet:
+
+```javascript
+// File: experiment-code.js
+// Get 'img/a_1.jpg'
+const imageA = experiment.getStimuli().getImage('a.jpg');
+
+// Get 'img/b_2.jpg'
+const imageB = experiment.getStimuli().getImage('b.jpg');
+```
 
 ### State management: accessing and updating state variables
 

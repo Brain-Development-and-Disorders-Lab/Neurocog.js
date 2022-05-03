@@ -16,7 +16,7 @@ const timeline = [{
   pages: [
     `<h1>First page!</h1>`,
     `<h1>Second page!</h1>`,
-    `<h1>Third page!</h1><img src="${config.stimuli['stimulus.jpeg']}" />`,
+    `<h1>Third page!</h1><img src="${experiment.getStimuli().getImage('stimulus.jpeg')}" />`,
   ],
   show_clickable_nav: true,
 }];
