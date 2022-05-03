@@ -46,10 +46,16 @@ import { Experiment } from 'neurocog';
 
 ### Importing via a `<script>` tag in an HTML file
 
-Download the script and import it via a `<script>` tag in the `<head>` of the HTML page.
+Download the script locally and import it via a `<script>` tag in the `<head>` of the HTML page.
 
 ```html
-<script src="<location of>/neurocog.js"></script>
+<script src="<path>/neurocog.js"></script>
+```
+
+Obtain the script from a CDN and import it via a `<script>` tag in the `<head>` of the HTML page.
+
+```html
+<script src="..."></script>
 ```
 
 ## Usage
@@ -167,11 +173,13 @@ const imageB = experiment.getStimuli().getImage('b.jpg');
 
 ### State management: accessing and updating state variables
 
+The following methods can be used for interacting with the experiment state throughout the experiment:
+
 | Method | Parameters | Description |
 | ------ | ---------- | ----------- |
-| getGlobalState | none | Get the global state |
-| getGlobalStateValue | `key: string` | Get the value of a global state variable |
-| setGlobalStateValue | `key: string`, `value: any` | Set the value of a global state variable |
+| `getState()` | none | Get the global state |
+| `getState().get(key)` | `key: string` | Get the value of a global state variable |
+| `getState().set(key, value)` | `key: string`, `value: any` | Set the value of a global state variable |
 
 ## Developer commands
 
