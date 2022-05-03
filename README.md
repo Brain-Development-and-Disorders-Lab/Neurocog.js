@@ -30,11 +30,11 @@ A seeded RNG is provided using the [D3.js](https://d3js.org) library.
 
 Install the library using NPM or Yarn:
 
-```bash
+```Shell
 $ npm install neurocog
 ```
 
-```bash
+```Shell
 $ yarn add neurocog
 ```
 
@@ -46,10 +46,16 @@ import { Experiment } from 'neurocog';
 
 ### Importing via a `<script>` tag in an HTML file
 
-Download the script and import it via a `<script>` tag in the `<head>` of the HTML page.
+Download the script locally and import it via a `<script>` tag in the `<head>` of the HTML page.
 
 ```html
-<script src="<location of>/neurocog.js"></script>
+<script src="<path>/neurocog.js"></script>
+```
+
+Obtain the script from a CDN and import it via a `<script>` tag in the `<head>` of the HTML page.
+
+```html
+<script src="..."></script>
 ```
 
 ## Usage
@@ -72,7 +78,7 @@ An example configuration object can be seen in the `example/config.js` file.
 
 Once the configuration has been created, instantiate the `Experiment` instance:
 
-```js
+```JavaScript
 // File: experiment-code.js
 const configuration = {
   // Configuration data
@@ -83,7 +89,7 @@ const experiment = new Experiment(configuration);
 
 After the timeline and experiment has been setup, instead of using `jsPsych.init(...)`, use `experiment.start(...)` with jsPsych initialisation parameters. All jsPsych parameters are supported:
 
-```js
+```JavaScript
 // File: experiment-code.js
 experiment.start({
   timeline: [...],
@@ -93,13 +99,13 @@ experiment.start({
 
 Finally, ensure that the script containing the `experiment.start()` function is imported with the `defer` parameter set in its `<script>` tag, shown below:
 
-```html
+```HTML
 <script src="<location of>/experiment-code.js" defer></script>
 ```
 
 When running the experiment on Gorilla, this will look slightly different, since only the `<head>` component is editable. On Gorilla, edit the `<head>` component after uploading the experiment code as a `Resource`:
 
-```html
+```HTML
 <script src="{{ resource 'experiment-code.js' }}" defer></script>
 ```
 
@@ -113,7 +119,7 @@ The manipulations specified in the `Experiment` configuration should have the sa
 
 To access manipulations:
 
-```javascript
+```JavaScript
 // File: configuration.js
 export const configuration = {
   // ...
@@ -125,7 +131,7 @@ export const configuration = {
 };
 ```
 
-```javascript
+```JavaScript
 // File: experiment-code.js
 import { configuration } from "./configuration";
 
@@ -135,15 +141,45 @@ const variableB = configuration.manipulations.variableB; // 2
 
 ### [Gorilla](https://gorilla.sc) integration: Stimuli
 
+Neurocog.js supports a key-value system in the configuration file when defining relative paths to stimuli. A `stimuli` keyword is expected in the configuration file, and represents the object containing these key-value pairings.
 
+To use stimuli in a jsPsych experiment with Neurocog.js, specify a key for accessing the image alongside a value containing the relative path to the actual image location:
+
+```JavaScript
+// File: configuration.js
+export const configuration = {
+  // ...
+  stimuli: {
+    'a.jpg' : 'img/a_1.jpg',
+    'b.jpg' : 'img/b_1.jpg',
+    // ...
+  },
+  // ...
+}
+```
+
+The above example references two images stored in an `img/` directory: `a_1.jpg` and `b_2.jpg`. Since these images have been assigned keys `a.jpg` and `b.jpg` respectively, they can be referenced throughout the experiment source code using these keys.
+
+Neurocog.js ultimately stores images in a 'stimuli collection', which can be accessed safely using the following code snippet:
+
+```JavaScript
+// File: experiment-code.js
+// Get 'img/a_1.jpg'
+const imageA = experiment.getStimuli().getImage('a.jpg');
+
+// Get 'img/b_2.jpg'
+const imageB = experiment.getStimuli().getImage('b.jpg');
+```
 
 ### State management: accessing and updating state variables
 
+The following methods can be used for interacting with the experiment state throughout the experiment:
+
 | Method | Parameters | Description |
 | ------ | ---------- | ----------- |
-| getGlobalState | none | Get the global state |
-| getGlobalStateValue | `key: string` | Get the value of a global state variable |
-| setGlobalStateValue | `key: string`, `value: any` | Set the value of a global state variable |
+| `getState()` | none | Get the global state |
+| `getState().get(key)` | `key: string` | Get the value of a global state variable |
+| `getState().set(key, value)` | `key: string`, `value: any` | Set the value of a global state variable |
 
 ## Developer commands
 
