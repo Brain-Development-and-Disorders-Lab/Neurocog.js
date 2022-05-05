@@ -1,11 +1,11 @@
-import { Resources } from '../../../src/lib/classes/Resources';
+import { Resources } from "../../../src/lib/classes/Resources";
 
-describe('Resources linking', () => {
+describe("Resources linking", () => {
   let windowSpy: any;
 
   beforeEach(() => {
     // Mock the Gorilla implementation attached to the Window
-    windowSpy = jest.spyOn(window, 'window', 'get');
+    windowSpy = jest.spyOn(window, "window", "get");
   });
 
   afterEach(() => {
@@ -13,7 +13,7 @@ describe('Resources linking', () => {
     windowSpy.mockRestore();
   });
 
-  it('calls the Gorilla functions', () => {
+  it("calls the Gorilla functions", () => {
     // Mock the manipulation implementation
     const mockedResource = jest.fn();
     windowSpy.mockImplementation(() => ({
@@ -23,8 +23,8 @@ describe('Resources linking', () => {
     }));
 
     const resources = {
-      'a.file': '/path/a.file',
-      'b.file': '/path/b.file',
+      "a.file": "/path/a.file",
+      "b.file": "/path/b.file",
     };
 
     Resources.link(resources);

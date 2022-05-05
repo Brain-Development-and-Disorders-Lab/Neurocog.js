@@ -1,8 +1,8 @@
 // Imports
-import { Platforms } from '../../constants';
+import { Platforms } from "../../constants";
 
 // Logging library
-import consola from 'consola';
+import consola from "consola";
 
 /**
  * @summary Utility class to load images and setup any API calls if required
@@ -34,7 +34,7 @@ export class Stimuli {
     const experiment = window.Experiment;
 
     // Check if the images are named consistently
-    Object.keys(this.collection).forEach(image => {
+    Object.keys(this.collection).forEach((image) => {
       if (!this.collection[image].endsWith(image)) {
         consola.warn(`Image '${image}' named inconsistently`);
       }
@@ -48,7 +48,7 @@ export class Stimuli {
       // For each of the images from the desktop build, we
       // want to create a new API call to retrieve each from
       // the Gorilla platform
-      Object.keys(this.collection).forEach(image => {
+      Object.keys(this.collection).forEach((image) => {
         // Generate the new API call
         this.collection[image] = gorilla.stimuliURL(image);
       });
@@ -93,7 +93,7 @@ export class Stimuli {
       return this.collection[image];
     } else {
       consola.error(new Error(`Image '${image}' not found!`));
-      return '';
+      return "";
     }
   }
 }

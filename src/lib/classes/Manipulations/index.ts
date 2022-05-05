@@ -1,5 +1,5 @@
 // Logging library
-import consola from 'consola';
+import consola from "consola";
 
 /**
  * @summary Class that links to the Gorilla Manipulations API. It allows
@@ -14,7 +14,7 @@ export class Manipulations {
    */
   public static link(manipulations: { [manipulation: string]: any }) {
     const gorilla = window.gorilla;
-    Object.keys(manipulations).forEach(key => {
+    Object.keys(manipulations).forEach((key) => {
       if (manipulations[key]) {
         // Type checks to make sure properties are preserved
         if (manipulations[key] instanceof Number) {
@@ -22,7 +22,7 @@ export class Manipulations {
           manipulations[key] = Number(gorilla.manipulation(key));
         } else if (manipulations[key] instanceof Boolean) {
           // Boolean
-          manipulations[key] = gorilla.manipulation(key) == 'true';
+          manipulations[key] = gorilla.manipulation(key) == "true";
         } else {
           // Everything else (strings etc.)
           manipulations[key] = gorilla.manipulation(key);

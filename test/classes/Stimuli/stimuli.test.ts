@@ -1,12 +1,12 @@
-import { Stimuli } from '../../../src/lib/classes/Stimuli';
-import { Platforms } from '../../../src/lib/constants';
+import { Stimuli } from "../../../src/lib/classes/Stimuli";
+import { Platforms } from "../../../src/lib/constants";
 
-describe('Stimuli loading', () => {
+describe("Stimuli loading", () => {
   let windowSpy: any;
 
   beforeEach(() => {
     // Mock the Gorilla implementation attached to the Window
-    windowSpy = jest.spyOn(window, 'window', 'get');
+    windowSpy = jest.spyOn(window, "window", "get");
   });
 
   afterEach(() => {
@@ -14,7 +14,7 @@ describe('Stimuli loading', () => {
     windowSpy.mockRestore();
   });
 
-  it('calls the Gorilla functions', () => {
+  it("calls the Gorilla functions", () => {
     // Mock the manipulation implementation
     const mockedStimuli = jest.fn();
     windowSpy.mockImplementation(() => ({
@@ -29,8 +29,8 @@ describe('Stimuli loading', () => {
     }));
 
     const images = {
-      'a.jpg': '/path/a.jpg',
-      'b.jpg': '/path/b.jpg',
+      "a.jpg": "/path/a.jpg",
+      "b.jpg": "/path/b.jpg",
     };
 
     const stimuli = new Stimuli(images);
@@ -39,7 +39,7 @@ describe('Stimuli loading', () => {
     expect(mockedStimuli).toBeCalledTimes(2);
   });
 
-  it('ignores Gorilla calls when jsPsych', () => {
+  it("ignores Gorilla calls when jsPsych", () => {
     // Mock the manipulation implementation
     const mockedStimuli = jest.fn();
     windowSpy.mockImplementation(() => ({
@@ -54,8 +54,8 @@ describe('Stimuli loading', () => {
     }));
 
     const images = {
-      'a.jpg': '/path/a.jpg',
-      'b.jpg': '/path/b.jpg',
+      "a.jpg": "/path/a.jpg",
+      "b.jpg": "/path/b.jpg",
     };
 
     const stimuli = new Stimuli(images);
@@ -64,17 +64,17 @@ describe('Stimuli loading', () => {
     expect(mockedStimuli).toBeCalledTimes(0);
   });
 
-  it('returns empty if not loaded', () => {
+  it("returns empty if not loaded", () => {
     const images = {
-      'a.jpg': '/path/a.jpg',
-      'b.jpg': '/path/b.jpg',
+      "a.jpg": "/path/a.jpg",
+      "b.jpg": "/path/b.jpg",
     };
 
     const stimuli = new Stimuli(images);
     expect(stimuli.getCollection()).toEqual({});
   });
 
-  it('returns the image collection when loaded', () => {
+  it("returns the image collection when loaded", () => {
     // Mock the manipulation implementation
     const mockedStimuli = jest.fn();
     windowSpy.mockImplementation(() => ({
@@ -89,8 +89,8 @@ describe('Stimuli loading', () => {
     }));
 
     const images = {
-      'a.jpg': '/path/a.jpg',
-      'b.jpg': '/path/b.jpg',
+      "a.jpg": "/path/a.jpg",
+      "b.jpg": "/path/b.jpg",
     };
 
     const stimuli = new Stimuli(images);
@@ -101,12 +101,12 @@ describe('Stimuli loading', () => {
   });
 });
 
-describe('Stimuli get image', () => {
+describe("Stimuli get image", () => {
   let windowSpy: any;
 
   beforeEach(() => {
     // Mock the Gorilla implementation attached to the Window
-    windowSpy = jest.spyOn(window, 'window', 'get');
+    windowSpy = jest.spyOn(window, "window", "get");
   });
 
   afterEach(() => {
@@ -114,7 +114,7 @@ describe('Stimuli get image', () => {
     windowSpy.mockRestore();
   });
 
-  it('retrieves an image', () => {
+  it("retrieves an image", () => {
     // Mock the manipulation implementation
     const mockedStimuli = jest.fn();
     windowSpy.mockImplementation(() => ({
@@ -129,14 +129,14 @@ describe('Stimuli get image', () => {
     }));
 
     const images = {
-      'a.jpg': '/path/a.jpg',
-      'b.jpg': '/path/b.jpg',
+      "a.jpg": "/path/a.jpg",
+      "b.jpg": "/path/b.jpg",
     };
 
     const stimuli = new Stimuli(images);
 
     stimuli.load();
     expect(mockedStimuli).toBeCalledTimes(0);
-    expect(stimuli.getImage('a.jpg')).toEqual('/path/a.jpg');
+    expect(stimuli.getImage("a.jpg")).toEqual("/path/a.jpg");
   });
 });

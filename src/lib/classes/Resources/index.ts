@@ -1,5 +1,5 @@
 // Logging library
-import consola from 'consola';
+import consola from "consola";
 
 /**
  * @summary Class that links to the Gorilla API 'Resources'. It allows
@@ -14,7 +14,7 @@ export class Resources {
    */
   public static link(resources: { [resource: string]: any }) {
     const gorilla = window.gorilla;
-    Object.keys(resources).forEach(key => {
+    Object.keys(resources).forEach((key) => {
       if (resources[key]) {
         resources[key] = gorilla.resourceURL(key);
       } else {

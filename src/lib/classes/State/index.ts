@@ -1,5 +1,5 @@
 // Logging library
-import consola from 'consola';
+import consola from "consola";
 
 /**
  * @summary State management class to maintain variables globally
@@ -41,7 +41,7 @@ export class State {
   public set(key: string, value: any): void {
     // Need to check that the value is defined first,
     // storing 'undefined' as a state is never a good idea
-    if (typeof value !== 'undefined') {
+    if (typeof value !== "undefined") {
       // Go ahead and check that the key currently exists
       if (key in this.stateData) {
         // Update the value if so

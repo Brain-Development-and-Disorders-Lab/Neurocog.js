@@ -1,14 +1,14 @@
-import {LogLevel} from "consola";
+import { LogLevel } from "consola";
 
 export const config = {
   // -------------------- Information --------------------
-  name: 'Test experiment',
-  studyName: 'Test study',
-  localisation: 'en-US',
+  name: "Test experiment",
+  studyName: "Test study",
+  localisation: "en-US",
 
   // -------------------- Participants --------------------
   allowParticipantContact: false,
-  contact: '',
+  contact: "",
 
   // -------------------- Manipulations --------------------
   manipulations: {
@@ -17,22 +17,22 @@ export const config = {
 
   // -------------------- Stimuli --------------------
   stimuli: {
-    'stimulus.jpeg': './images/stimulus.jpeg',
+    "stimulus.jpeg": "./images/stimulus.jpeg",
   },
 
   // -------------------- Keybindings --------------------
   keybindings: {
-    'keyboard': {
-      next: 'j',
-      previous: 'f',
-      submit: ' ',
-      alt: 'g',
+    keyboard: {
+      next: "j",
+      previous: "f",
+      submit: " ",
+      alt: "g",
     },
-    'spectrometer': {
-      next: '3',
-      previous: '2',
-      submit: '4',
-      alt: '1',
+    spectrometer: {
+      next: "3",
+      previous: "2",
+      submit: "4",
+      alt: "1",
     },
   },
 

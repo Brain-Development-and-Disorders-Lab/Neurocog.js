@@ -1,8 +1,8 @@
 // React imports
-import ReactDOM from 'react-dom';
+import ReactDOM from "react-dom";
 
 // Logging library
-import consola from 'consola';
+import consola from "consola";
 
 /**
  * Clear the HTML contents of an element without
@@ -78,7 +78,7 @@ export const checkContext = (): boolean => {
 
     // Check 2: check if we are running on Gorilla? This check doesn't need
     // to check for the API, we just check the current window location.
-    contextErrors.gorilla = window.location.href.includes('gorilla');
+    contextErrors.gorilla = window.location.href.includes("gorilla");
 
     // Generate any error messages
     if (contextErrors.gorilla === true && contextErrors.defer === false) {

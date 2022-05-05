@@ -1,6 +1,6 @@
 # Neurocog.js
 
-<img src="icon.png" alt="Neurocog.js icon" width="200"/>
+<img src="https://raw.githubusercontent.com/Brain-Development-and-Disorders-Lab/Neurocog.js/main/icon.png" alt="Neurocog.js icon" width="200"/>
 
 A utility wrapper library extending the functionality of jsPsych-based cognitive tasks and enabling multiplatform operation, designed to extend your jsPsych experiment with new features and capabilities.
 
@@ -41,7 +41,7 @@ $ yarn add neurocog
 The library is contained in the `Experiment` class. To get started, import it at the top of the file containing a `jsPsych.init(...)` function call.
 
 ```js
-import { Experiment } from 'neurocog';
+import { Experiment } from "neurocog";
 ```
 
 ### Importing via a `<script>` tag in an HTML file
@@ -62,17 +62,17 @@ Obtain the script from a CDN and import it via a `<script>` tag in the `<head>` 
 
 Before instantiating the `Experiment` instance, create an experiment configuration object. The following parameters are recognized (parameters in **bold** are required):
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| **name** | `string` | A human-readable name for the experiment such as `"Brain Game"` |
-| **studyName** | `string` | A machine-readable name for the experiment plugin such as `"brain-game"`. No whitespace is permitted. |
-| **manipulations** | `key : value` | A collection of key-value pairs that represent the manipulations configured in Gorilla. The key must be a string, and the value can be a string, boolean, or number. *While required, it can be empty.* |
-| **stimuli** | `key : value` | A collection of key-value pairs that represent the images used in the experiment. The key can be used as a unique identifier for accessing the image in the source code. The value is the relative path to the actual image. *While required, it can be empty.* |
-| **allowParticipantContact** | `boolean` | Whether or not to show an email address for participants to contact in the case of an error. |
-| **contact** | `string` | The contact email address for the experiment. |
-| **seed** | `number` | A float to act as the seed for the RNG. |
-| state | `key : value` | State initialisation parameters. This object is digested as the initial state and is accessible during the experiment using the same keys. *While not required, it must be at least defined if state functionality is to be used.* |
-| logging | `LogLevel` | Set the logging level of the `consola` logging utility. |
+| Name                        | Type          | Description                                                                                                                                                                                                                                                     |
+| --------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **name**                    | `string`      | A human-readable name for the experiment such as `"Brain Game"`                                                                                                                                                                                                 |
+| **studyName**               | `string`      | A machine-readable name for the experiment plugin such as `"brain-game"`. No whitespace is permitted.                                                                                                                                                           |
+| **manipulations**           | `key : value` | A collection of key-value pairs that represent the manipulations configured in Gorilla. The key must be a string, and the value can be a string, boolean, or number. _While required, it can be empty._                                                         |
+| **stimuli**                 | `key : value` | A collection of key-value pairs that represent the images used in the experiment. The key can be used as a unique identifier for accessing the image in the source code. The value is the relative path to the actual image. _While required, it can be empty._ |
+| **allowParticipantContact** | `boolean`     | Whether or not to show an email address for participants to contact in the case of an error.                                                                                                                                                                    |
+| **contact**                 | `string`      | The contact email address for the experiment.                                                                                                                                                                                                                   |
+| **seed**                    | `number`      | A float to act as the seed for the RNG.                                                                                                                                                                                                                         |
+| state                       | `key : value` | State initialisation parameters. This object is digested as the initial state and is accessible during the experiment using the same keys. _While not required, it must be at least defined if state functionality is to be used._                              |
+| logging                     | `LogLevel`    | Set the logging level of the `consola` logging utility.                                                                                                                                                                                                         |
 
 An example configuration object can be seen in the `example/config.js` file.
 
@@ -175,10 +175,10 @@ const imageB = experiment.getStimuli().getImage('b.jpg');
 
 The following methods can be used for interacting with the experiment state throughout the experiment:
 
-| Method | Parameters | Description |
-| ------ | ---------- | ----------- |
-| `getState()` | none | Get the global state |
-| `getState().get(key)` | `key: string` | Get the value of a global state variable |
+| Method                       | Parameters                  | Description                              |
+| ---------------------------- | --------------------------- | ---------------------------------------- |
+| `getState()`                 | none                        | Get the global state                     |
+| `getState().get(key)`        | `key: string`               | Get the value of a global state variable |
 | `getState().set(key, value)` | `key: string`, `value: any` | Set the value of a global state variable |
 
 ## Developer commands

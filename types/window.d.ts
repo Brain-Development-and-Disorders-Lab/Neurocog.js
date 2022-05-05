@@ -1,4 +1,4 @@
-import Experiment from '../src';
+import Experiment from "../src";
 
 // Extend the Window interface
 declare global {

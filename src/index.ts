@@ -1,28 +1,27 @@
 // Imports
-import { Platforms } from './lib/constants';
-import { Manipulations } from './lib/classes/Manipulations';
-import { Resources } from './lib/classes/Resources';
-import { State } from './lib/classes/State';
-import { Stimuli } from './lib/classes/Stimuli';
+import { Platforms } from "./lib/constants";
+import { Manipulations } from "./lib/classes/Manipulations";
+import { Resources } from "./lib/classes/Resources";
+import { State } from "./lib/classes/State";
+import { Stimuli } from "./lib/classes/Stimuli";
 
 // Utility functions
-import { checkContext, clear, clearTimeouts } from './lib/functions';
+import { checkContext, clear, clearTimeouts } from "./lib/functions";
 
 // Logging library
-import consola from 'consola';
+import consola from "consola";
 
 // Import styling
-import 'jspsych/css/jspsych.css';
-import './css/styles.css';
+import "jspsych/css/jspsych.css";
 
 // Import jsPsych & require preload plugin to ensure
 // everything is bundled when compiled
-import 'jspsych/jspsych';
-import 'jspsych/plugins/jspsych-preload';
+import "jspsych/jspsych";
+import "jspsych/plugins/jspsych-preload";
 
 // Import and configure d3 for random number generation
 // using a uniform random distribution
-import { randomLcg, randomUniform } from 'd3-random';
+import { randomLcg, randomUniform } from "d3-random";
 
 /**
  * Experiment class to start and manage connection to jsPsych
@@ -61,7 +60,7 @@ export class Experiment {
    */
   constructor(config: Configuration) {
     // Assign the experiment to the window
-    window['Experiment'] = this;
+    window["Experiment"] = this;
 
     this.config = config;
 
@@ -99,7 +98,7 @@ export class Experiment {
 
     // Check the context of the script to try and catch any errors
     if (checkContext() === false) {
-      consola.error(new Error('Context check failed, halting experiment'));
+      consola.error(new Error("Context check failed, halting experiment"));
     } else {
       // Load all stimuli used in the Experiment.
       this.load();
@@ -205,7 +204,7 @@ export class Experiment {
     }
 
     // Big issue if we are here
-    consola.error(new Error('No valid platforms detected'));
+    consola.error(new Error("No valid platforms detected"));
     return Platforms.Invalid;
   }
 
@@ -213,7 +212,7 @@ export class Experiment {
    * Setup the error handler by listening for the 'error' event
    */
   private setupErrorHandler(): void {
-    window.addEventListener('error', this.invokeError.bind(this));
+    window.addEventListener("error", this.invokeError.bind(this));
   }
 
   /**
@@ -221,41 +220,41 @@ export class Experiment {
    * @param {Error | ErrorEvent} error object containing error information
    */
   public invokeError(error: Error | ErrorEvent): void {
-    const target = document.getElementById('jspsych-content');
+    const target = document.getElementById("jspsych-content");
     clearTimeouts();
     clear(target, true);
 
     // Apply global styling
-    document.body.style.fontFamily = 'Open Sans';
-    document.body.style.textAlign = 'center';
+    document.body.style.fontFamily = "Open Sans";
+    document.body.style.textAlign = "center";
 
     // Container for elements
-    const container = document.createElement('div');
+    const container = document.createElement("div");
 
     // Heading text
-    const heading = document.createElement('h1');
-    heading.textContent = 'Oh no!';
+    const heading = document.createElement("h1");
+    heading.textContent = "Oh no!";
 
     // Subheading
-    const subheading = document.createElement('h2');
-    subheading.textContent = 'It looks like an error has occurred.';
+    const subheading = document.createElement("h2");
+    subheading.textContent = "It looks like an error has occurred.";
 
     // Container for the error information
-    const errorContainer = document.createElement('div');
-    errorContainer.style.margin = '20px';
+    const errorContainer = document.createElement("div");
+    errorContainer.style.margin = "20px";
 
     // 'Error description:' text
-    const textIntroduction = document.createElement('p');
-    textIntroduction.textContent = 'Error description:';
+    const textIntroduction = document.createElement("p");
+    textIntroduction.textContent = "Error description:";
 
     // Error description
-    const description = document.createElement('code');
+    const description = document.createElement("code");
     description.innerText = error.message;
-    description.style.gap = '20rem';
+    description.style.gap = "20rem";
     errorContainer.append(textIntroduction, description);
 
     // Follow-up instructions
-    const textInstructions = document.createElement('p');
+    const textInstructions = document.createElement("p");
     if (this.config.allowParticipantContact === true) {
       textInstructions.innerHTML =
         `Please send an email to ` +
@@ -264,17 +263,17 @@ export class Experiment {
         `&body=Error text: ${error.message}%0D%0A Additional information:"` +
         `>${this.config.contact}</a> to share ` +
         `the details of this error.`;
-      textInstructions.style.margin = '20px';
+      textInstructions.style.margin = "20px";
     }
 
     // Button to end the experiment
-    const endButton = document.createElement('button');
-    endButton.textContent = 'End Experiment';
-    endButton.classList.add('jspsych-btn');
+    const endButton = document.createElement("button");
+    endButton.textContent = "End Experiment";
+    endButton.classList.add("jspsych-btn");
     endButton.onclick = () => {
       // End the experiment and provide an error message
       window.jsPsych.endExperiment(
-        'The experiment ended early due to an error occurring.'
+        "The experiment ended early due to an error occurring."
       );
     };
 
@@ -290,8 +289,8 @@ export class Experiment {
       );
 
       // Update the styling of the target
-      target.style.display = 'flex';
-      target.style.justifyContent = 'center';
+      target.style.display = "flex";
+      target.style.justifyContent = "center";
       target.append(container);
     }
   }
@@ -362,7 +361,7 @@ export class Experiment {
 
       // Bring the stimuli into the local scope
       // Make sure Gorilla and jsPsych are loaded
-      if (typeof jsPsych !== 'undefined' && typeof gorilla !== 'undefined') {
+      if (typeof jsPsych !== "undefined" && typeof gorilla !== "undefined") {
         consola.debug(
           `Added 'preload' node to timeline:`,
           Object.values(this.config.stimuli)
@@ -371,7 +370,7 @@ export class Experiment {
         // Update the parameters object with required functions
         // and properties
         // Display element
-        parameters.display_element = document.getElementById('gorilla');
+        parameters.display_element = document.getElementById("gorilla");
 
         const stimuli = this.config.stimuli;
         if (stimuli && Object.values(stimuli).length > 0) {
@@ -379,7 +378,7 @@ export class Experiment {
 
           // Add a new timeline node to preload the images
           parameters.timeline.unshift({
-            type: 'preload',
+            type: "preload",
             auto_preload: true,
             images: Object.values(stimuli),
           });
@@ -389,12 +388,12 @@ export class Experiment {
         }
 
         // 'on_data_update' callback
-        parameters.on_data_update = function(data: any) {
+        parameters.on_data_update = function (data: any) {
           gorilla.metric(data);
         };
 
         // 'on_finish' callback
-        parameters.on_finish = function() {
+        parameters.on_finish = function () {
           gorilla.finish();
         };
 
@@ -402,7 +401,7 @@ export class Experiment {
 
         // Start Gorilla and initialise jsPsych with the updated
         // parameters
-        gorilla.ready(function() {
+        gorilla.ready(function () {
           consola.debug(`Starting jsPsych...`);
           jsPsych.init(parameters);
         });
@@ -415,11 +414,11 @@ export class Experiment {
       consola.debug(`Retrieved jsPsych:`, jsPsych);
 
       // Make sure jsPsych is loaded
-      if (typeof jsPsych !== 'undefined') {
+      if (typeof jsPsych !== "undefined") {
         // Update the parameters object with required functions
         // and properties
         // 'on_finish' callback
-        parameters.on_finish = function() {
+        parameters.on_finish = function () {
           jsPsych.data
             .get()
             .localSave(`csv`, `experiment_complete_${Date.now()}.csv`);
@@ -432,7 +431,7 @@ export class Experiment {
 
           // Add a new timeline node to preload the images
           parameters.timeline.unshift({
-            type: 'preload',
+            type: "preload",
             auto_preload: true,
             images: Object.values(stimuli),
           });

@@ -1,11 +1,11 @@
-import { Manipulations } from '../../../src/lib/classes/Manipulations';
+import { Manipulations } from "../../../src/lib/classes/Manipulations";
 
-describe('Manipulations linking', () => {
+describe("Manipulations linking", () => {
   let windowSpy: any;
 
   beforeEach(() => {
     // Mock the Gorilla implementation attached to the Window
-    windowSpy = jest.spyOn(window, 'window', 'get');
+    windowSpy = jest.spyOn(window, "window", "get");
   });
 
   afterEach(() => {
@@ -13,7 +13,7 @@ describe('Manipulations linking', () => {
     windowSpy.mockRestore();
   });
 
-  it('calls the Gorilla functions', () => {
+  it("calls the Gorilla functions", () => {
     // Mock the manipulation implementation
     const mockedManipulation = jest.fn();
     windowSpy.mockImplementation(() => ({
@@ -23,7 +23,7 @@ describe('Manipulations linking', () => {
     }));
 
     const manipulations = {
-      one: 'one',
+      one: "one",
       two: 2,
     };
 
