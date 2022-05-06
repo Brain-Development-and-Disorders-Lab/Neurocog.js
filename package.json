@@ -3,11 +3,17 @@
   "author": "Henry Burgess",
   "version": "0.2.1",
   "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
   "scripts": {
     "build": "webpack",
     "test": "jest",
     "lint": "prettier --write .",
-    "clean": "rm -rf .parcel-cache coverage dist"
+    "clean": "rm -rf coverage dist"
   },
   "devDependencies": {
     "@types/d3": "^7.1.0",

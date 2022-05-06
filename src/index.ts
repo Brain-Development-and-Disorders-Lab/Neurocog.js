@@ -1,9 +1,17 @@
-// Imports
+// Import classes
 import { Platforms } from "./lib/constants";
 import { Manipulations } from "./lib/classes/Manipulations";
 import { Resources } from "./lib/classes/Resources";
 import { State } from "./lib/classes/State";
 import { Stimuli } from "./lib/classes/Stimuli";
+
+// Import types
+import type {
+  Gorilla,
+  jsPsych,
+  jsPsychParameters,
+  Configuration,
+} from "../types";
 
 // Utility functions
 import { checkContext, clear, clearTimeouts } from "./lib/functions";
