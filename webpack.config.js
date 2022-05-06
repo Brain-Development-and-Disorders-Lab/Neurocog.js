@@ -20,7 +20,9 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"],
   },
   output: {
-    filename: "index.js",
+    library: {
+      type: "commonjs",
+    },
     path: path.resolve(__dirname, "dist"),
   },
 };
