@@ -3,7 +3,7 @@
   "author": "Henry Burgess",
   "version": "0.3.1",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/main.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
@@ -34,7 +34,7 @@
   "dependencies": {
     "consola": "^2.15.3",
     "d3-random": "^3.0.1",
-    "jspsych": "^6.0.0",
+    "jspsych": "^6.3.0",
     "react": "^17",
     "react-dom": "^17"
   },

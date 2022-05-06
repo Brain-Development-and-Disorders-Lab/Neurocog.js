@@ -6,6 +6,10 @@ A utility wrapper library extending the functionality of jsPsych-based cognitive
 
 ## Features
 
+### [jsPsych](https://www.jspsych.org/6.3/) included
+
+Neurcog is bundled to include jsPsych version 6.3, and it does not currently support any jsPsych 7 versions.
+
 ### [Gorilla](https://gorilla.sc) integration
 
 Facilitates interaction with parts of the Gorilla API. Load and access stimuli, access manipulations, and update stored data while maintaining the same codebase online and offline. The wrapper library detects what context the experiment is running in and makes API calls accordingly.
@@ -18,7 +22,7 @@ A global state is maintained outside of the jsPsych instace. While not an advisa
 
 By listening for errors in the browser, this library provides graceful error handling and alerts participants before ending the experiment. This prevents online experiments from hanging or resulting in the complete loss of participant data.
 
-### Seeded random number generation
+### Centralised seeded random number generator
 
 A seeded RNG is provided using the [D3.js](https://d3js.org) library.
 
@@ -29,16 +33,16 @@ A seeded RNG is provided using the [D3.js](https://d3js.org) library.
 Install the library using NPM or Yarn:
 
 ```Shell
-$ npm install neurocog
+npm install neurocog
 ```
 
 ```Shell
-$ yarn add neurocog
+yarn add neurocog
 ```
 
 The library is contained in the `Experiment` class. To get started, import it at the top of the file containing a `jsPsych.init(...)` function call.
 
-```js
+```JavaScript
 import { Experiment } from "neurocog";
 ```
 
@@ -46,7 +50,7 @@ import { Experiment } from "neurocog";
 
 Download the script locally and import it via a `<script>` tag in the `<head>` of the HTML page.
 
-```html
+```HTML
 <script src="<path>/neurocog.js"></script>
 ```
 
@@ -169,6 +173,8 @@ const imageA = experiment.getStimuli().getImage('a.jpg');
 const imageB = experiment.getStimuli().getImage('b.jpg');
 ```
 
+Neurocog detects the presence of the Gorilla platform, and it will automatically re-map the stimuli paths to the corresponding Gorilla API function call.
+
 ### State management: accessing and updating state variables
 
 The following methods can be used for interacting with the experiment state throughout the experiment:
@@ -181,14 +187,26 @@ The following methods can be used for interacting with the experiment state thro
 
 ## Developer commands
 
-If you would like to contribute or experiment with the library, these commands will be useful for you. To start development of the library, run the following command:
+If you would like to contribute or experiment with the library, these commands will be useful for you. To create a production-ready build of the library, run the following command:
 
-```bash
-yarn start
+```Shell
+yarn build
 ```
 
-To create a production-ready build of the library, run the following command:
+To run all unit tests and other tests for Neurocog, use the following command:
 
-```bash
-yarn build
+```Shell
+yarn test
+```
+
+[Prettier](https://prettier.io) is used to lint Neurocog, run the following command to run Prettier over the repository:
+
+```Shell
+yarn lint
+```
+
+To remove outdated builds or temporary files, use the following command:
+
+```Shell
+yarn clean
 ```

@@ -28,7 +28,7 @@ export type jsPsychParameters = {
   timeline: any[];
 
   // 'on_finish' callback
-  on_finish: () => void;
+  on_finish?: () => void;
 
   // Other generic properties
   [x: string]: any;
