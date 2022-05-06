@@ -9,7 +9,6 @@
     "sourceMap": true,
     "rootDir": "./src",
     "outDir": "./dist",
-    "typeRoots": ["./types"],
     "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,

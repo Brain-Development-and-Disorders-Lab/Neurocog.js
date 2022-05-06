@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "types"
+    "types/index.d.ts"
   ],
   "scripts": {
     "build": "webpack",
