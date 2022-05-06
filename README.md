@@ -4,8 +4,6 @@
 
 A utility wrapper library extending the functionality of jsPsych-based cognitive tasks and enabling multiplatform operation, designed to extend your jsPsych experiment with new features and capabilities.
 
-> `Neurocog.js` was bootstrapped using the TSDX tool, a utility for generating libraries using TypeScript.
-
 ## Features
 
 ### [Gorilla](https://gorilla.sc) integration

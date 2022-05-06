@@ -11,7 +11,6 @@ describe("clearing page contents", () => {
   it("clears children", () => {
     // Clear the content
     clear(dummyContent, false);
-
     expect(dummyContent.firstChild).toBeNull();
   });
 });
