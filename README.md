@@ -56,8 +56,8 @@ Download the script locally and import it via a `<script>` tag in the `<head>` o
 
 Obtain the script from a CDN and import it via a `<script>` tag in the `<head>` of the HTML page.
 
-```HTML
-<script src="https://unpkg.com/neurocog@latest/dist/index.js"></script>
+```html
+<script src="https://unpkg.com/neurocog@0.3.1/dist/index.js"></script>
 ```
 
 ## Usage
