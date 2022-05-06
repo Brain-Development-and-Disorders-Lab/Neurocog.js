@@ -53,7 +53,7 @@ Download the script locally and import it via a `<script>` tag in the `<head>` o
 Obtain the script from a CDN and import it via a `<script>` tag in the `<head>` of the HTML page.
 
 ```html
-<script src="..."></script>
+<script src="https://unpkg.com/neurocog@0.3.1/dist/index.js"></script>
 ```
 
 ## Usage
@@ -191,10 +191,4 @@ To create a production-ready build of the library, run the following command:
 
 ```bash
 yarn build
-```
-
-To run the example project showing how the library is to be used (source code is located in the `example` folder), run the following commmand:
-
-```bash
-yarn example
 ```
