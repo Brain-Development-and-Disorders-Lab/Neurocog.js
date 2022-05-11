@@ -1,7 +1,7 @@
 {
   "name": "neurocog",
   "author": "Henry Burgess",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "license": "MIT",
   "main": "dist/main.js",
   "types": "dist/index.d.ts",
