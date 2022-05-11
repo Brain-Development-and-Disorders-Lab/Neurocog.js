@@ -30,4 +30,32 @@ describe("Manipulations linking", () => {
     Manipulations.link(manipulations);
     expect(mockedManipulation).toBeCalledTimes(2);
   });
+
+  it("correctly links Boolean manipulations", () => {
+    // Mock the manipulation implementation
+    // In Gorilla, everything seems to be a string if not a number
+    const mockedManipulation = jest.fn();
+
+    // Return 'false' then 'true', given manipulations hold those values when
+    // accessed consecutively
+    mockedManipulation.mockReturnValueOnce('false').mockReturnValueOnce('true');
+
+    windowSpy.mockImplementation(() => ({
+      gorilla: {
+        manipulation: mockedManipulation,
+      },
+    }));
+
+    const manipulations = {
+      one: false,
+      two: true,
+    };
+
+    Manipulations.link(manipulations);
+    expect(mockedManipulation).toBeCalledTimes(2);
+
+    // Expect type to be preserved if Boolean
+    expect(manipulations.one).toBe(false);
+    expect(manipulations.two).toBe(true);
+  });
 });
