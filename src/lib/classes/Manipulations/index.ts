@@ -15,14 +15,14 @@ export class Manipulations {
   public static link(manipulations: { [manipulation: string]: any }) {
     const gorilla = window.gorilla;
     Object.keys(manipulations).forEach((key) => {
-      if (manipulations[key]) {
+      if (manipulations[key] !== undefined) {
         // Type checks to make sure properties are preserved
         if (manipulations[key] instanceof Number) {
           // Number
           manipulations[key] = Number(gorilla.manipulation(key));
-        } else if (manipulations[key] instanceof Boolean) {
+        } else if (manipulations[key] === true || manipulations[key] === false) {
           // Boolean
-          manipulations[key] = gorilla.manipulation(key) == "true";
+          manipulations[key] = gorilla.manipulation(key) === "true";
         } else {
           // Everything else (strings etc.)
           manipulations[key] = gorilla.manipulation(key);
