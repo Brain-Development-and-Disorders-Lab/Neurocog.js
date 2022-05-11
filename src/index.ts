@@ -185,8 +185,7 @@ export class Experiment {
   private detectPlatforms(): Platforms {
     // Check for Gorilla
     if (
-      Platforms.Gorilla in window &&
-      window.location.href.includes(Platforms.Gorilla)
+      Platforms.Gorilla in window
     ) {
       consola.success(`Gorilla instance found`);
 
