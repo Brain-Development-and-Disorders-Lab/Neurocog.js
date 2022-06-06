@@ -20,7 +20,10 @@ export class Manipulations {
         if (manipulations[key] instanceof Number) {
           // Number
           manipulations[key] = Number(gorilla.manipulation(key));
-        } else if (manipulations[key] === true || manipulations[key] === false) {
+        } else if (
+          manipulations[key] === true ||
+          manipulations[key] === false
+        ) {
           // Boolean
           manipulations[key] = gorilla.manipulation(key) === "true";
         } else {

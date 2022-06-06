@@ -184,9 +184,7 @@ export class Experiment {
    */
   private detectPlatforms(): Platforms {
     // Check for Gorilla
-    if (
-      Platforms.Gorilla in window
-    ) {
+    if (Platforms.Gorilla in window) {
       consola.success(`Gorilla instance found`);
 
       // Store the platform

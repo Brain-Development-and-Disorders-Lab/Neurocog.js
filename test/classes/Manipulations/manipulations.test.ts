@@ -38,7 +38,7 @@ describe("Manipulations linking", () => {
 
     // Return 'false' then 'true', given manipulations hold those values when
     // accessed consecutively
-    mockedManipulation.mockReturnValueOnce('false').mockReturnValueOnce('true');
+    mockedManipulation.mockReturnValueOnce("false").mockReturnValueOnce("true");
 
     windowSpy.mockImplementation(() => ({
       gorilla: {
