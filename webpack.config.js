@@ -2,6 +2,7 @@ const path = require("path");
 
 module.exports = {
   entry: "./src/index.ts",
+  target: ["web"],
   mode: "production",
   module: {
     rules: [
@@ -21,7 +22,8 @@ module.exports = {
   },
   output: {
     library: {
-      type: "commonjs",
+      name: "Neurocog",
+      type: "umd",
     },
     path: path.resolve(__dirname, "dist"),
   },
