@@ -22,9 +22,7 @@ module.exports = {
   },
   output: {
     library: {
-      name: "Experiment",
       type: "umd",
-      umdNamedDefine: true,
     },
     path: path.resolve(__dirname, "dist"),
   },
