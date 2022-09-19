@@ -6,10 +6,6 @@ A utility wrapper library extending the functionality of jsPsych-based cognitive
 
 ## Features
 
-### [jsPsych](https://www.jspsych.org/6.3/) included
-
-Neurcog is bundled to include jsPsych version 6.3, and it does not currently support any jsPsych 7 versions.
-
 ### [Gorilla](https://gorilla.sc) integration
 
 Facilitates interaction with parts of the Gorilla API. Load and access stimuli, access manipulations, and update stored data while maintaining the same codebase online and offline. The wrapper library detects what context the experiment is running in and makes API calls accordingly.
