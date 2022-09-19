@@ -14,7 +14,7 @@ import type {
 } from "../types";
 
 // Utility functions
-import { checkContext, clear, clearTimeouts } from "./lib/functions";
+import { checkEnvironment, clear, clearTimeouts } from "./lib/functions";
 
 // Logging library
 import consola from "consola";
@@ -105,7 +105,7 @@ export class Experiment {
     this.stimuliCollection = new Stimuli(this.config.stimuli);
 
     // Check the context of the script to try and catch any errors
-    if (checkContext() === false) {
+    if (checkEnvironment() === false) {
       consola.error(new Error("Context check failed, halting experiment"));
     } else {
       // Load all stimuli used in the Experiment.

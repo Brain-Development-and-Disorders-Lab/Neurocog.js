@@ -58,15 +58,15 @@ export const clearTimeouts = (timeouts?: number[]): void => {
  * Important utility function used to enforce loading the script with
  * the 'defer' attribute set correctly on Gorilla.
  */
-export const checkContext = (): boolean => {
-  // Get the current script
-  const scriptElement = document.currentScript;
-
+export const checkEnvironment = (): boolean => {
   // Status flag
   let status = true;
 
+  // Get the current script
+  const scriptElement = document.currentScript;
+
   // Collect a list of potential errors
-  const contextErrors = {
+  const scriptElementErrors = {
     defer: false,
     gorilla: false,
   };
@@ -74,14 +74,14 @@ export const checkContext = (): boolean => {
   // Run checks on how the script was loaded
   if (scriptElement !== null) {
     // Check 1: was the 'defer' flag set?
-    contextErrors.defer = (scriptElement as HTMLScriptElement).defer;
+    scriptElementErrors.defer = (scriptElement as HTMLScriptElement).defer;
 
     // Check 2: check if we are running on Gorilla? This check doesn't need
     // to check for the API, we just check the current window location.
-    contextErrors.gorilla = window.location.href.includes("gorilla");
+    scriptElementErrors.gorilla = window.location.href.includes("gorilla");
 
     // Generate any error messages
-    if (contextErrors.gorilla === true && contextErrors.defer === false) {
+    if (scriptElementErrors.gorilla === true && scriptElementErrors.defer === false) {
       // 'defer' was not specified when required
       consola.error(
         new Error(
@@ -93,8 +93,8 @@ export const checkContext = (): boolean => {
       // Context check didn't pass
       status = false;
     } else if (
-      contextErrors.gorilla === false &&
-      contextErrors.defer === false
+      scriptElementErrors.gorilla === false &&
+      scriptElementErrors.defer === false
     ) {
       // 'defer' was not specified, but not required
       consola.warn(`Script element missing 'defer' attribute`);
@@ -105,6 +105,19 @@ export const checkContext = (): boolean => {
   } else {
     // Log a warning
     consola.warn(`Context not checked`);
+  }
+
+  // Check the version of jsPsych
+  const version: string = window.jsPsych.version();
+  if (!version.startsWith("6.")) {
+
+    // Unsupported version, log error
+    consola.error(
+      new Error(`jsPsych version "${version}" is not supported at this time`)
+    );
+
+    // Context check didn't pass
+    status = false;
   }
 
   return status;
