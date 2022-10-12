@@ -81,7 +81,10 @@ export const checkEnvironment = (): boolean => {
     scriptElementErrors.gorilla = window.location.href.includes("gorilla");
 
     // Generate any error messages
-    if (scriptElementErrors.gorilla === true && scriptElementErrors.defer === false) {
+    if (
+      scriptElementErrors.gorilla === true &&
+      scriptElementErrors.defer === false
+    ) {
       // 'defer' was not specified when required
       consola.error(
         new Error(
@@ -110,7 +113,6 @@ export const checkEnvironment = (): boolean => {
   // Check the version of jsPsych
   const version: string = window.jsPsych.version();
   if (!version.startsWith("6.")) {
-
     // Unsupported version, log error
     consola.error(
       new Error(`jsPsych version "${version}" is not supported at this time`)
