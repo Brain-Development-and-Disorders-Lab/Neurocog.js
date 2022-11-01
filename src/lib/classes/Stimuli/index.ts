@@ -5,7 +5,7 @@ import { Platforms } from "../../constants";
 import consola from "consola";
 
 /**
- * @summary Utility class to load images and setup any API calls if required
+ * @summary Utility class to load stimuli and setup any API calls if required
  */
 export class Stimuli {
   private collection: { [x: string]: string };
@@ -13,7 +13,7 @@ export class Stimuli {
 
   /**
    * Default constructor
-   * @param {any} collection images to load and manage
+   * @param {any} collection stimuli to load and manage
    * @class
    */
   constructor(collection: { [x: string]: string }) {
@@ -27,47 +27,47 @@ export class Stimuli {
   }
 
   /**
-   * Loader method for the ImageCollection
+   * Loader method for the StimuliCollection
    */
   public load(): void {
-    // Get the Experiment object to determine the platform
-    const experiment = window.Experiment;
+    // Get the Neurocog object to determine the platform
+    const Neurocog = window.Neurocog;
 
-    // Check if the images are named consistently
-    Object.keys(this.collection).forEach((image) => {
-      if (!this.collection[image].endsWith(image)) {
-        consola.warn(`Image '${image}' named inconsistently`);
+    // Check if the stimuli are named consistently
+    Object.keys(this.collection).forEach((stimulus) => {
+      if (!this.collection[stimulus].endsWith(stimulus)) {
+        consola.warn(`Stimulus '${stimulus}' named inconsistently`);
       }
     });
 
-    if (experiment.getPlatform() === Platforms.Gorilla) {
-      // Populate the image collection for Gorilla
+    if (Neurocog.getPlatform() === Platforms.Gorilla) {
+      // Populate the stimulus collection for Gorilla
       // Grab the Gorilla API from the browser
       const gorilla = window.gorilla;
 
-      // For each of the images from the desktop build, we
+      // For each of the stimuli specified in the configuration, we
       // want to create a new API call to retrieve each from
       // the Gorilla platform
-      Object.keys(this.collection).forEach((image) => {
+      Object.keys(this.collection).forEach((stimulus) => {
         // Generate the new API call
-        this.collection[image] = gorilla.stimuliURL(image);
+        this.collection[stimulus] = gorilla.stimuliURL(stimulus);
       });
-      consola.debug(`All images attached to 'stimuliURL'.`);
+      consola.debug(`All stimulli attached to 'stimuliURL'.`);
 
       this.isLoaded = true;
     } else {
-      consola.debug(`jsPsych only, local images are loaded.`);
+      consola.debug(`jsPsych only, local stimuli are already loaded.`);
       this.isLoaded = true;
     }
   }
 
   /**
-   * Get the image collection
+   * Get the stimulus collection
    * @return {{ [x: string]: string }}
    */
-  public getCollection(): { [x: string]: string } {
+  public getStimuli(): { [x: string]: string } {
     if (this.isLoaded) {
-      // Return the collection if loaded images
+      // Return the collection if loaded stimuli
       return this.collection;
     }
 
@@ -82,17 +82,17 @@ export class Stimuli {
   }
 
   /**
-   * Get the path to an image stored locally or remotely
-   * @param {string} image the key used to reference the image
+   * Get the path to a stimulus stored locally or remotely
+   * @param {string} stimulus the key used to reference the imagstimuluse
    * @return {string}
    */
-  public getImage(image: string): string {
-    consola.debug(`'getImage' called for image:`, image);
-    if (Object.keys(this.collection).includes(image)) {
-      // Check that the image exists
-      return this.collection[image];
+  public getStimulus(stimulus: string): string {
+    consola.debug(`'getStimulus' called for stimulus:`, stimulus);
+    if (Object.keys(this.collection).includes(stimulus)) {
+      // Check that the stimulus exists
+      return this.collection[stimulus];
     } else {
-      consola.error(new Error(`Image '${image}' not found!`));
+      consola.error(new Error(`Stimulus '${stimulus}' not found!`));
       return "";
     }
   }
