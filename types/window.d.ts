@@ -1,9 +1,9 @@
-import Experiment from "../src";
+import Neurocog from "../src";
 
 // Extend the Window interface
 declare global {
   interface Window {
-    Experiment: Experiment;
+    Neurocog: Neurocog;
     gorilla: Gorilla;
     jsPsych: jsPsych;
   }

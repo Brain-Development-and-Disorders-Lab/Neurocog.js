@@ -32,11 +32,11 @@ import "jspsych/plugins/jspsych-preload";
 import { randomLcg, randomUniform } from "d3-random";
 
 /**
- * Experiment class to start and manage connection to jsPsych
+ * Neurocog class to start and manage connection to jsPsych
  * or Gorilla if required
  * @summary
  */
-export class Experiment {
+export class Neurocog {
   // Platform the experiment is running on, initially 'Invalid'
   private platform: Platforms = Platforms.Invalid;
 
@@ -67,8 +67,8 @@ export class Experiment {
    * @class
    */
   constructor(config: Configuration) {
-    // Assign the experiment to the window
-    window["Experiment"] = this;
+    // Assign the class instance to the window
+    window["Neurocog"] = this;
 
     this.config = config;
 
@@ -457,4 +457,4 @@ export class Experiment {
   }
 }
 
-export default Experiment;
+export default Neurocog;
