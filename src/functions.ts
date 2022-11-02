@@ -58,7 +58,7 @@ export const clearTimeouts = (timeouts?: number[]): void => {
  * Important utility function used to enforce loading the script with
  * the 'defer' attribute set correctly on Gorilla.
  */
-export const checkEnvironment = (): boolean => {
+export const checkScriptAttributes = (): boolean => {
   // Status flag
   let status = true;
 

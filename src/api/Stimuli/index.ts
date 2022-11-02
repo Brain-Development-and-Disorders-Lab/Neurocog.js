@@ -1,5 +1,8 @@
+// Interface
+import { APIFeature } from "../APIFeature";
+
 // Imports
-import { Platforms } from "../../constants";
+import { Environments } from "../../constants";
 
 // Logging library
 import consola from "consola";
@@ -7,7 +10,7 @@ import consola from "consola";
 /**
  * @summary Utility class to load stimuli and setup any API calls if required
  */
-export class Stimuli {
+export class Stimuli implements APIFeature {
   private collection: { [x: string]: string };
   private isLoaded: boolean;
 
@@ -24,14 +27,6 @@ export class Stimuli {
       `Created new 'Stimuli' instance with collection:`,
       this.collection
     );
-  }
-
-  /**
-   * Loader method for the StimuliCollection
-   */
-  public load(): void {
-    // Get the Neurocog object to determine the platform
-    const Neurocog = window.Neurocog;
 
     // Check if the stimuli are named consistently
     Object.keys(this.collection).forEach((stimulus) => {
@@ -40,21 +35,11 @@ export class Stimuli {
       }
     });
 
-    if (Neurocog.getPlatform() === Platforms.Gorilla) {
-      // Populate the stimulus collection for Gorilla
-      // Grab the Gorilla API from the browser
-      const gorilla = window.gorilla;
+    // Get the Neurocog object to determine the platform
+    const Neurocog = window.Neurocog;
 
-      // For each of the stimuli specified in the configuration, we
-      // want to create a new API call to retrieve each from
-      // the Gorilla platform
-      Object.keys(this.collection).forEach((stimulus) => {
-        // Generate the new API call
-        this.collection[stimulus] = gorilla.stimuliURL(stimulus);
-      });
-      consola.debug(`All stimulli attached to 'stimuliURL'.`);
-
-      this.isLoaded = true;
+    if (Neurocog.getEnvironment() === Environments.Gorilla) {
+      this.setup();
     } else {
       consola.debug(`jsPsych only, local stimuli are already loaded.`);
       this.isLoaded = true;
@@ -62,10 +47,30 @@ export class Stimuli {
   }
 
   /**
+   * Loader method for the StimuliCollection
+   */
+  private setup(): void {
+    // Populate the stimulus collection for Gorilla
+    // Grab the Gorilla API from the browser
+    const gorilla = window.gorilla;
+
+    // For each of the stimuli specified in the configuration, we
+    // want to create a new API call to retrieve each from
+    // the Gorilla platform
+    Object.keys(this.collection).forEach((stimulus) => {
+      // Generate the new API call
+      this.collection[stimulus] = gorilla.stimuliURL(stimulus);
+    });
+    consola.debug(`All stimulli attached to 'stimuliURL'.`);
+
+    this.isLoaded = true;
+  }
+
+  /**
    * Get the stimulus collection
    * @return {{ [x: string]: string }}
    */
-  public getStimuli(): { [x: string]: string } {
+  public getAll(): { [x: string]: string } {
     if (this.isLoaded) {
       // Return the collection if loaded stimuli
       return this.collection;
@@ -86,7 +91,7 @@ export class Stimuli {
    * @param {string} stimulus the key used to reference the imagstimuluse
    * @return {string}
    */
-  public getStimulus(stimulus: string): string {
+  public get(stimulus: string): string {
     consola.debug(`'getStimulus' called for stimulus:`, stimulus);
     if (Object.keys(this.collection).includes(stimulus)) {
       // Check that the stimulus exists

@@ -1,20 +1,23 @@
-// Import classes
-import { Platforms } from "./lib/constants";
-import { Manipulations } from "./lib/classes/Manipulations";
-import { Resources } from "./lib/classes/Resources";
-import { State } from "./lib/classes/State";
-import { Stimuli } from "./lib/classes/Stimuli";
-
 // Import types
 import type {
   Gorilla,
   jsPsych,
   jsPsychParameters,
-  Configuration,
 } from "../types";
+import type { Configuration } from "../types/Configuration";
+
+// Import constants
+import { Environments } from "./constants";
+
+// Gorilla API features
+import { Manipulations } from "./api/Manipulations";
+import { Resources } from "./api/Resources";
+import { Stimuli } from "./api/Stimuli";
+
+import { State } from "./lib/State";
 
 // Utility functions
-import { checkEnvironment, clear, clearTimeouts } from "./lib/functions";
+import { checkScriptAttributes, clear, clearTimeouts } from "./functions";
 
 // Logging library
 import consola from "consola";
@@ -37,8 +40,8 @@ import { randomLcg, randomUniform } from "d3-random";
  * @summary
  */
 export class Neurocog {
-  // Platform the experiment is running on, initially 'Invalid'
-  private platform: Platforms = Platforms.Invalid;
+  // Environment the experiment is running on, initially 'Invalid'
+  private environment: Environments = Environments.Invalid;
 
   // Instances of the window variables, initially set to 'undefined'
   private instances: {
@@ -49,17 +52,16 @@ export class Neurocog {
   // Instance of RNG
   private generator: any;
 
-  // Collection of stimuli
-  private stimuliCollection: Stimuli;
+  // Gorilla API features
+  private manipulations: Manipulations;
+  private resources: Resources;
+  private stimuli: Stimuli;
 
   // State management
   private state: State;
 
   // Configuration
-  private config: Configuration;
-
-  // 'Loaded' state
-  private loaded: boolean;
+  private configuration: Configuration;
 
   /**
    * Default constructor
@@ -70,10 +72,7 @@ export class Neurocog {
     // Assign the class instance to the window
     window["Neurocog"] = this;
 
-    this.config = config;
-
-    // Set the state to be 'unloaded'
-    this.loaded = false;
+    this.configuration = config;
 
     // Instantiate the 'instances'
     this.instances = {
@@ -82,15 +81,18 @@ export class Neurocog {
     };
 
     // Set the logging level
-    if (this.config.logging) {
-      consola.level = this.config.logging;
+    if (this.configuration.logging) {
+      consola.level = this.configuration.logging;
     }
-
-    // Configure the d3 RNG
-    this.generator = randomUniform.source(randomLcg(this.config.seed))(0, 1);
 
     // Add the error handler
     this.setupErrorHandler();
+
+    // Detect the Environment
+    this.setEnvironment(this.detectEnvironment());
+
+    // Configure the d3 RNG
+    this.generator = randomUniform.source(randomLcg(this.configuration.seed))(0, 1);
 
     // Store the initial and global state (if defined)
     if (config.state) {
@@ -101,36 +103,15 @@ export class Neurocog {
       this.state = new State();
     }
 
-    // Created new 'Stimuli' instance with a collection
-    this.stimuliCollection = new Stimuli(this.config.stimuli);
-
     // Check the context of the script to try and catch any errors
-    if (checkEnvironment() === false) {
+    if (checkScriptAttributes() === false) {
       consola.error(new Error("Context check failed, halting experiment"));
-    } else {
-      // Load all stimuli used in the Experiment.
-      this.load();
-    }
-  }
-
-  /**
-   * Loading function, responsible for connecting
-   * to the Gorilla API properly.
-   */
-  public load() {
-    // Detect and update the target in the configuration
-    this.setPlatform(this.detectPlatforms());
-
-    // Load all the stimuli
-    this.loadStimuli();
-
-    // Configure the manipulations and resources in the configuration file
-    if (this.platform === Platforms.Gorilla) {
-      Manipulations.link(this.config.manipulations);
-      Resources.link(this.config.resources);
     }
 
-    this.loaded = true;
+    // Setup Gorilla API features
+    this.manipulations = new Manipulations(this.configuration.manipulations);
+    this.resources = new Resources(this.configuration.resources);
+    this.stimuli = new Stimuli(this.configuration.stimuli);
   }
 
   /**
@@ -138,26 +119,26 @@ export class Neurocog {
    * @return {Configuration}
    */
   public getConfiguration(): Configuration {
-    return this.config;
+    return this.configuration;
   }
 
   /**
-   * Update and set the target
-   * @param {Platforms} target updated target
+   * Update and set the environment
+   * @param {Environments} environment updated environment
    */
-  private setPlatform(target: Platforms) {
-    if (target !== this.platform) {
-      consola.info(`Target updated to '${target}'`);
+  private setEnvironment(environment: Environments) {
+    if (environment !== this.environment) {
+      consola.info(`Environment updated to '${environment}'`);
     }
-    this.platform = target;
+    this.environment = environment;
   }
 
   /**
-   * Get the current platform the Experiment is running on
-   * @return {Platforms}
+   * Get the current Environment the Experiment is running in
+   * @return {Environments}
    */
-  public getPlatform(): Platforms {
-    return this.platform;
+  public getEnvironment(): Environments {
+    return this.environment;
   }
 
   /**
@@ -179,38 +160,38 @@ export class Neurocog {
   }
 
   /**
-   * Detect the platform that the experiment is running on
-   * @return {Platforms} platform name
+   * Detect the Environment that the experiment is running on
+   * @return {Environments} Environment name
    */
-  private detectPlatforms(): Platforms {
+  private detectEnvironment(): Environments {
     // Check for Gorilla
-    if (Platforms.Gorilla in window) {
+    if (Environments.Gorilla in window) {
       consola.success(`Gorilla instance found`);
 
-      // Store the platform
+      // Store the Environments
       this.instances.gorilla = window.gorilla;
     }
 
     // Check for jsPsych
-    if (Platforms.jsPsych in window) {
+    if (Environments.jsPsych in window) {
       consola.success(`jsPsych instance found`);
 
-      // Store the platform
+      // Store the Environments
       this.instances.jsPsych = window.jsPsych;
     }
 
-    // Return the correct platform
+    // Return the correct Environments
     if (this.instances.gorilla) {
       // Gorilla was found
-      return Platforms.Gorilla;
+      return Environments.Gorilla;
     } else if (this.instances.jsPsych) {
       // jsPsych found but not Gorilla
-      return Platforms.jsPsych;
+      return Environments.jsPsych;
     }
 
     // Big issue if we are here
-    consola.error(new Error("No valid platforms detected"));
-    return Platforms.Invalid;
+    consola.error(new Error("No valid Environments detected"));
+    return Environments.Invalid;
   }
 
   /**
@@ -260,13 +241,13 @@ export class Neurocog {
 
     // Follow-up instructions
     const textInstructions = document.createElement("p");
-    if (this.config.allowParticipantContact === true) {
+    if (this.configuration.allowParticipantContact === true) {
       textInstructions.innerHTML =
         `Please send an email to ` +
-        `<a href="mailto:${this.config.contact}?` +
-        `subject=Error (${this.config.studyName})` +
+        `<a href="mailto:${this.configuration.contact}?` +
+        `subject=Error (${this.configuration.studyName})` +
         `&body=Error text: ${error.message}%0D%0A Additional information:"` +
-        `>${this.config.contact}</a> to share ` +
+        `>${this.configuration.contact}</a> to share ` +
         `the details of this error.`;
       textInstructions.style.margin = "20px";
     }
@@ -301,37 +282,37 @@ export class Neurocog {
   }
 
   /**
-   * Retrieve an instance of a platform to utilise
+   * Retrieve an instance of a Environment to utilise
    * in integration
-   * @param {string} platform identifier of the platform
+   * @param {string} environment identifier of the platform
    * @return {Gorilla | jsPsych | null} platform instance
    */
-  public getHook(platform: string): Gorilla | jsPsych | null {
-    switch (platform) {
-      case Platforms.Gorilla:
+  public getHook(environment: string): Gorilla | jsPsych | null {
+    switch (environment) {
+      case Environments.Gorilla:
         if (this.instances.gorilla) {
           return this.instances.gorilla;
         } else {
           return null;
         }
-      case Platforms.jsPsych:
+      case Environments.jsPsych:
         if (this.instances.jsPsych) {
           return this.instances.jsPsych;
         } else {
           return null;
         }
       default:
-        consola.warn(`Hook '${platform}' not found`);
+        consola.warn(`Hook '${environment}' not found`);
         return null;
     }
   }
 
-  /**
-   * Load the stimuli and setup the ImageCollection
-   * instance
-   */
-  private loadStimuli() {
-    this.stimuliCollection.load();
+  public getManipulations(): Manipulations {
+    return this.manipulations;
+  }
+
+  public getResources(): Resources {
+    return this.resources;
   }
 
   /**
@@ -339,7 +320,7 @@ export class Neurocog {
    * @return {Stimuli}
    */
   public getStimuli(): Stimuli {
-    return this.stimuliCollection;
+    return this.stimuli;
   }
 
   /**
@@ -350,34 +331,23 @@ export class Neurocog {
   public start(parameters: jsPsychParameters): void {
     consola.debug(`Running start() function.`);
 
-    if (this.loaded === false) {
-      consola.error(
-        new Error(
-          `Cannot start until all resources are loaded, ` +
-            `ensure 'load()' is called prior to 'start()'`
-        )
-      );
-    }
-
-    if (this.platform === Platforms.Gorilla) {
+    if (this.environment === Environments.Gorilla) {
       // Initialise jsPsych and Gorilla (if required)
-      const gorilla = this.getHook(Platforms.Gorilla) as Gorilla;
-      const jsPsych = this.getHook(Platforms.jsPsych) as jsPsych;
+      const gorilla = this.getHook(Environments.Gorilla) as Gorilla;
+      const jsPsych = this.getHook(Environments.jsPsych) as jsPsych;
 
       // Bring the stimuli into the local scope
       // Make sure Gorilla and jsPsych are loaded
       if (typeof jsPsych !== "undefined" && typeof gorilla !== "undefined") {
         consola.debug(
           `Added 'preload' node to timeline:`,
-          Object.values(this.config.stimuli)
+          Object.values(this.configuration.stimuli)
         );
 
-        // Update the parameters object with required functions
-        // and properties
         // Display element
         parameters.display_element = document.getElementById("gorilla");
 
-        const stimuli = this.config.stimuli;
+        const stimuli = this.configuration.stimuli;
         if (stimuli && Object.values(stimuli).length > 0) {
           consola.debug(`Preloading images:`, Object.values(stimuli));
 
@@ -415,7 +385,7 @@ export class Neurocog {
       }
     } else {
       // Initialise jsPsych
-      const jsPsych = this.getHook(Platforms.jsPsych) as jsPsych;
+      const jsPsych = this.getHook(Environments.jsPsych) as jsPsych;
       consola.debug(`Retrieved jsPsych:`, jsPsych);
 
       // Make sure jsPsych is loaded
@@ -430,7 +400,7 @@ export class Neurocog {
         };
 
         // 'preload_images' value
-        const stimuli = this.config.stimuli;
+        const stimuli = this.configuration.stimuli;
         if (stimuli && Object.values(stimuli).length > 0) {
           consola.debug(`Preloading images:`, Object.values(stimuli));
 

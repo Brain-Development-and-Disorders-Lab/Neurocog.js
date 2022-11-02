@@ -1,11 +1,11 @@
-// Valid platforms
-export enum Platforms {
+// Environments
+export enum Environments {
   Gorilla = "gorilla",
   jsPsych = "jsPsych",
   Invalid = "",
 }
 
-// Valid controllers
+// Controllers
 export enum Controllers {
   Keyboard = "keyboard",
   Spectrometer = "spectrometer",
