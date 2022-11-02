@@ -307,16 +307,24 @@ export class Neurocog {
     }
   }
 
+  /**
+   * Get the collection of Manipulations
+   * @return {Manipulations}
+   */
   public getManipulations(): Manipulations {
     return this.manipulations;
   }
 
+  /**
+   * Get the collection of Resources
+   * @return {Resources}
+   */
   public getResources(): Resources {
     return this.resources;
   }
 
   /**
-   * Retrieve the collection of loaded images
+   * Get the collection of Stimuli
    * @return {Stimuli}
    */
   public getStimuli(): Stimuli {
