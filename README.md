@@ -65,7 +65,7 @@ Before instantiating the `Experiment` instance, create an experiment configurati
 | **name**                    | `string`      | A human-readable name for the experiment such as `"Brain Game"`                                                                                                                                                                                                 |
 | **studyName**               | `string`      | A machine-readable name for the experiment plugin such as `"brain-game"`. No whitespace is permitted.                                                                                                                                                           |
 | **manipulations**           | `key : value` | A collection of key-value pairs that represent the manipulations configured in Gorilla. The key must be a string, and the value can be a string, boolean, or number. _While required, it can be empty._                                                         |
-| **stimuli**                 | `key : value` | A collection of key-value pairs that represent the images used in the experiment. The key can be used as a unique identifier for accessing the image in the source code. The value is the relative path to the actual image. _While required, it can be empty._ |
+| **stimuli**                 | `key : value` | A collection of key-value pairs that represent the stimuli used in the experiment. The key can be used as a unique identifier for accessing the stimulus in the source code. The value is the relative path to the actual stimulus. _While required, it can be empty._ |
 | **allowParticipantContact** | `boolean`     | Whether or not to show an email address for participants to contact in the case of an error.                                                                                                                                                                    |
 | **contact**                 | `string`      | The contact email address for the experiment.                                                                                                                                                                                                                   |
 | **seed**                    | `number`      | A float to act as the seed for the RNG.                                                                                                                                                                                                                         |
@@ -141,7 +141,7 @@ const variableB = configuration.manipulations.variableB; // 2
 
 Neurocog.js supports a key-value system in the configuration file when defining relative paths to stimuli. A `stimuli` keyword is expected in the configuration file, and represents the object containing these key-value pairings.
 
-To use stimuli in a jsPsych experiment with Neurocog.js, specify a key for accessing the image alongside a value containing the relative path to the actual image location:
+To use stimuli in a jsPsych experiment with Neurocog.js, specify a key for accessing the stimulus alongside a value containing the relative path to the actual stimulus location:
 
 ```JavaScript
 // File: configuration.js
@@ -156,17 +156,17 @@ export const configuration = {
 }
 ```
 
-The above example references two images stored in an `img/` directory: `a_1.jpg` and `b_2.jpg`. Since these images have been assigned keys `a.jpg` and `b.jpg` respectively, they can be referenced throughout the experiment source code using these keys.
+The above example references two stimuli stored in an `img/` directory: `a_1.jpg` and `b_2.jpg`. Since these stimuli have been assigned keys `a.jpg` and `b.jpg` respectively, they can be referenced throughout the experiment source code using these keys.
 
-Neurocog.js ultimately stores images in a 'stimuli collection', which can be accessed safely using the following code snippet:
+Neurocog.js ultimately stores stimuli in a collection which can be accessed safely using the following code snippet:
 
 ```JavaScript
 // File: experiment-code.js
 // Get 'img/a_1.jpg'
-const imageA = experiment.getStimuli().getImage('a.jpg');
+const imageA = Neurocog.getStimulus('a.jpg');
 
 // Get 'img/b_2.jpg'
-const imageB = experiment.getStimuli().getImage('b.jpg');
+const imageB = Neurocog.getStimulus('b.jpg');
 ```
 
 Neurocog detects the presence of the Gorilla platform, and it will automatically re-map the stimuli paths to the corresponding Gorilla API function call.
