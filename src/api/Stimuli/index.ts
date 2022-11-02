@@ -47,7 +47,7 @@ export class Stimuli implements APIFeature {
   }
 
   /**
-   * Loader method for the StimuliCollection
+   * Loader method for Stimuli
    */
   private setup(): void {
     // Populate the stimulus collection for Gorilla
@@ -91,13 +91,13 @@ export class Stimuli implements APIFeature {
    * @param {string} stimulus the key used to reference the imagstimuluse
    * @return {string}
    */
-  public get(stimulus: string): string {
-    consola.debug(`'getStimulus' called for stimulus:`, stimulus);
-    if (Object.keys(this.collection).includes(stimulus)) {
+  public get(identifier: string): string {
+    consola.debug(`'getStimulus' called for stimulus:`, identifier);
+    if (Object.keys(this.collection).includes(identifier)) {
       // Check that the stimulus exists
-      return this.collection[stimulus];
+      return this.collection[identifier];
     } else {
-      consola.error(new Error(`Stimulus '${stimulus}' not found!`));
+      consola.error(new Error(`Stimulus '${identifier}' not found!`));
       return "";
     }
   }

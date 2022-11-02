@@ -1,15 +1,18 @@
 // Interfaces
 import { APIFeature } from "../APIFeature";
 
+// Constants
+import { Environments } from "../../constants";
+
 // Logging library
 import consola from "consola";
-import { Environments } from "../../constants";
 
 /**
  * @summary Class that links to the Gorilla API 'Resources'. It allows
  * safe references to the API while developing the tasks locally.
  */
 export class Resources implements APIFeature {
+  // Collection of Resources
   private resources:  { [resource: string]: any };
 
   constructor(resources: { [resource: string]: any }) {
@@ -26,9 +29,7 @@ export class Resources implements APIFeature {
 
   /**
    * Retrieves the Gorilla instance and connects any resources specified
-   * to the Gorilla API 'Resources'.
-   * @param {{ [resource: string]: any }} resources target object containing
-   * the resources
+   * to the Gorilla API 'Resources'
    */
   private setup() {
     const gorilla = window.gorilla;
@@ -41,10 +42,19 @@ export class Resources implements APIFeature {
     });
   }
 
-  public get(resource: string): any {
-    return this.resources[resource];
+  /**
+   * Get a specific Resource
+   * @param identifier the identifier of the resource to retrieve
+   * @return {any}
+   */
+  public get(identifier: string): any {
+    return this.resources[identifier];
   }
 
+  /**
+   * Get the collection of Resources
+   * @return {{ [resource: string]: any }}
+   */
   public getAll(): any {
     return this.resources;
   }

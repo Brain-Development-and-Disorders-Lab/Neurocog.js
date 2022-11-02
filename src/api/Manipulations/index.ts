@@ -61,23 +61,27 @@ export class Manipulations implements APIFeature {
 
   /**
    * Get the value of a specific manipulation
-   * @param {string} manipulation key identifying the manipulation
-   * @returns value of the manipulation if defined
+   * @param {string} identifier key identifying the manipulation
+   * @return {any} value of the manipulation if defined
    */
-  public get(manipulation: string): any {
+  public get(identifier: string): any {
     // Get the value, whether it is defined or not
-    const value = this.manipulations[manipulation];
+    const value = this.manipulations[identifier];
 
     // Check if value is defined
     if (value) {
       return value;
     } else {
-      consola.error(new Error(`Manipulation '${manipulation}' is undefined`));
+      consola.error(new Error(`Manipulation '${identifier}' is undefined`));
       return null;
     }
   }
 
-  public getAll(): any {
+  /**
+   * Get the entire collection of Manipulations
+   * @return {{ [manipulation: string]: any }}
+   */
+  public getAll(): { [manipulation: string]: any } {
     return this.manipulations;
   }
 }
