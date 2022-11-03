@@ -65,12 +65,10 @@ export class Manipulations implements APIFeature {
    * @return {any} value of the manipulation if defined
    */
   public get(identifier: string): any {
-    // Get the value, whether it is defined or not
-    const value = this.manipulations[identifier];
-
+    consola.info(this.manipulations[identifier]);
     // Check if value is defined
-    if (value) {
-      return value;
+    if (this.manipulations[identifier] !== undefined) {
+      return this.manipulations[identifier];
     } else {
       consola.error(new Error(`Manipulation '${identifier}' is undefined`));
       return null;

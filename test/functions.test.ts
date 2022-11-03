@@ -1,4 +1,4 @@
-import { clear } from "../src/lib/functions";
+import { clear } from "../src/functions";
 
 // Test 'clear' function
 describe("clearing page contents", () => {

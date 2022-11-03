@@ -1,54 +1,53 @@
-import { Stimuli } from "../../../src/lib/classes/Stimuli";
-import { Platforms } from "../../../src/lib/constants";
+import { Stimuli } from "../../../src/api/Stimuli";
+import { Environments } from "../../../src/constants";
 
 describe("Stimuli loading", () => {
   let windowSpy: any;
 
+  // Mock the manipulation implementation
+  const mockedStimuli = jest.fn();
+
   beforeEach(() => {
     // Mock the Gorilla implementation attached to the Window
     windowSpy = jest.spyOn(window, "window", "get");
+    windowSpy.mockImplementation(() => ({
+      gorilla: {
+        stimuliURL: mockedStimuli,
+      },
+      Neurocog: {
+        getEnvironment: jest.fn(() => {
+          return Environments.Gorilla;
+        }),
+      },
+    }));
   });
 
   afterEach(() => {
     // Restore the mocked instance
     windowSpy.mockRestore();
+    mockedStimuli.mockClear();
   });
 
   it("calls the Gorilla functions", () => {
-    // Mock the manipulation implementation
-    const mockedStimuli = jest.fn();
-    windowSpy.mockImplementation(() => ({
-      gorilla: {
-        stimuliURL: mockedStimuli,
-      },
-      Experiment: {
-        getPlatform: jest.fn(() => {
-          return Platforms.Gorilla;
-        }),
-      },
-    }));
-
     const images = {
       "a.jpg": "/path/a.jpg",
       "b.jpg": "/path/b.jpg",
     };
 
-    const stimuli = new Stimuli(images);
+    new Stimuli(images);
 
-    stimuli.load();
     expect(mockedStimuli).toBeCalledTimes(2);
   });
 
   it("ignores Gorilla calls when jsPsych", () => {
-    // Mock the manipulation implementation
-    const mockedStimuli = jest.fn();
+    // Specific window implementation for this test
     windowSpy.mockImplementation(() => ({
       gorilla: {
         stimuliURL: mockedStimuli,
       },
-      Experiment: {
-        getPlatform: jest.fn(() => {
-          return Platforms.jsPsych;
+      Neurocog: {
+        getEnvironment: jest.fn(() => {
+          return Environments.jsPsych;
         }),
       },
     }));
@@ -58,9 +57,8 @@ describe("Stimuli loading", () => {
       "b.jpg": "/path/b.jpg",
     };
 
-    const stimuli = new Stimuli(images);
+    new Stimuli(images);
 
-    stimuli.load();
     expect(mockedStimuli).toBeCalledTimes(0);
   });
 
@@ -71,23 +69,10 @@ describe("Stimuli loading", () => {
     };
 
     const stimuli = new Stimuli(images);
-    expect(stimuli.getCollection()).toEqual({});
+    expect(stimuli.getAll()).toEqual({});
   });
 
   it("returns the image collection when loaded", () => {
-    // Mock the manipulation implementation
-    const mockedStimuli = jest.fn();
-    windowSpy.mockImplementation(() => ({
-      gorilla: {
-        stimuliURL: mockedStimuli,
-      },
-      Experiment: {
-        getPlatform: jest.fn(() => {
-          return Platforms.Gorilla;
-        }),
-      },
-    }));
-
     const images = {
       "a.jpg": "/path/a.jpg",
       "b.jpg": "/path/b.jpg",
@@ -95,38 +80,39 @@ describe("Stimuli loading", () => {
 
     const stimuli = new Stimuli(images);
 
-    stimuli.load();
     expect(mockedStimuli).toBeCalledTimes(2);
-    expect(stimuli.getCollection()).toEqual(images);
+    expect(stimuli.getAll()).toEqual(images);
   });
 });
 
 describe("Stimuli get image", () => {
   let windowSpy: any;
 
+  // Mock the manipulation implementation
+  const mockedStimuli = jest.fn();
+
   beforeEach(() => {
     // Mock the Gorilla implementation attached to the Window
     windowSpy = jest.spyOn(window, "window", "get");
+    windowSpy.mockImplementation(() => ({
+      gorilla: {
+        stimuliURL: mockedStimuli,
+      },
+      Neurocog: {
+        getEnvironment: jest.fn(() => {
+          return Environments.jsPsych;
+        }),
+      },
+    }));
   });
 
   afterEach(() => {
     // Restore the mocked instance
     windowSpy.mockRestore();
+    mockedStimuli.mockClear();
   });
 
   it("retrieves an image", () => {
-    // Mock the manipulation implementation
-    const mockedStimuli = jest.fn();
-    windowSpy.mockImplementation(() => ({
-      gorilla: {
-        stimuliURL: mockedStimuli,
-      },
-      Experiment: {
-        getPlatform: jest.fn(() => {
-          return Platforms.jsPsych;
-        }),
-      },
-    }));
 
     const images = {
       "a.jpg": "/path/a.jpg",
@@ -135,8 +121,7 @@ describe("Stimuli get image", () => {
 
     const stimuli = new Stimuli(images);
 
-    stimuli.load();
     expect(mockedStimuli).toBeCalledTimes(0);
-    expect(stimuli.getImage("a.jpg")).toEqual("/path/a.jpg");
+    expect(stimuli.get("a.jpg")).toEqual("/path/a.jpg");
   });
 });

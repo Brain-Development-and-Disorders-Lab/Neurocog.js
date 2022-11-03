@@ -1,4 +1,4 @@
-import { State } from "../../../src/lib/classes/State";
+import { State } from "../../../src/lib/State";
 
 describe("State initialisation", () => {
   it("works with no arguments", () => {
