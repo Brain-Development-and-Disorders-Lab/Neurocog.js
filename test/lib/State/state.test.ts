@@ -48,9 +48,11 @@ describe("State modification", () => {
     const data = state.get("data");
     expect(data.count).toBe(0);
 
+    // Update count
     data.count = data.count + 1;
     state.set("data", data);
-    expect(state.get("data").count).toBe(1);
+
+    expect(state.get("data")["count"]).toBe(1);
   });
 
   it("changes types", () => {
@@ -60,6 +62,7 @@ describe("State modification", () => {
     expect(typeof state.get("data")).toBe("string");
 
     state.set("data", 0);
+
     expect(typeof state.get("data")).toBe("number");
   });
 });

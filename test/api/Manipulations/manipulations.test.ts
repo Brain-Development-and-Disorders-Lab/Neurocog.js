@@ -11,10 +11,6 @@ describe("Manipulations linking", () => {
     // Mock the Gorilla implementation attached to the Window
     windowSpy = jest.spyOn(window, "window", "get");
 
-    // Return 'false' then 'true', given manipulations hold those values when
-    // accessed consecutively
-    mockedManipulation.mockReturnValueOnce("false").mockReturnValueOnce("true");
-
     windowSpy.mockImplementation(() => ({
       gorilla: {
         manipulation: mockedManipulation,
@@ -34,6 +30,8 @@ describe("Manipulations linking", () => {
   });
 
   it("calls the Gorilla functions", () => {
+    mockedManipulation.mockReturnValueOnce("one").mockReturnValueOnce(2);
+
     const variables = {
       one: "one",
       two: 2,
@@ -45,6 +43,10 @@ describe("Manipulations linking", () => {
   });
 
   it("correctly links Boolean manipulations", () => {
+    // Return 'false' then 'true', given manipulations hold those values when
+    // accessed consecutively
+    mockedManipulation.mockReturnValueOnce("false").mockReturnValueOnce("true");
+
     const variables = {
       one: false,
       two: true,
@@ -54,5 +56,29 @@ describe("Manipulations linking", () => {
 
     expect(manipulations.get("one")).toBe(false);
     expect(manipulations.get("two")).toBe(true);
+  });
+
+  it("correctly links numerical manipulations", () => {
+    mockedManipulation.mockReturnValueOnce(1);
+
+    const variables = {
+      one: 1,
+    };
+
+    const manipulations = new Manipulations(variables);
+
+    expect(manipulations.get("one")).toBe(1);
+  });
+
+  it("returns all manipulations", () => {
+    mockedManipulation.mockReturnValueOnce(1);
+
+    const variables = {
+      one: 1,
+    };
+
+    const manipulations = new Manipulations(variables);
+
+    expect(manipulations.getAll()).toEqual(variables);
   });
 });
