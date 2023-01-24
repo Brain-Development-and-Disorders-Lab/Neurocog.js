@@ -2,31 +2,37 @@
 
 <img src="https://raw.githubusercontent.com/Brain-Development-and-Disorders-Lab/Neurocog.js/main/icon.png" alt="Neurocog.js icon" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
 
-A utility wrapper library extending the functionality of jsPsych-based cognitive tasks and enabling multiplatform operation, designed to extend your jsPsych experiment with new features and capabilities.
+> Neurocog.js is a library and framework to support the organization, configuration, and deployment of behavioral experiments built using the [jsPsych](https://www.jspsych.org/7.3/) library.
+
+**⚠️ Currently, experiments built using jsPsych 7.0+ are not supported.**
 
 ## Features
 
-### [Gorilla](https://gorilla.sc) integration
+### Experiment organization
 
-Facilitates interaction with parts of the Gorilla API. Load and access stimuli, access manipulations, and update stored data while maintaining the same codebase online and offline. The wrapper library detects what context the experiment is running in and makes API calls accordingly.
+A categorized and structured configuration system encourages the organization of experiment resources such as stimuli alongside the configuration of other parameters such as experimental variables.
+
+### Dynamic integration with the [Gorilla](https://gorilla.sc) platform
+
+Facilitates interaction with parts of the Gorilla API. Access stimuli, manipulations, and update stored data while maintaining the same codebase online and offline. Neurocog.js can detect if the experiment is running on the Gorilla platform, adjusting resource acquisition accordingly. This allows jsPsych experiments developed offline to deployed online with confidence.
 
 ### State management
 
-A global state is maintained outside of the jsPsych instace. While not an advisable for experiment-wide data storage, a state system can be used to direct task logic and add an element of dynamic behavior. Additionally, it could function as temporary data storage.
+A global state is maintained by Neurocog.js independently of jsPsych. While not an advisable for experiment-wide data storage, this system can be used to direct experiment logic and easily implement conditional experiment behavior.
 
 ### Error handling & task shutdown
 
-By listening for errors in the browser, this library provides graceful error handling and alerts participants before ending the experiment. This prevents online experiments from hanging or resulting in the complete loss of participant data.
+By catching in-browser JavaScript errors, Neurocog.js provides graceful error handling and notifies participants before ending the experiment. This prevents online experiments from crashing or resulting in the complete loss of participant data.
 
-### Centralised seeded random number generator
+### Seeded random number generator
 
-A seeded RNG is provided using the [D3.js](https://d3js.org) library.
+To provide reproducible "random" behavior, a seeded RNG is included in the Neurocog.js API utilizing [D3.js](https://d3js.org).
 
 ## Installation
 
 ### Installing via a package manager
 
-Install the library using NPM or Yarn:
+Install Neurocog.js using NPM or Yarn:
 
 ```Shell
 npm install neurocog
@@ -36,7 +42,7 @@ npm install neurocog
 yarn add neurocog
 ```
 
-The library is contained in the `Experiment` class. To get started, import it at the top of the file containing a `jsPsych.init(...)` function call.
+The entrypoint to interact with Neurocog.js is the `Experiment` class. To get started, import the class in the same file containing the `jsPsych.init(...)` function call.
 
 ```JavaScript
 import { Experiment } from "neurocog";
@@ -44,16 +50,16 @@ import { Experiment } from "neurocog";
 
 ### Importing via a `<script>` tag in an HTML file
 
-Download the script locally and import it via a `<script>` tag in the `<head>` of the HTML page.
+Download the script and import it via a `<script>` tag in the `<head>` of the HTML page.
 
 ```HTML
 <script src="<path>/neurocog.js"></script>
 ```
 
-Obtain the script from a CDN and import it via a `<script>` tag in the `<head>` of the HTML page.
+Obtain the latest version of the script from a CDN and import it via a `<script>` tag in the `<head>` of the HTML page.
 
 ```html
-<script src="https://unpkg.com/neurocog@0.3.1/dist/index.js"></script>
+<script src="https://unpkg.com/neurocog@latest/dist/index.js"></script>
 ```
 
 ## Usage

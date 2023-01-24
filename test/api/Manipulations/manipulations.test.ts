@@ -36,7 +36,6 @@ describe("Manipulations linking", () => {
       one: "one",
       two: 2,
     };
-
     new Manipulations(variables);
 
     expect(mockedManipulation).toBeCalledTimes(2);
@@ -51,7 +50,6 @@ describe("Manipulations linking", () => {
       one: false,
       two: true,
     };
-
     const manipulations = new Manipulations(variables);
 
     expect(manipulations.get("one")).toBe(false);
@@ -64,7 +62,6 @@ describe("Manipulations linking", () => {
     const variables = {
       one: 1,
     };
-
     const manipulations = new Manipulations(variables);
 
     expect(manipulations.get("one")).toBe(1);
@@ -76,7 +73,6 @@ describe("Manipulations linking", () => {
     const variables = {
       one: 1,
     };
-
     const manipulations = new Manipulations(variables);
 
     expect(manipulations.getAll()).toEqual(variables);
