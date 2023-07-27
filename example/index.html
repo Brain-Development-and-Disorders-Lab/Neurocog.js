@@ -1,14 +1,35 @@
 <!DOCTYPE html>
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1"
-  charset="utf-8"
-/>
-<html lang="en-US">
+<html>
   <head>
-    <title>Example Experiment</title>
-    <script src="example.js" type="module" defer></script>
+    <title>Example Neurocog.js</title>
+
+    <script src="https://unpkg.com/jspsych@7.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
+    <script src="../dist/index.browser.min.js"></script>
+    <link href="https://unpkg.com/jspsych@7.1.2/css/jspsych.css" rel="stylesheet" type="text/css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
   </head>
   <body></body>
-  <script></script>
+  <script>
+
+    var jsPsych = initJsPsych({
+      extensions: [
+        { type: NeurocogExtension }
+      ],
+      on_finish: function() {
+        jsPsych.data.displayData();
+      }
+    });
+
+    var welcome = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: '<p style="font-size:60px;">Click below to begin.</p>',
+      choices: ['Start']
+    };
+
+    jsPsych.run([welcome]);
+  </script>
 </html>
