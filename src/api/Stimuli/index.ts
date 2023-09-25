@@ -5,7 +5,7 @@ import { isPlatform } from "src/util";
 import consola from "consola";
 
 /**
- * @summary Utility class to load images and setup any API calls if required
+ * @summary Utility class to load Stimuli and setup any API calls if required
  */
 export class Stimuli {
   private collection: { [x: string]: string };
@@ -13,7 +13,7 @@ export class Stimuli {
 
   /**
    * Default constructor
-   * @param {any} collection images to load and manage
+   * @param {any} collection Stimuli to load and manage
    * @class
    */
   constructor(collection: { [x: string]: string }) {
@@ -26,7 +26,7 @@ export class Stimuli {
   }
 
   /**
-   * Loader method for the ImageCollection
+   * Linking method for the stimuli collection
    */
   private link(): void {
     // Check if the images are named consistently
@@ -73,12 +73,12 @@ export class Stimuli {
   }
 
   /**
-   * Get the path to an stimulus stored locally or remotely
+   * Get the path to a stimulus stored locally or remotely
    * @param {string} stimulus the key used to reference the stimulus
    * @return {string}
    */
   public getOne(stimulus: string): string {
-    consola.debug(`"getStimulus" called for stimulus:`, stimulus);
+    consola.debug(`"getOne" called for stimulus:`, stimulus);
     if (Object.keys(this.collection).includes(stimulus)) {
       // Check that the stimulus exists
       return this.collection[stimulus];
