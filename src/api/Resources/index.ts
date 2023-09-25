@@ -1,13 +1,14 @@
-// Utility functions
+// Utility functions and libraries
 import { isPlatform } from "src/util";
-
-// Logging library
 import consola from "consola";
+
+// ICollection interface
+import { ICollection } from "../ICollection";
 
 /**
  * @summary Utility class to load Resources and setup any API calls if required
  */
-export class Resources {
+export class Resources implements ICollection {
   private collection: { [x: string]: string };
   private isLinked: boolean;
 
