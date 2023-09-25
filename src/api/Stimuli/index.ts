@@ -9,7 +9,7 @@ import consola from "consola";
  */
 export class Stimuli {
   private collection: { [x: string]: string };
-  private isLoaded: boolean;
+  private isLinked: boolean;
 
   /**
    * Default constructor
@@ -18,22 +18,21 @@ export class Stimuli {
    */
   constructor(collection: { [x: string]: string }) {
     this.collection = collection;
-    this.isLoaded = false;
+    this.isLinked = false;
 
-    consola.debug(
-      `Created new 'Stimuli' instance with collection:`,
-      this.collection
-    );
+    // Link stimuli to Gorilla API functions if required
+    this.link();
+    consola.debug(`Created new "Stimuli" instance with ${Object.keys(collection).length} stimuli`);
   }
 
   /**
    * Loader method for the ImageCollection
    */
-  public load(): void {
+  private link(): void {
     // Check if the images are named consistently
     Object.keys(this.collection).forEach((image) => {
       if (!this.collection[image].endsWith(image)) {
-        consola.warn(`Image '${image}' named inconsistently`);
+        consola.warn(`Stimulus "${image}" named inconsistently`);
       }
     });
 
@@ -50,15 +49,15 @@ export class Stimuli {
         this.collection[image] = gorilla.stimuliURL(image);
       });
     }
-    this.isLoaded = true;
+    this.isLinked = true;
   }
 
   /**
    * Get the image collection
    * @return {{ [x: string]: string }}
    */
-  public getCollection(): { [x: string]: string } {
-    if (this.isLoaded) {
+  public getAll(): { [x: string]: string } {
+    if (this.isLinked) {
       // Return the collection if loaded images
       return this.collection;
     }
@@ -67,24 +66,24 @@ export class Stimuli {
     consola.error(
       new Error(
         `Image collection not loaded before accessing! ` +
-          `Ensure 'load()' has been called.`
+          `Ensure "link()" has been called.`
       )
     );
     return {};
   }
 
   /**
-   * Get the path to an image stored locally or remotely
-   * @param {string} image the key used to reference the image
+   * Get the path to an stimulus stored locally or remotely
+   * @param {string} stimulus the key used to reference the stimulus
    * @return {string}
    */
-  public getImage(image: string): string {
-    consola.debug(`'getImage' called for image:`, image);
-    if (Object.keys(this.collection).includes(image)) {
-      // Check that the image exists
-      return this.collection[image];
+  public getOne(stimulus: string): string {
+    consola.debug(`"getStimulus" called for stimulus:`, stimulus);
+    if (Object.keys(this.collection).includes(stimulus)) {
+      // Check that the stimulus exists
+      return this.collection[stimulus];
     } else {
-      consola.error(new Error(`Image '${image}' not found!`));
+      consola.error(new Error(`Stimulus "${stimulus}" not found!`));
       return "";
     }
   }
