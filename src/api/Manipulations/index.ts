@@ -13,7 +13,7 @@ export class Manipulations {
    * containing the manipulations
    */
   public static link(manipulations: { [manipulation: string]: any }) {
-    const gorilla = window.gorilla;
+    const gorilla: GorillaAPI = window["gorilla"];
     Object.keys(manipulations).forEach((key) => {
       if (manipulations[key] !== undefined) {
         // Type checks to make sure properties are preserved

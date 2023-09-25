@@ -1,69 +1,22 @@
-// Gorilla type
-export type Gorilla = {
-  ready(func: () => void): void;
-  manipulation(key: string): any;
-  stimuliURL(stimuli: string): string;
+// Type to express Gorilla API signatures
+// Based on documentation: https://support.gorilla.sc/support/tools/legacy-tools/task-builder-1/gorilla-api#overview
+declare type GorillaAPI = {
+  ready(callback: () => any): void;
+  manipulation(name: string, definition?: any): any;
+  stimuliURL(name: string): string;
   resourceURL(resource: string): string;
-  metric(data: any): void;
-  finish(): void;
+  metric(data: any, key?: string): void;
+  finish(overrideURL?: string): void;
 };
 
-// jsPsych type
-export type jsPsych = {
-  // Functions
-  init(paramters: jsPsychParameters): void;
-  endExperiment(message: string): void;
-  finishTrial(data: any): void;
-
-  // Plugin
-  plugins: { (): void }[];
-
-  // Data object
-  data: any;
+declare enum Platforms {
+  Gorilla = "gorilla",
+  jsPsych = "jsPsych",
+  Invalid = "",
 };
 
-// jsPsych parameter types
-export type jsPsychParameters = {
-  // Timeline
-  timeline: any[];
-
-  // 'on_finish' callback
-  on_finish?: () => void;
-
-  // Other generic properties
-  [x: string]: any;
-};
-
-// General configuration properties
-export type Configuration = {
-  name: string;
-  studyName: string;
-
-  // Gorilla manipulations
-  manipulations: {
-    [k: string]: number | string | boolean | any;
-  };
-
-  // Gorilla resources
-  resources: {
-    [k: string]: string;
-  };
-
-  // Gorilla stimuli
-  stimuli: {
-    [k: string]: string;
-  };
-
-  // Error-handling contact
-  allowParticipantContact: boolean;
-  contact: string;
-
-  // Optional initial state configuration
-  state?: any;
-
-  // Optional logging level
-  logging?: any;
-
-  // Seed for RNG
-  seed: number;
+declare enum Controllers {
+  Keyboard = "keyboard",
+  Spectrometer = "spectrometer",
+  Touch = "touch",
 };

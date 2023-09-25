@@ -2,7 +2,7 @@
 
 ![Neurocog.js Icon](./icon.png)
 
-A utility wrapper library extending the functionality of jsPsych-based cognitive tasks and enabling multiplatform operation, designed to extend your jsPsych experiment with new features and capabilities.
+A utility wrapper library extending the functionality of jsPsych-based cognitive tasks and enable integration with the Gorilla online behavioral experiment platform, designed to extend your jsPsych experiment with new features and capabilities.
 
 ## Features
 

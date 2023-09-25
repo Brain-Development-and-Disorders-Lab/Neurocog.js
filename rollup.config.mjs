@@ -1,3 +1,10 @@
+/**
+ * Custom Rollup configuration to ensure extension is bundled for web compatibility.
+ * Adapted from the template configuration:
+ *  https://github.com/jspsych/jspsych-contrib/tree/main/packages/extension-template-ts
+ * @author henryjburg, bjoluc
+ */
+
 // Babel
 import { DEFAULT_EXTENSIONS as babelDefaultExtensions } from "@babel/core";
 

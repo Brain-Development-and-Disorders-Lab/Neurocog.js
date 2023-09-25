@@ -1,6 +1,8 @@
+// jsPsych imports
 import { JsPsych, JsPsychExtension, JsPsychExtensionInfo } from "jspsych";
 
-// Utility functions
+// Utility functions and libraries
+import { isPlatform } from "./util";
 import consola from "consola";
 import _ from "lodash";
 
@@ -22,7 +24,7 @@ interface InitializeParameters {
     [k: string]: string;
   };
 
-  // Collection of stimuli
+  // Gorilla stimuli
   stimuli: {
     [k: string]: string;
   };
@@ -61,22 +63,22 @@ class NeurocogExtension implements JsPsychExtension {
     name: "neurocog",
   };
 
-  // Class parameters
-  private isGorilla: boolean;
+  // Toggle to indicate if task is operating online
+  private useAPI: boolean;
 
   constructor(private jsPsych: JsPsych) {
     this.jsPsych = jsPsych;
-    this.isGorilla = false;
+    this.useAPI = false;
   };
 
   initialize = ({}: InitializeParameters): Promise<void> => {
     return new Promise((resolve, _reject) => {
-      // Determine environment (Gorilla or otherwise)
-      if (_.isEqual(this.is_gorilla(), true)) {
-        this.isGorilla = true;
-        consola.info("Gorilla platform detected");
+      // Determine environment (API or otherwise)
+      if (isPlatform()) {
+        this.useAPI = true;
+        consola.info("API detected");
       } else {
-        consola.info("Gorilla platform not detected");
+        consola.info("API not detected");
       }
       resolve();
     });
@@ -91,15 +93,6 @@ class NeurocogExtension implements JsPsychExtension {
       data_property: "data_value",
     };
   };
-
-  /**
-   * Utility function to check if the Gorilla API is accessible in
-   * the current browser context
-   * @return {boolean}
-   */
-  private is_gorilla(): boolean {
-    return "gorilla" in window;
-  }
 }
 
 export default NeurocogExtension;

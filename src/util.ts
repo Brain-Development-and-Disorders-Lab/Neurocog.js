@@ -1,6 +1,3 @@
-// React imports
-import ReactDOM from "react-dom";
-
 // Logging library
 import consola from "consola";
 
@@ -8,20 +5,11 @@ import consola from "consola";
  * Clear the HTML contents of an element without
  * editing innerHTML.
  * @param {HTMLElement} target element to clear contents
- * @param {boolean} isReact specify if additiona clearing
  * is required for React content
  */
-export const clear = (
-  target: HTMLElement | null,
-  isReact: boolean = false
-): void => {
+export const clearView = (target: HTMLElement | null): void => {
   if (target) {
     consola.debug(`Target is defined, clearing...`);
-    if (isReact) {
-      // Note: this is for React < v18
-      consola.debug(`React-based target, unmounting...`);
-      ReactDOM.unmountComponentAtNode(target);
-    }
 
     // Clear existing HTML nodes
     while (target.firstChild) {
@@ -29,7 +17,7 @@ export const clear = (
     }
     consola.debug(`Cleared HTML nodes from target`);
   } else {
-    consola.warn(`Target was not cleared, target not found`);
+    consola.warn(`Target not found`);
   }
 };
 
@@ -108,8 +96,8 @@ export const checkEnvironment = (): boolean => {
   }
 
   // Check the version of jsPsych
-  const version: string = window.jsPsych.version();
-  if (!version.startsWith("6.")) {
+  const version: string = window[Platforms.jsPsych].version();
+  if (!version.startsWith("7.")) {
 
     // Unsupported version, log error
     consola.error(
@@ -121,4 +109,13 @@ export const checkEnvironment = (): boolean => {
   }
 
   return status;
+};
+
+/**
+ * Evaluate if the task is operating in a context with access to the
+ * Gorilla API platform
+ * @return {boolean}
+ */
+export const isPlatform = (): boolean => {
+  return "gorilla" in window;
 };

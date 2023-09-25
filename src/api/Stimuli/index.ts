@@ -1,5 +1,5 @@
-// Imports
-import { Platforms } from "../../constants";
+// Utility functions
+import { isPlatform } from "src/util";
 
 // Logging library
 import consola from "consola";
@@ -30,9 +30,6 @@ export class Stimuli {
    * Loader method for the ImageCollection
    */
   public load(): void {
-    // Get the Experiment object to determine the platform
-    const experiment = window.Experiment;
-
     // Check if the images are named consistently
     Object.keys(this.collection).forEach((image) => {
       if (!this.collection[image].endsWith(image)) {
@@ -40,10 +37,10 @@ export class Stimuli {
       }
     });
 
-    if (experiment.getPlatform() === Platforms.Gorilla) {
+    if (isPlatform()) {
       // Populate the image collection for Gorilla
       // Grab the Gorilla API from the browser
-      const gorilla = window.gorilla;
+      const gorilla: GorillaAPI = window["gorilla"];
 
       // For each of the images from the desktop build, we
       // want to create a new API call to retrieve each from
@@ -52,13 +49,8 @@ export class Stimuli {
         // Generate the new API call
         this.collection[image] = gorilla.stimuliURL(image);
       });
-      consola.debug(`All images attached to 'stimuliURL'.`);
-
-      this.isLoaded = true;
-    } else {
-      consola.debug(`jsPsych only, local images are loaded.`);
-      this.isLoaded = true;
     }
+    this.isLoaded = true;
   }
 
   /**

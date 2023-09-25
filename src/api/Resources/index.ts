@@ -13,7 +13,7 @@ export class Resources {
    * the resources
    */
   public static link(resources: { [resource: string]: any }) {
-    const gorilla = window.gorilla;
+    const gorilla: GorillaAPI = window["gorilla"];
     Object.keys(resources).forEach((key) => {
       if (resources[key]) {
         resources[key] = gorilla.resourceURL(key);
