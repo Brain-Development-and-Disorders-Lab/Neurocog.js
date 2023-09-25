@@ -14,7 +14,7 @@ import { Manipulations } from "./api/Manipulations";
 import { Resources } from "./api/Resources";
 import { Stimuli } from "./api/Stimuli";
 
-import { State } from "./lib/State";
+import { State } from "./api/State";
 
 // Utility functions
 import { checkScriptAttributes, clear, clearTimeouts } from "./functions";

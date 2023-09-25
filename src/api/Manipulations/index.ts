@@ -2,7 +2,7 @@
 import consola from "consola";
 
 /**
- * @summary Class that links to the Gorilla Manipulations API. It allows
+ * @summary Class that links experimental manipulations to the Gorilla API. It allows
  * safe references to the API while developing the tasks locally.
  */
 export class Manipulations {
@@ -31,8 +31,9 @@ export class Manipulations {
           manipulations[key] = gorilla.manipulation(key);
         }
       } else {
-        consola.warn(`Manipulation '${key}' was not bound`);
+        consola.warn(`Manipulation "${key}" was not bound`);
       }
     });
+    consola.success(`Linked ${Object.keys(manipulations).length} Manipulations`);
   }
 }

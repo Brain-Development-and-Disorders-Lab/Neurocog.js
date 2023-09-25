@@ -3,10 +3,15 @@
   <head>
     <title>Example Neurocog.js</title>
 
+    <!-- Development version of Neurocog.js -->
+    <script src="../dist/index.browser.min.js"></script>
+
+    <!-- jsPsych & other libraries -->
     <script src="https://unpkg.com/jspsych@7.1.2"></script>
     <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
-    <script src="../dist/index.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- jsPsych stylesheet -->
     <link href="https://unpkg.com/jspsych@7.1.2/css/jspsych.css" rel="stylesheet" type="text/css" />
     <meta
       name="viewport"
@@ -25,34 +30,12 @@
       }
     });
 
-    const networkFunc = () => {
-      axios.get("https://ccdresearch.wustl.edu/task/intentions", {params: { participantID: 1002, participantResponses: [] }})
-        .then(function (response) {
-          // handle success
-          console.log(response);
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error);
-        })
-        .finally(function () {
-          // always executed
-          jsPsych.finish_trial();
-        });
-    };
-
     var welcome = {
       type: jsPsychHtmlButtonResponse,
       stimulus: '<p style="font-size:60px;">Click below to begin.</p>',
       choices: ['Start']
     };
 
-    var networkTest = {
-      type: jsPsychHtmlButtonResponse,
-      stimulus: `<button onclick="networkFunc">Run Network Test</button>`,
-      choices: ["Finish"]
-    };
-
-    jsPsych.run([welcome, networkTest]);
+    jsPsych.run([welcome]);
   </script>
 </html>
