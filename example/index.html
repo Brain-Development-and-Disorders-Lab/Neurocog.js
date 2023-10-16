@@ -4,11 +4,12 @@
     <title>Example Neurocog.js</title>
 
     <!-- Development version of Neurocog.js -->
-    <script src="../dist/index.browser.min.js"></script>
+    <script src="../dist/index.browser.js"></script>
 
     <!-- jsPsych & other libraries -->
     <script src="https://unpkg.com/jspsych@7.1.2"></script>
     <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-image-button-response@1.1.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <!-- jsPsych stylesheet -->
@@ -20,10 +21,26 @@
   </head>
   <body></body>
   <script>
-
-    var jsPsych = initJsPsych({
+    const jsPsych = initJsPsych({
       extensions: [
-        { type: NeurocogExtension }
+        {
+          type: NeurocogExtension,
+          params: {
+            name: "Example Neurocog.js",
+            studyName: "example_task",
+            stimuli: {
+              "example": "img/example.jpg"
+            },
+            resources: {
+              "example": "img/example.jpg"
+            },
+            manipulations: {
+              variableA: 1,
+            },
+            allowParticipantContact: false,
+            contact: "henry.burgess@wustl.edu",
+          }
+        }
       ],
       on_finish: function() {
         jsPsych.data.displayData();
@@ -32,10 +49,27 @@
 
     var welcome = {
       type: jsPsychHtmlButtonResponse,
-      stimulus: '<p style="font-size:60px;">Click below to begin.</p>',
-      choices: ['Start']
+      stimulus: "<p>Click below to begin.</p>",
+      choices: ["Start"],
+      extensions: [
+        {
+          type: NeurocogExtension,
+        }
+      ]
     };
 
-    jsPsych.run([welcome]);
+    var image = {
+      type: jsPsychImageButtonResponse,
+      stimulus: jsPsych.extensions.Neurocog.getResource("example"),
+      prompt: "Is this a mug?",
+      choices: ["Yes", "No"],
+      extensions: [
+        {
+          type: NeurocogExtension,
+        }
+      ]
+    };
+
+    jsPsych.run([welcome, image]);
   </script>
 </html>

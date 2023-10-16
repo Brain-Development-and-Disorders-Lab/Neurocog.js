@@ -1,6 +1,6 @@
-import { Manipulations } from "../../../src/lib/classes/Manipulations";
+import { Manipulations } from "./index";
 
-describe("Manipulations linking", () => {
+describe("\"Manipulations\" class instantiation", () => {
   let windowSpy: any;
 
   beforeEach(() => {
@@ -22,16 +22,15 @@ describe("Manipulations linking", () => {
       },
     }));
 
-    const manipulations = {
+    const manipulations = new Manipulations({
       one: "one",
       two: 2,
-    };
+    });
 
-    Manipulations.link(manipulations);
     expect(mockedManipulation).toBeCalledTimes(2);
   });
 
-  it("correctly links Boolean manipulations", () => {
+  it("correctly configures Boolean manipulations", () => {
     // Mock the manipulation implementation
     // In Gorilla, everything seems to be a string if not a number
     const mockedManipulation = jest.fn();
@@ -46,16 +45,42 @@ describe("Manipulations linking", () => {
       },
     }));
 
-    const manipulations = {
+    const manipulations = new Manipulations({
       one: false,
       two: true,
-    };
+    });
 
-    Manipulations.link(manipulations);
     expect(mockedManipulation).toBeCalledTimes(2);
 
     // Expect type to be preserved if Boolean
-    expect(manipulations.one).toBe(false);
-    expect(manipulations.two).toBe(true);
+    expect(manipulations.getOne("one")).toBe(false);
+    expect(manipulations.getOne("two")).toBe(true);
+  });
+});
+
+describe("\"Manipulations\" class usage", () => {
+  it("returns one existing Manipulation", () => {
+    const manipulations = new Manipulations({
+      one: "a",
+    });
+
+    expect(manipulations.getOne("one")).toBe("a");
+  });
+
+  it("returns all Manipulations", () => {
+    const manipulations = new Manipulations({
+      one: "one",
+      two: 2,
+    });
+
+    expect(manipulations.getAll()).toStrictEqual({ one: "one", two: 2 });
+  });
+
+  it("returns null if non-existing", () => {
+    const manipulations = new Manipulations({
+      yes: true,
+    });
+
+    expect(manipulations.getOne("no")).toBeNull();
   });
 });

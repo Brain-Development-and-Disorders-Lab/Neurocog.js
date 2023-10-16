@@ -13,10 +13,10 @@ declare enum Platforms {
   Gorilla = "gorilla",
   jsPsych = "jsPsych",
   Invalid = "",
-};
+}
 
 declare enum Controllers {
   Keyboard = "keyboard",
   Spectrometer = "spectrometer",
   Touch = "touch",
-};
+}

@@ -1,5 +1,5 @@
 // Utility functions and libraries
-import { isPlatform } from "src/util";
+import { isPlatform } from "../../util";
 import _ from "lodash";
 import consola from "consola";
 
@@ -11,17 +11,15 @@ import { ICollection } from "../ICollection";
  * safe references to the API while developing the tasks locally.
  */
 export class Manipulations implements ICollection {
-  private collection: { [x: string]: any };
-  private isLinked: boolean;
+  private collection: { [x: string]: string | number | boolean | any };
 
   /**
    * Default constructor
-   * @param {any} collection manipulations to load and manage
+   * @param {{ [x: string]: string | number | boolean | any }} collection manipulations to load and manage
    * @class
    */
-  constructor(collection: { [x: string]: string }) {
+  constructor(collection: { [x: string]: string | number | boolean | any }) {
     this.collection = collection;
-    this.isLinked = false;
 
     // Link stimuli to Gorilla API functions if required
     this.link();

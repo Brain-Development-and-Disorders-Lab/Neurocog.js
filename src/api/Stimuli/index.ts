@@ -1,5 +1,5 @@
 // Utility functions and libraries
-import { isPlatform } from "src/util";
+import { isPlatform } from "../../util";
 import consola from "consola";
 
 // ICollection interface

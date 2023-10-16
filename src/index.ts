@@ -18,7 +18,7 @@ import { Stimuli } from "./api/Stimuli";
 
 /**
  * Interface to describe initialization parameters, configuring
- * Neurocog
+ * the Neurocog instance
  */
 interface InitializeParameters {
   name: string;
@@ -26,17 +26,17 @@ interface InitializeParameters {
 
   // Gorilla manipulations
   manipulations: {
-    [k: string]: number | string | boolean | any;
+    [manipulationName: string]: number | string | boolean | any;
   };
 
   // Gorilla resources
   resources: {
-    [k: string]: string;
+    [resourceName: string]: string;
   };
 
   // Gorilla stimuli
   stimuli: {
-    [k: string]: string;
+    [stimulusName: string]: string;
   };
 
   // Error-handling contact
@@ -63,10 +63,10 @@ interface OnFinishParameters {}
  * **Neurocog Extension**
  *
  * Integrate jsPsych experiments with the Gorilla online behavioral
- * experiment platform
+ * experiment platform.
  *
  * @author Henry Burgess
- * @see {@link https://github.com/henry-burgess/Neurocog.js Repository}
+ * @see {@link https://github.com/henryjburg/Neurocog.js Repository}
  */
 class NeurocogExtension implements JsPsychExtension {
   static info: JsPsychExtensionInfo = {
@@ -76,12 +76,14 @@ class NeurocogExtension implements JsPsychExtension {
   private parameters: InitializeParameters; // Parameters to configure Neurocog.js
 
   // Toggles
-  private _useAPI: boolean; // Toggle to indicate if task is operating online
+  private _useAPI: boolean; // Toggle to indicate if task is using the Gorilla API
 
   // API and Extension components
   private _gorilla: GorillaAPI; // Gorilla API (defined if available)
-  private state: State; // State management
-  private stimuli: Stimuli; // Stimuli management
+  private _state: State; // State management
+  private _stimuli: Stimuli; // Stimuli management
+  private _resources: Resources; // Resource management
+  private _manipulations: Manipulations; // Manipulation management
   private _generator: () => number; // Random generator function
 
   constructor(private jsPsych: JsPsych) {
@@ -96,7 +98,9 @@ class NeurocogExtension implements JsPsychExtension {
    */
   initialize = (params: InitializeParameters): Promise<void> => {
     return new Promise((resolve, _reject) => {
+      // Copy and validate parameters
       this.parameters = params;
+      this.validParameters();
 
       // Determine environment (API or otherwise)
       if (isPlatform()) {
@@ -114,45 +118,19 @@ class NeurocogExtension implements JsPsychExtension {
       // Store the initial and global state (if defined)
       if (!_.isUndefined(this.parameters.state)) {
         // Initialise with provided State
-        this.state = new State(this.parameters.state);
+        this._state = new State(this.parameters.state);
       } else {
         // Initialise with empty State
-        this.state = new State();
+        this._state = new State();
       }
 
-      // Configure the experiment Stimuli
-      this.stimuli = new Stimuli(this.parameters.stimuli);
-
-      if (this._useAPI) {
-        // Bind the Manipulations API component
-        Manipulations.link(this.parameters.manipulations);
-        Resources.link(this.parameters.resources);
-
-        // Bring the stimuli into the local scope
-        // Make sure Gorilla and jsPsych are loaded
-        if (!_.isUndefined(this.jsPsych) && isPlatform()) {
-          consola.debug(
-            `Adding "preload" node to timeline, loading:`,
-            Object.values(this.parameters.stimuli)
-          );
-
-          const stimuli = this.parameters.stimuli;
-          if (!_.isUndefined(stimuli) && Object.values(stimuli).length > 0) {
-            consola.debug(`Preloading images:`, Object.values(stimuli));
-
-            // Add a new timeline node to preload the images
-            this.jsPsych.addNodeToEndOfTimeline({
-              type: "preload",
-              auto_preload: true,
-              images: Object.values(stimuli),
-            });
-          }
-        } else {
-          consola.error(new Error(`Gorilla or jsPsych not loaded`));
-        }
-      }
+      // Configure and load the experiment Stimuli, Resources, and Manipulations
+      this._stimuli = new Stimuli(this.parameters.stimuli);
+      this._resources = new Resources(this.parameters.resources);
+      this._manipulations = new Manipulations(this.parameters.manipulations);
 
       // Resolve now setup is complete
+      consola.success("Successfully initialized Neurocog extension");
       resolve();
     });
   };
@@ -161,11 +139,42 @@ class NeurocogExtension implements JsPsychExtension {
 
   on_load = (params: OnLoadParameters): void => {};
 
+  /**
+   * Function called and the end of a trial. Used to submit data to the
+   * the Gorilla API if using the API.
+   * @param {OnFinishParameters} params set of parameters for callback
+   * @return {{ [key: string]: any }}
+   */
   on_finish = (params: OnFinishParameters): { [key: string]: any } => {
-    this._gorilla.metric(this.jsPsych.getCurrentTrial().data);
+    if (this._useAPI) {
+      // Store all jsPsych data in Gorilla automatically
+      this._gorilla.metric(this.jsPsych.getCurrentTrial().data);
+      return this.jsPsych.getCurrentTrial().data;
+    }
     return {};
   };
 
+  /**
+   * Utility function to check that all required parameters are passed to the
+   * extension. Generates an error if parameters are missing, listing the
+   * missing parameters.
+   * @return {boolean}
+   */
+  private validParameters(): boolean {
+    const RequiredInitializeParameters = ["name", "studyName", "manipulations", "resources", "stimuli", "allowParticipantContact", "contact"];
+    const parameterComparison = _.difference(RequiredInitializeParameters, Object.keys(this.parameters));
+
+    if (parameterComparison.length > 0) {
+      consola.error(`Extension missing required initialization parameters:\n${parameterComparison.join(", ")}`);
+    }
+    return true;
+  };
+
+  /**
+   * Utility function to generate and display an error message to the participant.
+   * Handles the "error" event.
+   * @param {Error | ErrorEvent} error a class instance containing error information
+   */
   private invokeError(error: Error | ErrorEvent): void {
     const target = document.getElementById("jspsych-content");
     clearTimeouts();
@@ -242,9 +251,65 @@ class NeurocogExtension implements JsPsychExtension {
     }
   };
 
-  random = () => {
+  /**
+   * Generate a new random float using the D3 library
+   * @return {number}
+   */
+  public random = (): number => {
     return this._generator();
   };
-}
+
+  /** ---------- Stimuli ---------- */
+  /**
+   * Retrieve the collection of all Stimuli
+   * @return {(): { [stimulus: string]: string }} A collection of Stimuli identifiers or filenames,
+   * pointing to paths to each Stimulus
+   */
+  public getStimuli = (): () => { [stimulus: string]: string } => {
+    return () => this._stimuli.getAll();
+  }
+
+  /**
+   * Retrieve a single Stimulus, identified by a key or filename
+   * @param {string} stimulus Identifier or filename of the Stimulus
+   * @return {(): string} Path to the Stimulus, either locally or via an API
+   */
+  public getStimulus = (stimulus: string): () => string => {
+    return () => this._stimuli.getOne(stimulus);
+  }
+
+  /** ---------- Resources ---------- */
+  /**
+   * Retrieve the collection of all Resources
+   * @return {(): { [resource: string]: string }} A collection of Resources identifiers or filenames,
+   * pointing to paths to each Resource
+   */
+  public getResources = (): () => { [resource: string]: string } => {
+    return () => this._resources.getAll();
+  }
+
+  /**
+   * Retrieve a single Resource, identified by a key or filename
+   * @param {string} resource Identifier or filename of the Resource
+   * @return {(): string} Path to the Resource, either locally or via an API
+   */
+  public getResource = (resource: string): () => string => {
+    return () => this._stimuli.getOne(resource);
+  }
+
+  /** ---------- State ---------- */
+  public getState(key: string): any | null {
+    return this._state.get(key);
+  }
+
+  public setState(key: string, value: any): void {
+    return this._state.set(key, value);
+  }
+
+  /** ---------- Manipulations ---------- */
+  public getManipulation(key: string): any | null {
+    return this._manipulations.getOne(key);
+  }
+};
 
 export default NeurocogExtension;
