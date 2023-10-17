@@ -10,6 +10,9 @@
   },
   "typings": "dist/index.d.ts",
   "unpkg": "dist/index.browser.min.js",
+  "engines": {
+    "node": "16.x"
+  },
   "files": [
     "src",
     "dist"
