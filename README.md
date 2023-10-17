@@ -6,6 +6,8 @@
 
 🚨 Neurocog.js is now a **jsPsych Extension**! This means that Neurocog.js v0.4.0+ is only compatible with jsPsych v7.0+. For earlier jsPsych versions, please use Neurocog.js [v0.3.9](https://github.com/Brain-Development-and-Disorders-Lab/Neurocog.js/releases/tag/v0.3.9) or earlier. 🚨
 
+---
+
 ## Features
 
 ### [Gorilla](https://gorilla.sc) integration
@@ -47,6 +49,8 @@ npm install neurocog@0.3.9
 ```Shell
 yarn add neurocog@0.3.9
 ```
+
+---
 
 ## Configuration
 
@@ -210,22 +214,8 @@ The following methods can be used for interacting with the experiment state thro
 | `getState(key)`        | `key: string`               | Get the value of a global state variable |
 | `setState(key, value)` | `key: string`, `value: any` | Set the value of a global state variable |
 
-## Developer commands
+---
 
-If you would like to contribute to Neurocog.js, these commands will be useful for you. To create a production-ready build of Neurocog.js, run the following command:
+![License](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)
 
-```Shell
-yarn build
-```
-
-To run all unit tests and other tests for Neurocog, use the following command:
-
-```Shell
-yarn test
-```
-
-To remove outdated builds or temporary files, use the following command:
-
-```Shell
-yarn clean
-```
+This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
