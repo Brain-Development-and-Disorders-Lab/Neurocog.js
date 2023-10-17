@@ -48,7 +48,7 @@ var welcome = {
 
 var image = {
   type: jsPsychImageButtonResponse,
-  stimulus: () => jsPsych.extensions.Neurocog.getResource("example.jpg"),
+  stimulus: jsPsych.extensions.Neurocog.getResource("example.jpg"),
   prompt: "Is this a mug?",
   choices: ["Yes", "No"],
   // Specify the extensions, utilize `NeurocogExtension`
