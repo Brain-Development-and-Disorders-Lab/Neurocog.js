@@ -27,23 +27,23 @@ jobs:
           yarn
           yarn build
 
-    test:
-      runs-on: ${{ matrix.os }}
-      strategy:
-        matrix:
-          node: ["16.x", "18.x"]
-          os: [ubuntu-latest, windows-latest, macOS-latest]
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: ["16.x", "18.x"]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
 
-      steps:
-        - name: Checkout repo
-          uses: actions/checkout@v3
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-        - name: Use Node ${{ matrix.node }}
-          uses: actions/setup-node@v3
-          with:
-            node-version: ${{ matrix.node }}
+      - name: Use Node ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
 
-        - name: Test
-          run: |
-            yarn
-            yarn test --ci --coverage --maxWorkers=2
+      - name: Test
+        run: |
+          yarn
+          yarn test --ci --coverage --maxWorkers=2
