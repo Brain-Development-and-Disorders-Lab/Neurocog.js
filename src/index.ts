@@ -131,6 +131,18 @@ class NeurocogExtension implements JsPsychExtension {
 
       // Resolve now setup is complete
       consola.success("Successfully initialized Neurocog extension");
+      if (this._useAPI) {
+        this._gorilla.ready(() => {});
+        consola.info("Gorilla API ready");
+        this.jsPsych.getInitSettings().on_finish = (() => {
+          // Cache the existing `on_finish` function and append the `finish` Gorilla API call
+          var cachedFunction = this.jsPsych.getInitSettings().on_finish;
+          return () => {
+            cachedFunction.apply(this);
+            this._gorilla.finish();
+          };
+        })();
+      }
       resolve();
     });
   };
@@ -146,10 +158,9 @@ class NeurocogExtension implements JsPsychExtension {
    * @return {{ [key: string]: any }}
    */
   on_finish = (params: OnFinishParameters): { [key: string]: any } => {
-    if (this._useAPI) {
+    if (this._useAPI && this.jsPsych.data.getLastTrialData().last().values().length > 0) {
       // Store all jsPsych data in Gorilla automatically
-      this._gorilla.metric(this.jsPsych.getCurrentTrial().data);
-      return this.jsPsych.getCurrentTrial().data;
+      this._gorilla.metric(this.jsPsych.data.getLastTrialData().last().values()[0]);
     }
     return {};
   };
