@@ -1,233 +1,195 @@
-// Import classes
-import { Platforms } from "./lib/constants";
-import { Manipulations } from "./lib/classes/Manipulations";
-import { Resources } from "./lib/classes/Resources";
-import { State } from "./lib/classes/State";
-import { Stimuli } from "./lib/classes/Stimuli";
+// jsPsych imports
+import { JsPsych, JsPsychExtension, JsPsychExtensionInfo } from "jspsych";
 
-// Import types
-import type {
-  Gorilla,
-  jsPsych,
-  jsPsychParameters,
-  Configuration,
-} from "../types";
-
-// Utility functions
-import { checkEnvironment, clear, clearTimeouts } from "./lib/functions";
-
-// Logging library
+// Utility functions and libraries
+import { clearTimeouts, clearView, isPlatform } from "./util";
 import consola from "consola";
-
-// Import styling
-import "jspsych/css/jspsych.css";
-
-// Import jsPsych & require preload plugin to ensure
-// everything is bundled when compiled
-import "jspsych/jspsych";
-import "jspsych/plugins/jspsych-preload";
+import _ from "lodash";
 
 // Import and configure d3 for random number generation
 // using a uniform random distribution
 import { randomLcg, randomUniform } from "d3-random";
 
-/**
- * Experiment class to start and manage connection to jsPsych
- * or Gorilla if required
- * @summary
- */
-export class Experiment {
-  // Platform the experiment is running on, initially 'Invalid'
-  private platform: Platforms = Platforms.Invalid;
+// API functions
+import { Manipulations } from "./api/Manipulations";
+import { State } from "./api/State";
+import { Resources } from "./api/Resources";
+import { Stimuli } from "./api/Stimuli";
 
-  // Instances of the window variables, initially set to 'undefined'
-  private instances: {
-    gorilla: Gorilla | undefined;
-    jsPsych: jsPsych | undefined;
+/**
+ * Interface to describe initialization parameters, configuring
+ * the Neurocog instance
+ */
+interface InitializeParameters {
+  name: string;
+  studyName: string;
+
+  // Gorilla manipulations
+  manipulations: {
+    [manipulationName: string]: number | string | boolean | any;
   };
 
-  // Instance of RNG
-  private generator: any;
+  // Gorilla resources
+  resources: {
+    [resourceName: string]: string;
+  };
 
-  // Collection of stimuli
-  private stimuliCollection: Stimuli;
+  // Gorilla stimuli
+  stimuli: {
+    [stimulusName: string]: string;
+  };
 
-  // State management
-  private state: State;
+  // Error-handling contact
+  allowParticipantContact: boolean;
+  contact: string;
 
-  // Configuration
-  private config: Configuration;
+  // Optional initial state configuration
+  state?: any;
 
-  // 'Loaded' state
-  private loaded: boolean;
+  // Optional logging level
+  logging?: any;
+
+  // Seed for RNG
+  seed: number;
+};
+
+interface OnStartParameters {}
+
+interface OnLoadParameters {}
+
+interface OnFinishParameters {}
+
+/**
+ * **Neurocog Extension**
+ *
+ * Integrate jsPsych experiments with the Gorilla online behavioral
+ * experiment platform.
+ *
+ * @author Henry Burgess
+ * @see {@link https://github.com/henryjburg/Neurocog.js Repository}
+ */
+class NeurocogExtension implements JsPsychExtension {
+  static info: JsPsychExtensionInfo = {
+    name: "Neurocog",
+  };
+
+  private parameters: InitializeParameters; // Parameters to configure Neurocog.js
+
+  // Toggles
+  private _useAPI: boolean; // Toggle to indicate if task is using the Gorilla API
+
+  // API and Extension components
+  private _gorilla: GorillaAPI; // Gorilla API (defined if available)
+  private _state: State; // State management
+  private _stimuli: Stimuli; // Stimuli management
+  private _resources: Resources; // Resource management
+  private _manipulations: Manipulations; // Manipulation management
+  private _generator: () => number; // Random generator function
+
+  constructor(private jsPsych: JsPsych) {
+    this.jsPsych = jsPsych;
+    this._useAPI = false;
+  };
 
   /**
-   * Default constructor
-   * @param {Configuration} config configuration object
-   * @class
+   * Params are passed from the extensions parameter in `jsPsych.init`
+   * @param {InitializeParameters} params
+   * @return {Promise<void>}
    */
-  constructor(config: Configuration) {
-    // Assign the experiment to the window
-    window["Experiment"] = this;
+  initialize = (params: InitializeParameters): Promise<void> => {
+    return new Promise((resolve, _reject) => {
+      // Copy and validate parameters
+      this.parameters = params;
+      this.validParameters();
 
-    this.config = config;
+      // Determine environment (API or otherwise)
+      if (isPlatform()) {
+        this._useAPI = true;
+        this._gorilla = window["gorilla"];
+        consola.info("Gorilla API detected");
+      }
 
-    // Set the state to be 'unloaded'
-    this.loaded = false;
+      // Setup error handling
+      window.addEventListener("error", this.invokeError.bind(this));
 
-    // Instantiate the 'instances'
-    this.instances = {
-      gorilla: undefined,
-      jsPsych: undefined,
-    };
+      // Setup the random number generator
+      this._generator = randomUniform.source(randomLcg(this.parameters.seed))(0, 1);
 
-    // Set the logging level
-    if (this.config.logging) {
-      consola.level = this.config.logging;
+      // Store the initial and global state (if defined)
+      if (!_.isUndefined(this.parameters.state)) {
+        // Initialise with provided State
+        this._state = new State(this.parameters.state);
+      } else {
+        // Initialise with empty State
+        this._state = new State();
+      }
+
+      // Configure and load the experiment Stimuli, Resources, and Manipulations
+      this._stimuli = new Stimuli(this.parameters.stimuli);
+      this._resources = new Resources(this.parameters.resources);
+      this._manipulations = new Manipulations(this.parameters.manipulations);
+
+      // Resolve now setup is complete
+      consola.success("Successfully initialized Neurocog extension");
+      if (this._useAPI) {
+        this._gorilla.ready(() => {});
+        consola.info("Gorilla API ready");
+        this.jsPsych.getInitSettings().on_finish = (() => {
+          // Cache the existing `on_finish` function and append the `finish` Gorilla API call
+          var cachedFunction = this.jsPsych.getInitSettings().on_finish;
+          return () => {
+            cachedFunction.apply(this);
+            this._gorilla.finish();
+          };
+        })();
+      }
+      resolve();
+    });
+  };
+
+  on_start = (params: OnStartParameters): void => {};
+
+  on_load = (params: OnLoadParameters): void => {};
+
+  /**
+   * Function called and the end of a trial. Used to submit data to the
+   * the Gorilla API if using the API.
+   * @param {OnFinishParameters} params set of parameters for callback
+   * @return {{ [key: string]: any }}
+   */
+  on_finish = (params: OnFinishParameters): { [key: string]: any } => {
+    if (this._useAPI && this.jsPsych.data.getLastTrialData().last().values().length > 0) {
+      // Store all jsPsych data in Gorilla automatically
+      this._gorilla.metric(this.jsPsych.data.getLastTrialData().last().values()[0]);
     }
+    return {};
+  };
 
-    // Configure the d3 RNG
-    this.generator = randomUniform.source(randomLcg(this.config.seed))(0, 1);
+  /**
+   * Utility function to check that all required parameters are passed to the
+   * extension. Generates an error if parameters are missing, listing the
+   * missing parameters.
+   * @return {boolean}
+   */
+  private validParameters(): boolean {
+    const RequiredInitializeParameters = ["name", "studyName", "manipulations", "resources", "stimuli", "allowParticipantContact", "contact"];
+    const parameterComparison = _.difference(RequiredInitializeParameters, Object.keys(this.parameters));
 
-    // Add the error handler
-    this.setupErrorHandler();
-
-    // Store the initial and global state (if defined)
-    if (config.state) {
-      // Initialise with given State
-      this.state = new State(config.state);
-    } else {
-      // Initialise with empty State
-      this.state = new State();
+    if (parameterComparison.length > 0) {
+      consola.error(`Extension missing required initialization parameters:\n${parameterComparison.join(", ")}`);
     }
-
-    // Created new 'Stimuli' instance with a collection
-    this.stimuliCollection = new Stimuli(this.config.stimuli);
-
-    // Check the context of the script to try and catch any errors
-    if (checkEnvironment() === false) {
-      consola.error(new Error("Context check failed, halting experiment"));
-    } else {
-      // Load all stimuli used in the Experiment.
-      this.load();
-    }
-  }
+    return true;
+  };
 
   /**
-   * Loading function, responsible for connecting
-   * to the Gorilla API properly.
+   * Utility function to generate and display an error message to the participant.
+   * Handles the "error" event.
+   * @param {Error | ErrorEvent} error a class instance containing error information
    */
-  public load() {
-    // Detect and update the target in the configuration
-    this.setPlatform(this.detectPlatforms());
-
-    // Load all the stimuli
-    this.loadStimuli();
-
-    // Configure the manipulations and resources in the configuration file
-    if (this.platform === Platforms.Gorilla) {
-      Manipulations.link(this.config.manipulations);
-      Resources.link(this.config.resources);
-    }
-
-    this.loaded = true;
-  }
-
-  /**
-   * Get the experiment configuration data
-   * @return {Configuration}
-   */
-  public getConfiguration(): Configuration {
-    return this.config;
-  }
-
-  /**
-   * Update and set the target
-   * @param {Platforms} target updated target
-   */
-  private setPlatform(target: Platforms) {
-    if (target !== this.platform) {
-      consola.info(`Target updated to '${target}'`);
-    }
-    this.platform = target;
-  }
-
-  /**
-   * Get the current platform the Experiment is running on
-   * @return {Platforms}
-   */
-  public getPlatform(): Platforms {
-    return this.platform;
-  }
-
-  /**
-   * Return the global state instance of the
-   * experiment
-   * @return {State}
-   */
-  public getState(): State {
-    return this.state;
-  }
-
-  /**
-   * Generate and return a random number from a uniform
-   * distribution in [0, 1)
-   * @return {number}
-   */
-  public random(): number {
-    return this.generator();
-  }
-
-  /**
-   * Detect the platform that the experiment is running on
-   * @return {Platforms} platform name
-   */
-  private detectPlatforms(): Platforms {
-    // Check for Gorilla
-    if (Platforms.Gorilla in window) {
-      consola.success(`Gorilla instance found`);
-
-      // Store the platform
-      this.instances.gorilla = window.gorilla;
-    }
-
-    // Check for jsPsych
-    if (Platforms.jsPsych in window) {
-      consola.success(`jsPsych instance found`);
-
-      // Store the platform
-      this.instances.jsPsych = window.jsPsych;
-    }
-
-    // Return the correct platform
-    if (this.instances.gorilla) {
-      // Gorilla was found
-      return Platforms.Gorilla;
-    } else if (this.instances.jsPsych) {
-      // jsPsych found but not Gorilla
-      return Platforms.jsPsych;
-    }
-
-    // Big issue if we are here
-    consola.error(new Error("No valid platforms detected"));
-    return Platforms.Invalid;
-  }
-
-  /**
-   * Setup the error handler by listening for the 'error' event
-   */
-  private setupErrorHandler(): void {
-    window.addEventListener("error", this.invokeError.bind(this));
-  }
-
-  /**
-   * Invoke an error, displaying error screen to participant
-   * @param {Error | ErrorEvent} error object containing error information
-   */
-  public invokeError(error: Error | ErrorEvent): void {
+  private invokeError(error: Error | ErrorEvent): void {
     const target = document.getElementById("jspsych-content");
     clearTimeouts();
-    clear(target, true);
+    clearView(target);
 
     // Apply global styling
     document.body.style.fontFamily = "Open Sans";
@@ -260,13 +222,13 @@ export class Experiment {
 
     // Follow-up instructions
     const textInstructions = document.createElement("p");
-    if (this.config.allowParticipantContact === true) {
+    if (this.parameters.allowParticipantContact === true) {
       textInstructions.innerHTML =
         `Please send an email to ` +
-        `<a href="mailto:${this.config.contact}?` +
-        `subject=Error (${this.config.studyName})` +
+        `<a href="mailto:${this.parameters.contact}?` +
+        `subject=Error (${this.parameters.studyName})` +
         `&body=Error text: ${error.message}%0D%0A Additional information:"` +
-        `>${this.config.contact}</a> to share ` +
+        `>${this.parameters.contact}</a> to share ` +
         `the details of this error.`;
       textInstructions.style.margin = "20px";
     }
@@ -277,8 +239,8 @@ export class Experiment {
     endButton.classList.add("jspsych-btn");
     endButton.onclick = () => {
       // End the experiment and provide an error message
-      window.jsPsych.endExperiment(
-        "The experiment ended early due to an error occurring."
+      this.jsPsych.endExperiment(
+        "The experiment has ended early due to an error occurring."
       );
     };
 
@@ -298,163 +260,67 @@ export class Experiment {
       target.style.justifyContent = "center";
       target.append(container);
     }
+  };
+
+  /**
+   * Generate a new random float using the D3 library
+   * @return {number}
+   */
+  public random = (): number => {
+    return this._generator();
+  };
+
+  /** ---------- Stimuli ---------- */
+  /**
+   * Retrieve the collection of all Stimuli
+   * @return {(): { [stimulus: string]: string }} A collection of Stimuli identifiers or filenames,
+   * pointing to paths to each Stimulus
+   */
+  public getStimuli = (): () => { [stimulus: string]: string } => {
+    return () => this._stimuli.getAll();
   }
 
   /**
-   * Retrieve an instance of a platform to utilise
-   * in integration
-   * @param {string} platform identifier of the platform
-   * @return {Gorilla | jsPsych | null} platform instance
+   * Retrieve a single Stimulus, identified by a key or filename
+   * @param {string} stimulus Identifier or filename of the Stimulus
+   * @return {(): string} Path to the Stimulus, either locally or via an API
    */
-  public getHook(platform: string): Gorilla | jsPsych | null {
-    switch (platform) {
-      case Platforms.Gorilla:
-        if (this.instances.gorilla) {
-          return this.instances.gorilla;
-        } else {
-          return null;
-        }
-      case Platforms.jsPsych:
-        if (this.instances.jsPsych) {
-          return this.instances.jsPsych;
-        } else {
-          return null;
-        }
-      default:
-        consola.warn(`Hook '${platform}' not found`);
-        return null;
-    }
+  public getStimulus = (stimulus: string): () => string => {
+    return () => this._stimuli.getOne(stimulus);
+  }
+
+  /** ---------- Resources ---------- */
+  /**
+   * Retrieve the collection of all Resources
+   * @return {(): { [resource: string]: string }} A collection of Resources identifiers or filenames,
+   * pointing to paths to each Resource
+   */
+  public getResources = (): () => { [resource: string]: string } => {
+    return () => this._resources.getAll();
   }
 
   /**
-   * Load the stimuli and setup the ImageCollection
-   * instance
+   * Retrieve a single Resource, identified by a key or filename
+   * @param {string} resource Identifier or filename of the Resource
+   * @return {(): string} Path to the Resource, either locally or via an API
    */
-  private loadStimuli() {
-    this.stimuliCollection.load();
+  public getResource = (resource: string): () => string => {
+    return () => this._stimuli.getOne(resource);
   }
 
-  /**
-   * Retrieve the collection of loaded images
-   * @return {Stimuli}
-   */
-  public getStimuli(): Stimuli {
-    return this.stimuliCollection;
+  /** ---------- State ---------- */
+  public getState(key: string): any | null {
+    return this._state.get(key);
   }
 
-  /**
-   * Start the experiment
-   * @param {jsPsychParameters} parameters collection of the jsPsych
-   * timeline nodes to execute.
-   */
-  public start(parameters: jsPsychParameters): void {
-    consola.debug(`Running start() function.`);
-
-    if (this.loaded === false) {
-      consola.error(
-        new Error(
-          `Cannot start until all resources are loaded, ` +
-            `ensure 'load()' is called prior to 'start()'`
-        )
-      );
-    }
-
-    if (this.platform === Platforms.Gorilla) {
-      // Initialise jsPsych and Gorilla (if required)
-      const gorilla = this.getHook(Platforms.Gorilla) as Gorilla;
-      const jsPsych = this.getHook(Platforms.jsPsych) as jsPsych;
-
-      // Bring the stimuli into the local scope
-      // Make sure Gorilla and jsPsych are loaded
-      if (typeof jsPsych !== "undefined" && typeof gorilla !== "undefined") {
-        consola.debug(
-          `Added 'preload' node to timeline:`,
-          Object.values(this.config.stimuli)
-        );
-
-        // Update the parameters object with required functions
-        // and properties
-        // Display element
-        parameters.display_element = document.getElementById("gorilla");
-
-        const stimuli = this.config.stimuli;
-        if (stimuli && Object.values(stimuli).length > 0) {
-          consola.debug(`Preloading images:`, Object.values(stimuli));
-
-          // Add a new timeline node to preload the images
-          parameters.timeline.unshift({
-            type: "preload",
-            auto_preload: true,
-            images: Object.values(stimuli),
-          });
-
-          // Set the 'preload_images' parameter
-          parameters.preload_images = Object.values(stimuli);
-        }
-
-        // 'on_data_update' callback
-        parameters.on_data_update = function (data: any) {
-          gorilla.metric(data);
-        };
-
-        // 'on_finish' callback
-        parameters.on_finish = function () {
-          gorilla.finish();
-        };
-
-        consola.debug(`Configured jsPsych parameters:`, parameters);
-
-        // Start Gorilla and initialise jsPsych with the updated
-        // parameters
-        gorilla.ready(function () {
-          consola.debug(`Starting jsPsych...`);
-          jsPsych.init(parameters);
-        });
-      } else {
-        consola.error(new Error(`Gorilla or jsPsych not loaded`));
-      }
-    } else {
-      // Initialise jsPsych
-      const jsPsych = this.getHook(Platforms.jsPsych) as jsPsych;
-      consola.debug(`Retrieved jsPsych:`, jsPsych);
-
-      // Make sure jsPsych is loaded
-      if (typeof jsPsych !== "undefined") {
-        // Update the parameters object with required functions
-        // and properties
-        // 'on_finish' callback
-        parameters.on_finish = function () {
-          jsPsych.data
-            .get()
-            .localSave(`csv`, `experiment_complete_${Date.now()}.csv`);
-        };
-
-        // 'preload_images' value
-        const stimuli = this.config.stimuli;
-        if (stimuli && Object.values(stimuli).length > 0) {
-          consola.debug(`Preloading images:`, Object.values(stimuli));
-
-          // Add a new timeline node to preload the images
-          parameters.timeline.unshift({
-            type: "preload",
-            auto_preload: true,
-            images: Object.values(stimuli),
-          });
-
-          // Set the 'preload_images' parameter
-          parameters.preload_images = Object.values(stimuli);
-        }
-
-        consola.debug(`Configured jsPsych parameters:`, parameters);
-
-        // Initialise jsPsych with the updated parameters
-        consola.debug(`Starting jsPsych...`);
-        jsPsych.init(parameters);
-      } else {
-        consola.error(new Error(`jsPsych not loaded`));
-      }
-    }
+  public setState(key: string, value: any): void {
+    return this._state.set(key, value);
   }
-}
 
-export default Experiment;
+  /** ---------- Manipulations ---------- */
+  public getManipulation(key: string): any | null {
+    return this._manipulations.getOne(key);
+  }
+};
+
+export default NeurocogExtension;

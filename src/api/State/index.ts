@@ -1,4 +1,5 @@
-// Logging library
+// Utility libraries
+import _ from "lodash";
 import consola from "consola";
 
 /**
@@ -41,7 +42,7 @@ export class State {
   public set(key: string, value: any): void {
     // Need to check that the value is defined first,
     // storing 'undefined' as a state is never a good idea
-    if (typeof value !== "undefined") {
+    if (!_.isUndefined(value)) {
       // Go ahead and check that the key currently exists
       if (key in this.stateData) {
         // Update the value if so

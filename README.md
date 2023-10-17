@@ -1,8 +1,10 @@
 # Neurocog.js
 
-<img src="https://raw.githubusercontent.com/Brain-Development-and-Disorders-Lab/Neurocog.js/main/icon.png" alt="Neurocog.js icon" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
+![Neurocog.js Icon](./icon.png)
 
-A utility wrapper library extending the functionality of jsPsych-based cognitive tasks and enabling multiplatform operation, designed to extend your jsPsych experiment with new features and capabilities.
+> A jsPsych Extension enabling integration with the Gorilla online behavioral experiment platform, designed to extend your jsPsych experiment with new features and capabilities.
+
+🚨 Neurocog.js is now a **jsPsych Extension**! This means that Neurocog.js v0.4.0+ is only compatible with jsPsych v7.0+. For earlier jsPsych versions, please use Neurocog.js [v0.3.9](https://github.com/Brain-Development-and-Disorders-Lab/Neurocog.js/releases/tag/v0.3.9) or earlier. 🚨
 
 ## Features
 
@@ -12,7 +14,7 @@ Facilitates interaction with parts of the Gorilla API. Load and access stimuli, 
 
 ### State management
 
-A global state is maintained outside of the jsPsych instace. While not an advisable for experiment-wide data storage, a state system can be used to direct task logic and add an element of dynamic behavior. Additionally, it could function as temporary data storage.
+A global state is maintained outside of the jsPsych instance. While not an advisable for experiment-wide data storage, a state system can be used to direct task logic and add an element of dynamic behavior. Additionally, it could function as temporary data storage.
 
 ### Error handling & task shutdown
 
@@ -24,9 +26,7 @@ A seeded RNG is provided using the [D3.js](https://d3js.org) library.
 
 ## Installation
 
-### Installing via a package manager
-
-Install the library using NPM or Yarn:
+### jsPsych v7.0+
 
 ```Shell
 npm install neurocog
@@ -36,154 +36,183 @@ npm install neurocog
 yarn add neurocog
 ```
 
-The library is contained in the `Experiment` class. To get started, import it at the top of the file containing a `jsPsych.init(...)` function call.
+Once installed, refer to the jsPsych guide on [Extension usage](https://www.jspsych.org/7.3/overview/extensions/) for instructions to enable the Neurocog.js extension within your existing experiment using jsPsych v7.0+. Refer to **Configuration** below for further information regaring the expected parameters (`params`).
 
-```JavaScript
-import { Experiment } from "neurocog";
+### Up to jsPsych v7.0
+
+```Shell
+npm install neurocog@0.3.9
 ```
 
-### Importing via a `<script>` tag in an HTML file
-
-Download the script locally and import it via a `<script>` tag in the `<head>` of the HTML page.
-
-```HTML
-<script src="<path>/neurocog.js"></script>
+```Shell
+yarn add neurocog@0.3.9
 ```
 
-Obtain the script from a CDN and import it via a `<script>` tag in the `<head>` of the HTML page.
+## Configuration
 
-```html
-<script src="https://unpkg.com/neurocog@0.3.1/dist/index.js"></script>
-```
-
-## Usage
-
-Before instantiating the `Experiment` instance, create an experiment configuration object. The following parameters are recognized (parameters in **bold** are required):
+Neurocog.js expects a number of parameters (`params`) when being initialized. There are also optional parameters (parameters in **bold** are required):
 
 | Name                        | Type          | Description                                                                                                                                                                                                                                                     |
 | --------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **name**                    | `string`      | A human-readable name for the experiment such as `"Brain Game"`                                                                                                                                                                                                 |
 | **studyName**               | `string`      | A machine-readable name for the experiment plugin such as `"brain-game"`. No whitespace is permitted.                                                                                                                                                           |
 | **manipulations**           | `key : value` | A collection of key-value pairs that represent the manipulations configured in Gorilla. The key must be a string, and the value can be a string, boolean, or number. _While required, it can be empty._                                                         |
-| **stimuli**                 | `key : value` | A collection of key-value pairs that represent the images used in the experiment. The key can be used as a unique identifier for accessing the image in the source code. The value is the relative path to the actual image. _While required, it can be empty._ |
+| **resources**                 | `key : value` | A collection of key-value pairs that represent resources used in the experiment. The key can be used as a unique identifier for accessing the resource in the source code. The value is the relative path to the actual resource. _While required, it can be empty._ |
+| **stimuli**                 | `key : value` | A collection of key-value pairs that represent the stimuli used in the experiment. The key can be used as a unique identifier for accessing the stimulus in the source code. The value is the relative path to the actual stimulus. _While required, it can be empty._ |
 | **allowParticipantContact** | `boolean`     | Whether or not to show an email address for participants to contact in the case of an error.                                                                                                                                                                    |
 | **contact**                 | `string`      | The contact email address for the experiment.                                                                                                                                                                                                                   |
 | **seed**                    | `number`      | A float to act as the seed for the RNG.                                                                                                                                                                                                                         |
 | state                       | `key : value` | State initialisation parameters. This object is digested as the initial state and is accessible during the experiment using the same keys. _While not required, it must be at least defined if state functionality is to be used._                              |
 | logging                     | `LogLevel`    | Set the logging level of the `consola` logging utility.                                                                                                                                                                                                         |
 
-An example configuration object can be seen in the `example/config.js` file.
-
-Once the configuration has been created, instantiate the `Experiment` instance:
+To utilize the Neurocog.js functionality in timeline trials, ensure that the trial object contains the `extensions` parameter containing the type `NeurocogExtension`, shown below:
 
 ```JavaScript
-// File: experiment-code.js
-const configuration = {
-  // Configuration data
-};
-
-const experiment = new Experiment(configuration);
+var timelineNode = {
+  ...
+  extensions: [
+    {
+      type: NeurocogExtension,
+    }
+  ],
+  ...
+}
 ```
 
-After the timeline and experiment has been setup, instead of using `jsPsych.init(...)`, use `experiment.start(...)` with jsPsych initialisation parameters. All jsPsych parameters are supported:
-
-```JavaScript
-// File: experiment-code.js
-experiment.start({
-  timeline: [...],
-  // Other jsPsych parameters
-});
-```
-
-Finally, ensure that the script containing the `experiment.start()` function is imported with the `defer` parameter set in its `<script>` tag, shown below:
-
-```HTML
-<script src="<location of>/experiment-code.js" defer></script>
-```
-
-When running the experiment on Gorilla, this will look slightly different, since only the `<head>` component is editable. On Gorilla, edit the `<head>` component after uploading the experiment code as a `Resource`:
-
-```HTML
-<script src="{{ resource 'experiment-code.js' }}" defer></script>
-```
-
-If the script is not imported correctly, it will not operate properly on Gorilla, and will display a warning when operating offline.
-
-Check out the experiment in the `example/` directory for a more in-depth example.
+Check out the experiment in the `example/` directory for a simple example.
 
 ### [Gorilla](https://gorilla.sc) integration: Manipulations
 
-The manipulations specified in the `Experiment` configuration should have the same name as the manipluations defined online on Gorilla. The library, if operating online on the Gorilla platform, will update the values of the configured manipulations with the actual manipulations defined by Gorilla.
+The manipulations specified in the initialization parameters should have the same name as the manipluations defined online on Gorilla. Neurocog.js will update the values of the configured manipulations with the actual manipulations defined by Gorilla.
 
-To access manipulations:
+Configuring Manipulations:
 
 ```JavaScript
-// File: configuration.js
-export const configuration = {
+const jsPsych = initJsPsych({
   // ...
-  manipulations: {
-    variableA: 1,
-    variableB: 2,
-  },
+  extensions: [
+    {
+      type: NeurocogExtension,
+      params: {
+        // ...
+        manipulations: {
+          variableA: 1,
+        },
+        // ...
+      }
+    }
+  ],
   // ...
-};
+});
 ```
 
-```JavaScript
-// File: experiment-code.js
-import { configuration } from "./configuration";
+Accessing Manipulations:
 
-const variableA = configuration.manipulations.variableA; // 1
-const variableB = configuration.manipulations.variableB; // 2
+```JavaScript
+const variableA = jsPsych.extensions.Neurocog.getManipulation("variableA");
+console.log(variableA); // 1
 ```
 
 ### [Gorilla](https://gorilla.sc) integration: Stimuli
 
-Neurocog.js supports a key-value system in the configuration file when defining relative paths to stimuli. A `stimuli` keyword is expected in the configuration file, and represents the object containing these key-value pairings.
+To use stimuli in a jsPsych experiment with Neurocog.js, specify a new key-value pairing for each stimulus under the `stimuli` parameter. The key for the stimulus **must** be the exact file name and the value the relative path to the actual stimulus location.
 
-To use stimuli in a jsPsych experiment with Neurocog.js, specify a key for accessing the image alongside a value containing the relative path to the actual image location:
-
-```JavaScript
-// File: configuration.js
-export const configuration = {
-  // ...
-  stimuli: {
-    'a.jpg' : 'img/a_1.jpg',
-    'b.jpg' : 'img/b_1.jpg',
-    // ...
-  },
-  // ...
-}
-```
-
-The above example references two images stored in an `img/` directory: `a_1.jpg` and `b_2.jpg`. Since these images have been assigned keys `a.jpg` and `b.jpg` respectively, they can be referenced throughout the experiment source code using these keys.
-
-Neurocog.js ultimately stores images in a 'stimuli collection', which can be accessed safely using the following code snippet:
+Configuring Stimuli:
 
 ```JavaScript
-// File: experiment-code.js
-// Get 'img/a_1.jpg'
-const imageA = experiment.getStimuli().getImage('a.jpg');
-
-// Get 'img/b_2.jpg'
-const imageB = experiment.getStimuli().getImage('b.jpg');
+const jsPsych = initJsPsych({
+  // ...
+  extensions: [
+    {
+      type: NeurocogExtension,
+      params: {
+        // ...
+        stimuli: {
+          'a.jpg': 'img/a.jpg',
+          // ...
+        },
+        // ...
+      }
+    }
+  ],
+  // ...
+});
 ```
 
-Neurocog detects the presence of the Gorilla platform, and it will automatically re-map the stimuli paths to the corresponding Gorilla API function call.
+Accessing Stimuli:
+
+```JavaScript
+const imageA = jsPsych.extensions.Neurocog.getStimulus('a.jpg');
+console.log(imageA); // 'img/a.jpg' or the path to a Gorilla Stimulus
+```
+
+### [Gorilla](https://gorilla.sc) integration: Resources
+
+Using a resource in a jsPsych experiment with Neurocog.js is very similar to using a stimulus. Specify a new key-value pairing for each resource under the `resources` parameter. The key for the resource **must** be the exact file name and the value the relative path to the actual resource location.
+
+Configuring Resources:
+
+```JavaScript
+const jsPsych = initJsPsych({
+  // ...
+  extensions: [
+    {
+      type: NeurocogExtension,
+      params: {
+        // ...
+        resources: {
+          'a.jpg': 'img/a.jpg',
+          // ...
+        },
+        // ...
+      }
+    }
+  ],
+  // ...
+});
+```
+
+Accessing Resources:
+
+```JavaScript
+const resourceA = jsPsych.extensions.Neurocog.getResource('a.jpg');
+console.log(resourceA); // 'img/a.jpg' or the path to a Gorilla Resource
+```
 
 ### State management: accessing and updating state variables
+
+Configuring State:
+
+```JavaScript
+const jsPsych = initJsPsych({
+  // ...
+  extensions: [
+    {
+      type: NeurocogExtension,
+      params: {
+        // ...
+        state: {
+          counter: 0,
+          // ...
+        },
+        // ...
+      }
+    }
+  ],
+  // ...
+});
+```
 
 The following methods can be used for interacting with the experiment state throughout the experiment:
 
 | Method                       | Parameters                  | Description                              |
 | ---------------------------- | --------------------------- | ---------------------------------------- |
-| `getState()`                 | none                        | Get the global state                     |
-| `getState().get(key)`        | `key: string`               | Get the value of a global state variable |
-| `getState().set(key, value)` | `key: string`, `value: any` | Set the value of a global state variable |
+| `getState(key)`        | `key: string`               | Get the value of a global state variable |
+| `setState(key, value)` | `key: string`, `value: any` | Set the value of a global state variable |
 
 ## Developer commands
 
-If you would like to contribute or experiment with the library, these commands will be useful for you. To create a production-ready build of the library, run the following command:
+If you would like to contribute to Neurocog.js, these commands will be useful for you. To create a production-ready build of Neurocog.js, run the following command:
 
 ```Shell
 yarn build
@@ -193,12 +222,6 @@ To run all unit tests and other tests for Neurocog, use the following command:
 
 ```Shell
 yarn test
-```
-
-[Prettier](https://prettier.io) is used to lint Neurocog, run the following command to run Prettier over the repository:
-
-```Shell
-yarn lint
 ```
 
 To remove outdated builds or temporary files, use the following command:

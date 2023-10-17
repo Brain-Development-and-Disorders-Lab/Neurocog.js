@@ -1,6 +1,6 @@
-import { State } from "../../../src/lib/classes/State";
+import { State } from "../../src/api/State/index";
 
-describe("State initialisation", () => {
+describe("\"State\" class initialisation", () => {
   it("works with no arguments", () => {
     new State();
   });
@@ -16,9 +16,24 @@ describe("State initialisation", () => {
 
     expect(state.get("count")).toBe(0);
   });
+
+  it("can specify values after initialisation", () => {
+    const state = new State();
+
+    state.set("count", 0);
+    expect(state.get("count")).toBe(0);
+  });
+
+  it("does not allow undefined values", () => {
+    const state = new State({
+      message: "hello",
+    });
+
+    expect(state.set("message", undefined)).toBeUndefined();
+  });
 });
 
-describe("State modification", () => {
+describe("\"State\" class usage", () => {
   it("increments a counter", () => {
     const state = new State({
       count: 0,
@@ -61,22 +76,5 @@ describe("State modification", () => {
 
     state.set("data", 0);
     expect(typeof state.get("data")).toBe("number");
-  });
-});
-
-describe("State instance", () => {
-  it("can specify values after initialisation", () => {
-    const state = new State();
-
-    state.set("count", 0);
-    expect(state.get("count")).toBe(0);
-  });
-
-  it("does not allow undefined values", () => {
-    const state = new State({
-      message: "hello",
-    });
-
-    expect(state.set("message", undefined)).toBeUndefined();
   });
 });
