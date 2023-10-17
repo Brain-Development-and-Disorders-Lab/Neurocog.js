@@ -12,6 +12,9 @@
     <script src="https://unpkg.com/@jspsych/plugin-image-button-response@1.1.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+    <!-- Main script -->
+    <script src="index.js"></script>
+
     <!-- jsPsych stylesheet -->
     <link href="https://unpkg.com/jspsych@7.1.2/css/jspsych.css" rel="stylesheet" type="text/css" />
     <meta
@@ -20,56 +23,4 @@
     />
   </head>
   <body></body>
-  <script>
-    const jsPsych = initJsPsych({
-      extensions: [
-        {
-          type: NeurocogExtension,
-          params: {
-            name: "Example Neurocog.js",
-            studyName: "example_task",
-            stimuli: {
-              "example": "img/example.jpg"
-            },
-            resources: {
-              "example": "img/example.jpg"
-            },
-            manipulations: {
-              variableA: 1,
-            },
-            allowParticipantContact: false,
-            contact: "henry.burgess@wustl.edu",
-          }
-        }
-      ],
-      on_finish: function() {
-        jsPsych.data.displayData();
-      }
-    });
-
-    var welcome = {
-      type: jsPsychHtmlButtonResponse,
-      stimulus: "<p>Click below to begin.</p>",
-      choices: ["Start"],
-      extensions: [
-        {
-          type: NeurocogExtension,
-        }
-      ]
-    };
-
-    var image = {
-      type: jsPsychImageButtonResponse,
-      stimulus: jsPsych.extensions.Neurocog.getResource("example"),
-      prompt: "Is this a mug?",
-      choices: ["Yes", "No"],
-      extensions: [
-        {
-          type: NeurocogExtension,
-        }
-      ]
-    };
-
-    jsPsych.run([welcome, image]);
-  </script>
 </html>
