@@ -1,4 +1,4 @@
-import { Manipulations } from "./index";
+import { Manipulations } from "../../src/api/Manipulations/index";
 
 describe("\"Manipulations\" class instantiation", () => {
   let windowSpy: any;

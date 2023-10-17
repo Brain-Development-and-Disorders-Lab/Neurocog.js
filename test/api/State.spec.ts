@@ -1,4 +1,4 @@
-import { State } from "./index";
+import { State } from "../../src/api/State/index";
 
 describe("\"State\" class initialisation", () => {
   it("works with no arguments", () => {

@@ -1,4 +1,4 @@
-import { Resources } from "./index";
+import { Resources } from "../../src/api/Resources/index";
 
 describe("\"Resources\" class instantiation", () => {
   let windowSpy: any;

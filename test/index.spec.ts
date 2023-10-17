@@ -1,6 +1,6 @@
 import { initJsPsych } from "jspsych";
 
-import NeurocogExtension from "./index";
+import NeurocogExtension from "../src/index";
 
 describe("\"Neurocog\" initialization with basic parameters", () => {
   it("should pass", () => {

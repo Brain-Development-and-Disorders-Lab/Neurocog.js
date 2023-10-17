@@ -1,4 +1,4 @@
-import { Stimuli } from "./index";
+import { Stimuli } from "../../src/api/Stimuli/index";
 
 describe("\"Stimuli\" class initialisation", () => {
   let windowSpy: any;
