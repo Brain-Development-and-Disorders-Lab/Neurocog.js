@@ -11,10 +11,7 @@ import _ from "lodash";
 import { randomLcg, randomUniform } from "d3-random";
 
 // API functions
-import { Manipulations } from "./api/Manipulations";
 import { State } from "./api/State";
-import { Resources } from "./api/Resources";
-import { Stimuli } from "./api/Stimuli";
 
 /**
  * Interface to describe initialization parameters, configuring
@@ -23,21 +20,6 @@ import { Stimuli } from "./api/Stimuli";
 interface InitializeParameters {
   name: string;
   studyName: string;
-
-  // Gorilla manipulations
-  manipulations: {
-    [manipulationName: string]: number | string | boolean | any;
-  };
-
-  // Gorilla resources
-  resources: {
-    [resourceName: string]: string;
-  };
-
-  // Gorilla stimuli
-  stimuli: {
-    [stimulusName: string]: string;
-  };
 
   // Error-handling contact
   allowParticipantContact: boolean;
@@ -81,14 +63,21 @@ class NeurocogExtension implements JsPsychExtension {
   // API and Extension components
   private _gorilla: GorillaAPI; // Gorilla API (defined if available)
   private _state: State; // State management
-  private _stimuli: Stimuli; // Stimuli management
-  private _resources: Resources; // Resource management
-  private _manipulations: Manipulations; // Manipulation management
   private _generator: () => number; // Random generator function
 
   constructor(private jsPsych: JsPsych) {
     this.jsPsych = jsPsych;
     this._useAPI = false;
+
+    // Determine environment (API or otherwise)
+    if (isPlatform()) {
+      this._useAPI = true;
+      this._gorilla = window["gorilla"];
+      consola.info("Gorilla API detected");
+    }
+
+    // Initialise with empty State
+    this._state = new State();
   };
 
   /**
@@ -97,16 +86,11 @@ class NeurocogExtension implements JsPsychExtension {
    * @return {Promise<void>}
    */
   initialize = (params: InitializeParameters): Promise<void> => {
-    return new Promise((resolve, _reject) => {
+    return new Promise((resolve, reject) => {
       // Copy and validate parameters
       this.parameters = params;
-      this.validParameters();
-
-      // Determine environment (API or otherwise)
-      if (isPlatform()) {
-        this._useAPI = true;
-        this._gorilla = window["gorilla"];
-        consola.info("Gorilla API detected");
+      if (!this.validParameters()) {
+        reject();
       }
 
       // Setup error handling
@@ -119,21 +103,11 @@ class NeurocogExtension implements JsPsychExtension {
       if (!_.isUndefined(this.parameters.state)) {
         // Initialise with provided State
         this._state = new State(this.parameters.state);
-      } else {
-        // Initialise with empty State
-        this._state = new State();
       }
 
-      // Configure and load the experiment Stimuli, Resources, and Manipulations
-      this._stimuli = new Stimuli(this.parameters.stimuli);
-      this._resources = new Resources(this.parameters.resources);
-      this._manipulations = new Manipulations(this.parameters.manipulations);
-
       // Resolve now setup is complete
-      consola.success("Successfully initialized Neurocog extension");
       if (this._useAPI) {
         this._gorilla.ready(() => {});
-        consola.info("Gorilla API ready");
         this.jsPsych.getInitSettings().on_finish = (() => {
           // Cache the existing `on_finish` function and append the `finish` Gorilla API call
           var cachedFunction = this.jsPsych.getInitSettings().on_finish;
@@ -172,7 +146,7 @@ class NeurocogExtension implements JsPsychExtension {
    * @return {boolean}
    */
   private validParameters(): boolean {
-    const RequiredInitializeParameters = ["name", "studyName", "manipulations", "resources", "stimuli", "allowParticipantContact", "contact"];
+    const RequiredInitializeParameters = ["name", "studyName", "allowParticipantContact", "contact"];
     const parameterComparison = _.difference(RequiredInitializeParameters, Object.keys(this.parameters));
 
     if (parameterComparison.length > 0) {
@@ -272,40 +246,44 @@ class NeurocogExtension implements JsPsychExtension {
 
   /** ---------- Stimuli ---------- */
   /**
-   * Retrieve the collection of all Stimuli
-   * @return {(): { [stimulus: string]: string }} A collection of Stimuli identifiers or filenames,
-   * pointing to paths to each Stimulus
-   */
-  public getStimuli = (): () => { [stimulus: string]: string } => {
-    return () => this._stimuli.getAll();
-  }
-
-  /**
    * Retrieve a single Stimulus, identified by a key or filename
    * @param {string} stimulus Identifier or filename of the Stimulus
    * @return {(): string} Path to the Stimulus, either locally or via an API
    */
-  public getStimulus = (stimulus: string): () => string => {
-    return () => this._stimuli.getOne(stimulus);
+  public getStimulus = (stimulus: string): string => {
+    if (this._useAPI) {
+      return this._gorilla.stimuliURL(stimulus);
+    } else {
+      return `stimuli/${stimulus}`;
+    }
+  }
+
+  /**
+   * @deprecated since version 1.1.0
+   */
+  public getStimuli = (): void => {
+    consola.warn("Deprecated: `getStimuli` is deprecated, use `getStimulus(id)` to retrieve individual Stimuli.");
   }
 
   /** ---------- Resources ---------- */
-  /**
-   * Retrieve the collection of all Resources
-   * @return {(): { [resource: string]: string }} A collection of Resources identifiers or filenames,
-   * pointing to paths to each Resource
-   */
-  public getResources = (): () => { [resource: string]: string } => {
-    return () => this._resources.getAll();
-  }
-
   /**
    * Retrieve a single Resource, identified by a key or filename
    * @param {string} resource Identifier or filename of the Resource
    * @return {(): string} Path to the Resource, either locally or via an API
    */
-  public getResource = (resource: string): () => string => {
-    return () => this._stimuli.getOne(resource);
+  public getResource = (resource: string): string => {
+    if (this._useAPI) {
+      return this._gorilla.resourceURL(resource);
+    } else {
+      return `resources/${resource}`;
+    }
+  }
+
+  /**
+   * @deprecated since version 1.1.0
+   */
+  public getResources = (): void => {
+    consola.warn("Deprecated: `getResources` is deprecated, use `getResource(id)` to retrieve individual Resources.");
   }
 
   /** ---------- State ---------- */
@@ -314,12 +292,42 @@ class NeurocogExtension implements JsPsychExtension {
   }
 
   public setState(key: string, value: any): void {
-    return this._state.set(key, value);
+    this._state.set(key, value);
   }
 
   /** ---------- Manipulations ---------- */
-  public getManipulation(key: string): any | null {
-    return this._manipulations.getOne(key);
+  /**
+   * Retrieve and return experimental manipulations. Primarily intended for usage with the Gorilla platform,
+   * this function will retrieve the manipulation value from the Gorilla API, otherwise a 'default' value will be
+   * returned with a warning.
+   * @param {string} key manipulation key, defined in the Gorilla task
+   * @param {any} defaultValue a default value, returned when Gorilla is not available
+   * @return {any}
+   */
+  public getManipulation(key: string, defaultValue: any): typeof defaultValue {
+    if (this._useAPI) {
+      const rawValue = this._gorilla.manipulation(key);
+      // Check that manipulation exists
+      if (_.isUndefined(rawValue)) {
+        consola.error(`Manipulations: Manipulation "${key}" is not defined!`);
+        return null;
+      }
+
+      // Adjust value if return type is Boolean
+      if (_.isBoolean(defaultValue)) {
+        return _.isEqual(rawValue, "true") ? true : false;
+      }
+
+      // Validate type if not Boolean
+      if (!_.isEqual(typeof rawValue, typeof defaultValue)) {
+        consola.warn(`Manipulations: Inconsistent type of manipulation "${key}" (Gorilla: ${typeof rawValue}, default: ${typeof defaultValue})`);
+      }
+
+      // Return manipulation value
+      return rawValue;
+    } else {
+      return defaultValue;
+    }
   }
 };
 
