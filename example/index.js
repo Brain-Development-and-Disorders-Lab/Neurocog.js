@@ -14,9 +14,6 @@ const jsPsych = initJsPsych({
       params: {
         name: "Example Neurocog.js",
         studyName: "example_task",
-        manipulations: {
-          variableA: 1,
-        },
         allowParticipantContact: false,
         contact: "henry.burgess@wustl.edu",
       }
