@@ -14,15 +14,6 @@ const jsPsych = initJsPsych({
       params: {
         name: "Example Neurocog.js",
         studyName: "example_task",
-        stimuli: {
-          "example.jpg": "img/example.jpg"
-        },
-        resources: {
-          "example.jpg": "img/example.jpg"
-        },
-        manipulations: {
-          variableA: 1,
-        },
         allowParticipantContact: false,
         contact: "henry.burgess@wustl.edu",
       }
@@ -48,7 +39,7 @@ var welcome = {
 
 var image = {
   type: jsPsychImageButtonResponse,
-  stimulus: jsPsych.extensions.Neurocog.getResource("example.jpg"),
+  stimulus: jsPsych.extensions.Neurocog.getStimulus("mug.jpg"),
   prompt: "Is this a mug?",
   choices: ["Yes", "No"],
   // Specify the extensions, utilize `NeurocogExtension`

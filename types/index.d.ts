@@ -1,4 +1,4 @@
-// Type to express Gorilla API signatures
+// Type to describe Gorilla API signatures
 // Based on documentation: https://support.gorilla.sc/support/tools/legacy-tools/task-builder-1/gorilla-api#overview
 declare type GorillaAPI = {
   ready(callback: () => any): void;
